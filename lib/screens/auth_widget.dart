@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:twtxt_flutter/screens/discover.dart';
+import 'package:twtxt_flutter/screens/follow.dart';
 
 import '../api.dart';
 import '../models.dart';
@@ -79,6 +80,9 @@ class _HomeState extends State<Home> {
                   create: (_) => DiscoverViewModel(_api),
                   child: Discover(),
                 );
+            break;
+          case Follow.routePath:
+            builder = (_) => Follow();
             break;
           default:
             throw Exception('Invalid route: ${settings.name}');

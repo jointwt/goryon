@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:twtxt_flutter/screens/follow.dart';
 import 'package:twtxt_flutter/viewmodels.dart';
 
 import 'models.dart';
@@ -100,6 +101,15 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.of(context).pop();
               Navigator.of(context).pushNamed(Timeline.routePath);
+            },
+          ),
+          ListTile(
+            tileColor:
+                activatedRoute == Follow.routePath ? highlightColor : null,
+            title: Text('Follow'),
+            onTap: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushNamed(Follow.routePath);
             },
           ),
           ListTile(
