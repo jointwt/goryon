@@ -1,0 +1,77 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+  desc "Runs all the tests"
+  version_info = flutter_version()
+  version_code = version_info["version_code"]
+
+  desc "Submit to internal track in Google Play Store"
+  lane :internal do
+    begin
+      sh("flutter", "build", "appbundle")
+      upload_to_play_store(
+        track: 'internal',
+        aab: '../build/app/outputs/bundle/release/app-release.aab',
+        skip_upload_screenshots: true,
+        skip_upload_images: true
+        )
+      rescue => exception
+        raise exception unless exception.message.include?('APK specifies a version code that has already been used.')
+        puts 'Current version already present on the Play Store. Omitting this upload.'
+    end
+  end
+
+  desc "Promote to alpha track in Google Play Store"
+  lane :alpha do
+    sh("flutter", "build", "appbundle")
+    upload_to_play_store(
+      track: 'internal',
+      version_code: version_code,
+      track_promote_to: 'alpha',
+      skip_upload_aab: true,
+      skip_upload_screenshots: true,
+      skip_upload_images: true
+    )
+  end
+
+  desc "Promote to beta track in Google Play Store"
+   lane :beta do
+     sh("flutter", "build", "appbundle")
+     upload_to_play_store(
+       track: 'internal',
+       version_code: version_code,
+       track_promote_to: 'beta',
+       skip_upload_aab: true,
+       skip_upload_screenshots: true,
+       skip_upload_images: true
+     )
+   end
+
+  desc "Promote to production track in Google Play Store"
+  lane :production do
+    sh("flutter", "build", "appbundle")
+    upload_to_play_store(
+      track: 'alpha',
+      version_code: version_code,
+      track_promote_to: 'production',
+      skip_upload_aab: true,
+      skip_upload_screenshots: true,
+      skip_upload_images: true
+    )
+  end
+end

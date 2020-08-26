@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:twtxt_flutter/models.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+import 'models.dart';
 
 class Api {
   final http.Client _httpClient;

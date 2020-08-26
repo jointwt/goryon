@@ -1,8 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:twtxt_flutter/screens/follow.dart';
-import 'package:twtxt_flutter/viewmodels.dart';
+import 'package:goryon/viewmodels.dart';
 
 import 'models.dart';
 import 'screens/discover.dart';

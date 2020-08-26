@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:twtxt_flutter/api.dart';
-import 'package:twtxt_flutter/models.dart';
+
+import 'api.dart';
+import 'models.dart';
 
 class AuthViewModel {
   final Api _api;

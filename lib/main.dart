@@ -4,10 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:twtxt_flutter/api.dart';
-import 'package:twtxt_flutter/common_widgets.dart';
-import 'package:twtxt_flutter/strings.dart';
-import 'package:twtxt_flutter/viewmodels.dart';
+import 'package:goryon/api.dart';
+import 'package:goryon/common_widgets.dart';
+import 'package:goryon/strings.dart';
+import 'package:goryon/viewmodels.dart';
 
 import 'screens/auth_widget.dart';
 

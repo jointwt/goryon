@@ -2,12 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:twtxt_flutter/screens/discover.dart';
-import 'package:twtxt_flutter/screens/follow.dart';
 
 import '../api.dart';
 import '../models.dart';
 import '../viewmodels.dart';
+import 'discover.dart';
 import 'login.dart';
 import 'timeline.dart';
 
