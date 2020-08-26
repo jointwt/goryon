@@ -4,12 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:goryon/api.dart';
-import 'package:goryon/common_widgets.dart';
-import 'package:goryon/strings.dart';
-import 'package:goryon/viewmodels.dart';
 
+import 'api.dart';
+import 'common_widgets.dart';
 import 'screens/auth_widget.dart';
+import 'strings.dart';
+import 'viewmodels.dart';
 
 void main() {
   runApp(MyApp());

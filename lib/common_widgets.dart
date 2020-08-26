@@ -5,6 +5,7 @@ import 'package:goryon/viewmodels.dart';
 
 import 'models.dart';
 import 'screens/discover.dart';
+import 'screens/follow.dart';
 import 'screens/timeline.dart';
 
 class Avatar extends StatelessWidget {

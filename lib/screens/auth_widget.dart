@@ -7,6 +7,7 @@ import '../api.dart';
 import '../models.dart';
 import '../viewmodels.dart';
 import 'discover.dart';
+import 'follow.dart';
 import 'login.dart';
 import 'timeline.dart';
 

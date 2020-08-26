@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:twtxt_flutter/common_widgets.dart';
+
+import '../common_widgets.dart';
 
 class Follow extends StatefulWidget {
   static const String routePath = '/follow';
@@ -13,6 +14,32 @@ class _FollowState extends State<Follow> {
   final _formKey = GlobalKey<FormState>();
   final _nicknameController = TextEditingController();
   final _urlController = TextEditingController();
+
+  Widget buildSuccessMessagePage(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: ListView(
+          padding: const EdgeInsets.all(32),
+          shrinkWrap: true,
+          children: [
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                'Successfully followed ${_nicknameController.text}',
+              ),
+            ),
+            SizedBox(height: 64),
+            Container(
+              child: RaisedButton(
+                child: Text('OK'),
+                onPressed: () => Navigator.pop(context),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +59,16 @@ class _FollowState extends State<Follow> {
           label: label,
           elevation: _canSubmit ? 2 : 0,
           backgroundColor: _canSubmit ? null : Theme.of(context).disabledColor,
-          onPressed: _canSubmit ? () {} : null,
+          onPressed: _canSubmit
+              ? () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => buildSuccessMessagePage(context),
+                    ),
+                  );
+                }
+              : null,
         );
       }),
       drawer: const AppDrawer(activatedRoute: Follow.routePath),
