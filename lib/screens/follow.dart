@@ -48,8 +48,8 @@ class _FollowState extends State<Follow> {
                   ),
                   SizedBox(height: 32),
                   Text(
-                    ' ${_nicknameController.text}: ${_urlController.text}',
-                    style: Theme.of(context).textTheme.headline6,
+                    ' ${_nicknameController.text}(${_urlController.text})',
+                    style: Theme.of(context).textTheme.bodyText1,
                   ),
                 ],
               ),
