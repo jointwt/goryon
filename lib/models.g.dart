@@ -50,12 +50,14 @@ Twter _$TwterFromJson(Map<String, dynamic> json) {
   return Twter(
     nick: json['Nick'] as String,
     uri: json['URL'] == null ? null : Uri.parse(json['URL'] as String),
+    avatar: json['Avatar'] == null ? null : Uri.parse(json['Avatar'] as String),
   );
 }
 
 Map<String, dynamic> _$TwterToJson(Twter instance) => <String, dynamic>{
       'Nick': instance.nick,
       'URL': instance.uri?.toString(),
+      'Avatar': instance.avatar?.toString(),
     };
 
 Twt _$TwtFromJson(Map<String, dynamic> json) {

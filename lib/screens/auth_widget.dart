@@ -62,6 +62,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final navigator = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) {
     final _api = context.watch<Api>();

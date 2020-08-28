@@ -74,14 +74,9 @@ class _DiscoverState extends State<Discover> {
               itemCount: twts.length,
               itemBuilder: (context, index) {
                 final twt = twts[index];
-                print(twt.twter.imageUrl);
                 return ListTile(
                   isThreeLine: true,
-                  leading: Avatar(
-                      // This makes it so that we only display images from the pod we're currently logged in
-                      imageUrl: twt.twter.uri.authority == user.podURL.authority
-                          ? twt.twter.imageUrl
-                          : null),
+                  leading: Avatar(imageUrl: twt.twter.avatar.toString()),
                   title: Text(
                     twt.twter.nick,
                     style: Theme.of(context).textTheme.headline6,

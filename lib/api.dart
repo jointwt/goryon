@@ -101,6 +101,8 @@ class Api {
       },
     );
 
+    print(response.body);
+
     if (response.statusCode >= 400) {
       throw http.ClientException('Failed to get posts');
     }
@@ -122,6 +124,24 @@ class Api {
 
     if (response.statusCode >= 400) {
       throw http.ClientException('Failed post tweet. Please try again later');
+    }
+  }
+
+  Future<void> follow(String nick, String url) async {
+    final _user = await user;
+    final response = await _httpClient.post(
+      _user.podURL.replace(path: "/api/v1/follow"),
+      body: jsonEncode({'nick': nick, 'url': url}),
+      headers: {
+        'Token': _user.token,
+        HttpHeaders.contentTypeHeader: ContentType.json.toString(),
+      },
+    );
+
+    if (response.statusCode >= 400) {
+      throw http.ClientException(
+        'Follow request failed. Please try again later',
+      );
     }
   }
 }

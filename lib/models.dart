@@ -16,7 +16,7 @@ class User {
   });
 
   String get imageUrl =>
-      podURL.replace(path: "/user/$username/avatar.png").toString();
+      podURL.replace(path: "/user/$username/avatar").toString();
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
   Map<String, dynamic> toJson() => _$UserToJson(this);
@@ -55,12 +55,10 @@ class Twter {
   final String nick;
   @JsonKey(name: 'URL')
   final Uri uri;
+  @JsonKey(name: 'Avatar')
+  final Uri avatar;
 
-  Twter({this.nick, this.uri});
-
-  String get imageUrl {
-    return uri.replace(path: "/user/$nick/avatar.png").toString();
-  }
+  Twter({this.nick, this.uri, this.avatar});
 
   factory Twter.fromJson(Map<String, dynamic> json) => _$TwterFromJson(json);
   Map<String, dynamic> toJson() => _$TwterToJson(this);
