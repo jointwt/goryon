@@ -26,7 +26,6 @@ class Api {
   }
 
   Future<User> login(String username, String password, Uri podURI) async {
-    print(podURI.replace(path: "/api/v1/auth"));
     final response = await _httpClient.post(
       podURI.replace(path: "/api/v1/auth"),
       body: jsonEncode({'username': username, 'password': password}),
@@ -100,8 +99,6 @@ class Api {
         HttpHeaders.contentTypeHeader: ContentType.json.toString(),
       },
     );
-
-    print(response.body);
 
     if (response.statusCode >= 400) {
       throw http.ClientException('Failed to get posts');
