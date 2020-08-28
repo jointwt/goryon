@@ -91,7 +91,7 @@ class AppDrawer extends StatelessWidget {
                 activatedRoute == Discover.routePath ? highlightColor : null,
             onTap: () {
               Navigator.of(context).pop();
-              Navigator.of(context).pushNamed(Discover.routePath);
+              Navigator.of(context).pushReplacementNamed(Discover.routePath);
             },
           ),
           ListTile(
@@ -100,7 +100,7 @@ class AppDrawer extends StatelessWidget {
             title: Text('Timeline'),
             onTap: () {
               Navigator.of(context).pop();
-              Navigator.of(context).pushNamed(Timeline.routePath);
+              Navigator.of(context).pushReplacementNamed(Timeline.routePath);
             },
           ),
           ListTile(

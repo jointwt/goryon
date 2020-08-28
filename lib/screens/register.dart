@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goryon/form_validators.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -36,13 +37,6 @@ class _RegisterState extends State<Register> {
     }
   }
 
-  String requiredFieldValidator(String value) {
-    if (value.isEmpty) {
-      return 'Required';
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,7 +50,7 @@ class _RegisterState extends State<Register> {
               children: [
                 SizedBox(height: 16),
                 TextFormField(
-                  validator: requiredFieldValidator,
+                  validator: FormValidators.requiredField,
                   controller: _usernameTextController,
                   autofillHints: [AutofillHints.username],
                   decoration: InputDecoration(
@@ -65,7 +59,7 @@ class _RegisterState extends State<Register> {
                   ),
                 ),
                 TextFormField(
-                  validator: requiredFieldValidator,
+                  validator: FormValidators.requiredField,
                   controller: _passwordTextController,
                   autofillHints: [AutofillHints.password],
                   obscureText: true,
@@ -76,7 +70,7 @@ class _RegisterState extends State<Register> {
                 ),
                 TextFormField(
                   autofillHints: [AutofillHints.email],
-                  validator: requiredFieldValidator,
+                  validator: FormValidators.requiredField,
                   controller: _emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
@@ -85,7 +79,7 @@ class _RegisterState extends State<Register> {
                 ),
                 TextFormField(
                   autofillHints: [AutofillHints.url],
-                  validator: requiredFieldValidator,
+                  validator: FormValidators.requiredField,
                   controller: _podURLController,
                   decoration: InputDecoration(
                     labelText: 'Pod URL',
