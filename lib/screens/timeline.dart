@@ -17,12 +17,20 @@ class _TimelineState extends State<Timeline> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => _page());
+    Future.microtask(() => _fetchNewPost());
   }
 
   void _page() async {
     try {
       context.read<TimelineViewModel>().gotoNextPage();
+    } on http.ClientException catch (e) {
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+    }
+  }
+
+  void _fetchNewPost() async {
+    try {
+      context.read<TimelineViewModel>().fetchNewPost();
     } on http.ClientException catch (e) {
       Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
     }
@@ -55,7 +63,7 @@ class _TimelineState extends State<Timeline> {
       ),
       body: Consumer2<TimelineViewModel, User>(
         builder: (context, timelineViewModel, user, _) {
-          if (timelineViewModel.isLoading) {
+          if (timelineViewModel.isEntireListLoading) {
             return Center(
               child: CircularProgressIndicator(),
             );
@@ -64,6 +72,8 @@ class _TimelineState extends State<Timeline> {
           return RefreshIndicator(
             onRefresh: timelineViewModel.refreshPost,
             child: PostList(
+              isBottomListLoading: timelineViewModel.isBottomListLoading,
+              gotoNextPage: _page,
               fetchNewPost: timelineViewModel.fetchNewPost,
               twts: timelineViewModel.twts,
             ),

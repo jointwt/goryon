@@ -42,20 +42,28 @@ class AuthViewModel {
 class TimelineViewModel extends ChangeNotifier {
   TimelineViewModel(this._api) {
     _twts = [];
-    _isLoading = false;
+    _isEntireListLoading = false;
+    _isBottomListLoading = false;
   }
 
   final Api _api;
-  bool _isLoading;
+  bool _isEntireListLoading;
+  bool _isBottomListLoading;
   TimelineResponse _lastTimelineResponse;
   List<Twt> _twts;
 
-  bool get isLoading => _isLoading;
+  bool get isEntireListLoading => _isEntireListLoading;
+  bool get isBottomListLoading => _isBottomListLoading;
 
   List<Twt> get twts => _twts;
 
-  set isLoading(bool isLoading) {
-    _isLoading = isLoading;
+  set isEntireListLoading(bool isLoading) {
+    _isEntireListLoading = isLoading;
+    notifyListeners();
+  }
+
+  set isBottomListLoading(bool isLoading) {
+    _isBottomListLoading = isLoading;
     notifyListeners();
   }
 
@@ -66,27 +74,29 @@ class TimelineViewModel extends ChangeNotifier {
   }
 
   void fetchNewPost() async {
-    isLoading = true;
+    isEntireListLoading = true;
 
     try {
       _lastTimelineResponse = await _api.timeline(0);
       _twts = _lastTimelineResponse.twts;
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      isEntireListLoading = false;
     }
   }
 
   void gotoNextPage() async {
-    isLoading = true;
+    if (_lastTimelineResponse.pagerResponse.currentPage ==
+        _lastTimelineResponse.pagerResponse.maxPages) {
+      return;
+    }
+
+    isBottomListLoading = true;
     try {
-      final page =
-          (_lastTimelineResponse?.pagerResponse?.currentPage ?? -1) + 1;
+      final page = _lastTimelineResponse.pagerResponse.currentPage + 1;
       _lastTimelineResponse = await _api.timeline(page);
       _twts = [..._twts, ..._lastTimelineResponse.twts];
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      isBottomListLoading = false;
     }
   }
 }
@@ -94,20 +104,28 @@ class TimelineViewModel extends ChangeNotifier {
 class DiscoverViewModel extends ChangeNotifier {
   DiscoverViewModel(this._api) {
     _twts = [];
-    _isLoading = false;
+    _isEntireListLoading = false;
+    _isBottomListLoading = false;
   }
 
   final Api _api;
-  bool _isLoading;
+  bool _isEntireListLoading;
+  bool _isBottomListLoading;
   TimelineResponse _lastTimelineResponse;
   List<Twt> _twts;
 
-  bool get isLoading => _isLoading;
+  bool get isEntireListLoading => _isEntireListLoading;
+  bool get isBottomListLoading => _isBottomListLoading;
 
   List<Twt> get twts => _twts;
 
-  set isLoading(bool isLoading) {
-    _isLoading = isLoading;
+  set isEntireListLoading(bool isLoading) {
+    _isEntireListLoading = isLoading;
+    notifyListeners();
+  }
+
+  set isBottomListLoading(bool isLoading) {
+    _isBottomListLoading = isLoading;
     notifyListeners();
   }
 
@@ -118,31 +136,29 @@ class DiscoverViewModel extends ChangeNotifier {
   }
 
   void fetchNewPost() async {
-    isLoading = true;
+    isEntireListLoading = true;
 
     try {
       _lastTimelineResponse = await _api.discover(0);
       _twts = _lastTimelineResponse.twts;
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      isEntireListLoading = false;
     }
   }
 
   void gotoNextPage() async {
-    if (isLoading) {
+    if (_lastTimelineResponse.pagerResponse.currentPage ==
+        _lastTimelineResponse.pagerResponse.maxPages) {
       return;
     }
 
-    isLoading = true;
+    isBottomListLoading = true;
     try {
-      final page =
-          (_lastTimelineResponse?.pagerResponse?.currentPage ?? -1) + 1;
+      final page = _lastTimelineResponse.pagerResponse.currentPage + 1;
       _lastTimelineResponse = await _api.discover(page);
       _twts = [..._twts, ..._lastTimelineResponse.twts];
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      isBottomListLoading = false;
     }
   }
 }

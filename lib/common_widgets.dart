@@ -13,10 +13,11 @@ import 'screens/newtwt.dart';
 import 'screens/timeline.dart';
 
 class Avatar extends StatelessWidget {
+  const Avatar({Key key, this.imageUrl, this.radius = 20}) : super(key: key);
+
   final String imageUrl;
   final double radius;
 
-  const Avatar({Key key, this.imageUrl, this.radius = 20}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     if (imageUrl == null) {
@@ -35,6 +36,7 @@ class Avatar extends StatelessWidget {
 
 class AuthWidgetBuilder extends StatelessWidget {
   const AuthWidgetBuilder({Key key, @required this.builder}) : super(key: key);
+
   final Widget Function(BuildContext, AsyncSnapshot<User>) builder;
 
   @override
@@ -58,12 +60,26 @@ class AuthWidgetBuilder extends StatelessWidget {
 }
 
 class AppDrawer extends StatelessWidget {
-  final double avatarRadius;
-  final String activatedRoute;
-
   const AppDrawer(
       {Key key, @required this.activatedRoute, this.avatarRadius = 35})
       : super(key: key);
+
+  final String activatedRoute;
+  final double avatarRadius;
+
+  ListTile buildListTile(BuildContext context, String title, String routePath) {
+    final isActive = activatedRoute == routePath;
+    return ListTile(
+      title: Text(title),
+      tileColor: isActive ? Theme.of(context).highlightColor : null,
+      onTap: isActive
+          ? null
+          : () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushReplacementNamed(routePath);
+            },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,40 +124,52 @@ class AppDrawer extends StatelessWidget {
       ),
     );
   }
-
-  ListTile buildListTile(BuildContext context, String title, String routePath) {
-    final isActive = activatedRoute == routePath;
-    return ListTile(
-      title: Text(title),
-      tileColor: isActive ? Theme.of(context).highlightColor : null,
-      onTap: isActive
-          ? null
-          : () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushReplacementNamed(routePath);
-            },
-    );
-  }
 }
 
-class PostList extends StatelessWidget {
-  final List<Twt> twts;
-  final Function fetchNewPost;
-
+class PostList extends StatefulWidget {
   const PostList({
     Key key,
-    @required this.twts,
     @required this.fetchNewPost,
+    @required this.gotoNextPage,
+    @required this.twts,
+    @required this.isBottomListLoading,
   }) : super(key: key);
+
+  final Function fetchNewPost;
+  final Function gotoNextPage;
+  final bool isBottomListLoading;
+  final List<Twt> twts;
+
+  @override
+  _PostListState createState() => _PostListState();
+}
+
+class _PostListState extends State<PostList> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(initiateLoadMoreOnScroll);
+  }
+
+  void initiateLoadMoreOnScroll() {
+    if (_scrollController.position.pixels >
+            _scrollController.position.maxScrollExtent * 0.9 &&
+        !widget.isBottomListLoading) {
+      widget.gotoNextPage();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
+      controller: _scrollController,
       slivers: [
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (_, idx) {
-              final twt = twts[idx];
+              final twt = widget.twts[idx];
               return ListTile(
                 isThreeLine: true,
                 leading: Avatar(imageUrl: twt.twter.avatar.toString()),
@@ -180,7 +208,7 @@ class PostList extends StatelessWidget {
                                 ),
                               ) ??
                               false) {
-                            fetchNewPost();
+                            widget.fetchNewPost();
                           }
                         },
                         child: Text(
@@ -194,9 +222,18 @@ class PostList extends StatelessWidget {
                 ),
               );
             },
-            childCount: twts.length,
+            childCount: widget.twts.length,
           ),
         ),
+        if (widget.isBottomListLoading)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 64.0),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          )
       ],
     );
   }

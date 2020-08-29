@@ -14,13 +14,10 @@ class Discover extends StatefulWidget {
 }
 
 class _DiscoverState extends State<Discover> {
-  final _scrollController = ScrollController();
-
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => _page());
-    _scrollController.addListener(initiateLoadMoreOnScroll);
+    Future.microtask(() => _fetchNewPost());
   }
 
   void _page() async {
@@ -33,11 +30,11 @@ class _DiscoverState extends State<Discover> {
     }
   }
 
-  void initiateLoadMoreOnScroll() {
-    var triggerFetchMoreSize = 0.9 * _scrollController.position.maxScrollExtent;
-
-    if (_scrollController.position.pixels > triggerFetchMoreSize) {
-      _page();
+  void _fetchNewPost() async {
+    try {
+      context.read<DiscoverViewModel>().fetchNewPost();
+    } on http.ClientException catch (e) {
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
 
@@ -68,7 +65,7 @@ class _DiscoverState extends State<Discover> {
       ),
       body: Consumer2<DiscoverViewModel, User>(
         builder: (context, discoverViewModel, user, _) {
-          if (discoverViewModel.isLoading) {
+          if (discoverViewModel.isEntireListLoading) {
             return Center(
               child: CircularProgressIndicator(),
             );
@@ -76,6 +73,8 @@ class _DiscoverState extends State<Discover> {
           return RefreshIndicator(
             onRefresh: discoverViewModel.refreshPost,
             child: PostList(
+              isBottomListLoading: discoverViewModel.isBottomListLoading,
+              gotoNextPage: _page,
               fetchNewPost: discoverViewModel.fetchNewPost,
               twts: discoverViewModel.twts,
             ),
