@@ -63,8 +63,8 @@ class _DiscoverState extends State<Discover> {
           },
         ),
       ),
-      body: Consumer2<DiscoverViewModel, User>(
-        builder: (context, discoverViewModel, user, _) {
+      body: Consumer<DiscoverViewModel>(
+        builder: (context, discoverViewModel, _) {
           if (discoverViewModel.isEntireListLoading) {
             return Center(
               child: CircularProgressIndicator(),

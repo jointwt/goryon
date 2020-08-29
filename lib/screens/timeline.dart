@@ -61,8 +61,8 @@ class _TimelineState extends State<Timeline> {
           },
         ),
       ),
-      body: Consumer2<TimelineViewModel, User>(
-        builder: (context, timelineViewModel, user, _) {
+      body: Consumer<TimelineViewModel>(
+        builder: (context, timelineViewModel, _) {
           if (timelineViewModel.isEntireListLoading) {
             return Center(
               child: CircularProgressIndicator(),

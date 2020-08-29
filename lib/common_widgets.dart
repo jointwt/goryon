@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-import 'package:goryon/viewmodels.dart';
-
+import 'viewmodels.dart';
 import 'models.dart';
 import 'screens/discover.dart';
 import 'screens/follow.dart';
@@ -30,6 +30,7 @@ class Avatar extends StatelessWidget {
         return CircleAvatar(backgroundImage: imageProvider, radius: radius);
       },
       placeholder: (context, url) => CircularProgressIndicator(),
+      errorWidget: (context, url, error) => Icon(Icons.error),
     );
   }
 }
@@ -184,8 +185,40 @@ class _PostListState extends State<PostList> {
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: MarkdownBody(
                         styleSheet: MarkdownStyleSheet(textScaleFactor: 1.2),
-                        onTapLink: (link) {
-                          print(link);
+                        imageBuilder: (uri, title, alt) => GestureDetector(
+                          onTap: () async {
+                            if (await canLaunch(uri.toString())) {
+                              await launch(uri.toString());
+                            }
+
+                            Scaffold.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Failed to launch image'),
+                              ),
+                            );
+                          },
+                          child: CachedNetworkImage(
+                            imageUrl: uri.toString(),
+                            placeholder: (context, url) =>
+                                CircularProgressIndicator(),
+                          ),
+                        ),
+                        onTapLink: (link) async {
+                          final linkUri = Uri.parse(link);
+                          if (linkUri.authority ==
+                              context.read<User>().podURL.authority) {
+                            // TODO: handle app URLs
+                            return;
+                          }
+
+                          if (await canLaunch(link)) {
+                            await launch(link);
+                          }
+                          Scaffold.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to launch $link'),
+                            ),
+                          );
                         },
                         data: twt.sanitizedTxt,
                         extensionSet: md.ExtensionSet.gitHubWeb,
@@ -202,9 +235,11 @@ class _PostListState extends State<PostList> {
                           if (await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => NewTwt(initialText: ''
-                                      // twt.replyText(user.username),
-                                      ),
+                                  builder: (_) => NewTwt(
+                                    initialText: twt.replyText(
+                                      context.read<User>().username,
+                                    ),
+                                  ),
                                 ),
                               ) ??
                               false) {
