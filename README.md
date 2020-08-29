@@ -1,7 +1,9 @@
 # goryon 🐦🐦🐦
 A flutter client for twtxt
 
-![Timeline](docs/timeline.png) ![New post](docs/new_post.png)
+![Timeline](docs/timeline.png)
+![New post](docs/new_post.png)
+![Drawer](docs/drawer.png)
 
 
 ## Requirements
