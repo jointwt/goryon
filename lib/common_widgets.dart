@@ -69,6 +69,7 @@ class AppDrawer extends StatelessWidget {
         children: [
           Consumer<User>(builder: (context, user, _) {
             return UserAccountsDrawerHeader(
+              margin: const EdgeInsets.all(0),
               // Avatar border
               currentAccountPicture: CircleAvatar(
                 radius: avatarRadius,
@@ -110,11 +111,11 @@ class AppDrawer extends StatelessWidget {
       title: Text(title),
       tileColor: isActive ? Theme.of(context).highlightColor : null,
       onTap: isActive
-          ? () {
+          ? null
+          : () {
               Navigator.of(context).pop();
               Navigator.of(context).pushReplacementNamed(routePath);
-            }
-          : null,
+            },
     );
   }
 }
