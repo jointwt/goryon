@@ -16,10 +16,13 @@ class Discover extends StatefulWidget {
 }
 
 class _DiscoverState extends State<Discover> {
+  final _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     Future.microtask(() => _page());
+    _scrollController.addListener(initiateLoadMoreOnScroll);
   }
 
   void _page() async {
@@ -27,6 +30,16 @@ class _DiscoverState extends State<Discover> {
       context.read<DiscoverViewModel>().gotoNextPage();
     } on http.ClientException catch (e) {
       Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void initiateLoadMoreOnScroll() {
+    var triggerFetchMoreSize = 0.9 * _scrollController.position.maxScrollExtent;
+
+    if (_scrollController.position.pixels > triggerFetchMoreSize) {
+      _page();
     }
   }
 
@@ -67,6 +80,7 @@ class _DiscoverState extends State<Discover> {
           return RefreshIndicator(
             onRefresh: discoverViewModel.refreshPost,
             child: ListView.separated(
+              controller: _scrollController,
               padding: const EdgeInsets.only(bottom: 16),
               separatorBuilder: (context, index) {
                 return Divider();

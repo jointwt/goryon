@@ -119,7 +119,7 @@ class Twt {
 @JsonSerializable()
 class TimelineResponse {
   final List<Twt> twts;
-  @JsonKey(name: 'PagerResponse')
+  @JsonKey(name: 'Pager')
   final PagerResponse pagerResponse;
 
   TimelineResponse(this.twts, this.pagerResponse);

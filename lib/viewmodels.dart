@@ -130,6 +130,10 @@ class DiscoverViewModel extends ChangeNotifier {
   }
 
   void gotoNextPage() async {
+    if (isLoading) {
+      return;
+    }
+
     isLoading = true;
     try {
       final page =

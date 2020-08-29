@@ -83,16 +83,16 @@ TimelineResponse _$TimelineResponseFromJson(Map<String, dynamic> json) {
     (json['twts'] as List)
         ?.map((e) => e == null ? null : Twt.fromJson(e as Map<String, dynamic>))
         ?.toList(),
-    json['PagerResponse'] == null
+    json['Pager'] == null
         ? null
-        : PagerResponse.fromJson(json['PagerResponse'] as Map<String, dynamic>),
+        : PagerResponse.fromJson(json['Pager'] as Map<String, dynamic>),
   );
 }
 
 Map<String, dynamic> _$TimelineResponseToJson(TimelineResponse instance) =>
     <String, dynamic>{
       'twts': instance.twts,
-      'PagerResponse': instance.pagerResponse,
+      'Pager': instance.pagerResponse,
     };
 
 PostRequest _$PostRequestFromJson(Map<String, dynamic> json) {
