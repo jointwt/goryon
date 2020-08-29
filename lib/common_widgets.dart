@@ -189,6 +189,7 @@ class _PostListState extends State<PostList> {
                           onTap: () async {
                             if (await canLaunch(uri.toString())) {
                               await launch(uri.toString());
+                              return;
                             }
 
                             Scaffold.of(context).showSnackBar(
@@ -213,7 +214,9 @@ class _PostListState extends State<PostList> {
 
                           if (await canLaunch(link)) {
                             await launch(link);
+                            return;
                           }
+
                           Scaffold.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Failed to launch $link'),
