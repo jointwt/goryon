@@ -5,12 +5,12 @@ on:
       - "master"
       - "actions/release-android__*"
     paths:
-      - "goryon/pubspec.yaml"
-      - "goryon/android/fastlane/**/*"
-      - "goryon/android/fastlane/Fastfile"
+      - "pubspec.yaml"
+      - "android/fastlane/**/*"
+      - "android/fastlane/Fastfile"
       - ".github/workflows/shipit.yml"
-      - "goryon/android/Gemfile"
-      - "goryon/android/Gemfile.lock"
+      - "android/Gemfile"
+      - "android/Gemfile.lock"
 jobs:
   release-android:
     name: release android app
