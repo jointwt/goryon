@@ -54,25 +54,28 @@ class AuthWidgetBuilder extends StatelessWidget {
 }
 
 class AppDrawer extends StatelessWidget {
+  final double avatarRadius;
   final String activatedRoute;
 
-  const AppDrawer({Key key, @required this.activatedRoute}) : super(key: key);
+  const AppDrawer(
+      {Key key, @required this.activatedRoute, this.avatarRadius = 35})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final highlightColor = Theme.of(context).highlightColor;
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           Consumer<User>(builder: (context, user, _) {
             return UserAccountsDrawerHeader(
+              // Avatar border
               currentAccountPicture: CircleAvatar(
-                radius: 35,
+                radius: avatarRadius,
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 child: Avatar(
                   imageUrl: user.imageUrl,
-                  radius: 34,
+                  radius: avatarRadius - 1,
                 ),
               ),
               accountName: Column(
@@ -85,43 +88,33 @@ class AppDrawer extends StatelessWidget {
               accountEmail: null,
             );
           }),
-          ListTile(
-            title: Text('Discover'),
-            tileColor:
-                activatedRoute == Discover.routePath ? highlightColor : null,
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushReplacementNamed(Discover.routePath);
-            },
-          ),
-          ListTile(
-            tileColor:
-                activatedRoute == Timeline.routePath ? highlightColor : null,
-            title: Text('Timeline'),
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushReplacementNamed(Timeline.routePath);
-            },
-          ),
-          ListTile(
-            tileColor:
-                activatedRoute == Follow.routePath ? highlightColor : null,
-            title: Text('Follow'),
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushNamed(Follow.routePath);
-            },
-          ),
+          buildListTile(context, 'Discover', Discover.routePath),
+          buildListTile(context, 'Timeline', Timeline.routePath),
+          buildListTile(context, 'Follow', Follow.routePath),
           ListTile(
             title: Text('Log Out'),
             trailing: Icon(Icons.logout),
             onTap: () {
               Navigator.of(context).pop();
-              context.watch<AuthViewModel>().logout();
+              context.read<AuthViewModel>().logout();
             },
           )
         ],
       ),
+    );
+  }
+
+  ListTile buildListTile(BuildContext context, String title, String routePath) {
+    final isActive = activatedRoute == routePath;
+    return ListTile(
+      title: Text(title),
+      tileColor: isActive ? Theme.of(context).highlightColor : null,
+      onTap: isActive
+          ? () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushReplacementNamed(routePath);
+            }
+          : null,
     );
   }
 }
