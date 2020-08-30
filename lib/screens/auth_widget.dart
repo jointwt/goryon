@@ -70,33 +70,33 @@ class _HomeState extends State<Home> {
       onWillPop: () async {
         return !await navigator.currentState.maybePop();
       },
-      child: Navigator(
-        key: navigator,
-        initialRoute: Timeline.routePath,
-        onGenerateRoute: (RouteSettings settings) {
-          WidgetBuilder builder;
-          switch (settings.name) {
-            case Timeline.routePath:
-              builder = (_) => ChangeNotifierProvider(
-                    create: (_) => TimelineViewModel(_api),
-                    child: Timeline(),
-                  );
-              break;
-            case Discover.routePath:
-              builder = (_) => ChangeNotifierProvider(
-                    create: (_) => DiscoverViewModel(_api),
-                    child: Discover(),
-                  );
-              break;
-            case Follow.routePath:
-              builder = (_) => Follow();
-              break;
-            default:
-              throw Exception('Invalid route: ${settings.name}');
-          }
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => TimelineViewModel(_api)),
+          ChangeNotifierProvider(create: (_) => DiscoverViewModel(_api)),
+        ],
+        child: Navigator(
+          key: navigator,
+          initialRoute: Timeline.routePath,
+          onGenerateRoute: (RouteSettings settings) {
+            WidgetBuilder builder;
+            switch (settings.name) {
+              case Timeline.routePath:
+                builder = (_) => Timeline();
+                break;
+              case Discover.routePath:
+                builder = (_) => Discover();
+                break;
+              case Follow.routePath:
+                builder = (_) => Follow();
+                break;
+              default:
+                throw Exception('Invalid route: ${settings.name}');
+            }
 
-          return MaterialPageRoute(builder: builder, settings: settings);
-        },
+            return MaterialPageRoute(builder: builder, settings: settings);
+          },
+        ),
       ),
     );
   }
