@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'api.dart';
@@ -160,5 +161,21 @@ class DiscoverViewModel extends ChangeNotifier {
     } finally {
       isBottomListLoading = false;
     }
+  }
+}
+
+class NewTwtViewModel {
+  final _picker = ImagePicker();
+  final Api _api;
+
+  NewTwtViewModel(this._api);
+
+  Future<String> prompUserForImageAndUpload() async {
+    final pickedFile = await _picker.getImage(source: ImageSource.camera);
+    if (pickedFile == null) {
+      return null;
+    }
+
+    return _api.uploadImage(pickedFile.path);
   }
 }

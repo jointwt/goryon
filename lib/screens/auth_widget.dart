@@ -74,6 +74,7 @@ class _HomeState extends State<Home> {
         providers: [
           ChangeNotifierProvider(create: (_) => TimelineViewModel(_api)),
           ChangeNotifierProvider(create: (_) => DiscoverViewModel(_api)),
+          Provider(create: (_) => NewTwtViewModel(_api)),
         ],
         child: Navigator(
           key: navigator,

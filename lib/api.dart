@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:path/path.dart';
 
 import 'models.dart';
 
@@ -140,5 +141,33 @@ class Api {
         'Follow request failed. Please try again later',
       );
     }
+  }
+
+  Future<String> uploadImage(String filePath) async {
+    final _user = await user;
+    final request = http.MultipartRequest(
+      'POST',
+      _user.podURL.replace(path: "/api/v1/upload"),
+    )
+      ..headers['Token'] = _user.token
+      ..files.add(
+        await http.MultipartFile.fromPath(
+          'media_file',
+          filePath,
+          filename: basename(filePath),
+        ),
+      );
+
+    final streamedResponse = await request.send();
+
+    if (streamedResponse.statusCode >= 400) {
+      throw http.ClientException(
+        'Failed to upload image. Please try again later',
+      );
+    }
+
+    final response = await http.Response.fromStream(streamedResponse);
+
+    return jsonDecode(response.body)['Path'];
   }
 }
