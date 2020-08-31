@@ -14,7 +14,7 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   Future _loginFuture;
   final _passwordTextController = TextEditingController();
-  final _podURLController = TextEditingController(text: 'http://0.0.0.0:8000');
+  final _podURLController = TextEditingController();
   final _usernameTextController = TextEditingController();
 
   Future _handleLogin(BuildContext context) async {
