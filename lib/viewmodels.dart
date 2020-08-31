@@ -170,8 +170,8 @@ class NewTwtViewModel {
 
   NewTwtViewModel(this._api);
 
-  Future<String> prompUserForImageAndUpload() async {
-    final pickedFile = await _picker.getImage(source: ImageSource.camera);
+  Future<String> prompUserForImageAndUpload(ImageSource imageSource) async {
+    final pickedFile = await _picker.getImage(source: imageSource);
     if (pickedFile == null) {
       return null;
     }

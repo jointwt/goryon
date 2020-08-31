@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:goryon/viewmodels.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
@@ -25,7 +26,8 @@ class _NewTwtState extends State<NewTwt> {
   final _formKey = GlobalKey<FormState>();
 
   Future _savePostFuture;
-  Future _uploadImageFuture;
+  Future _uploadImageFromGalleryFuture;
+  Future _uploadImageFromCameraFuture;
   TextEditingController _textController;
   String _twtPrompt;
 
@@ -47,11 +49,11 @@ class _NewTwtState extends State<NewTwt> {
     });
   }
 
-  Future<void> _uploadImage() async {
+  Future<void> _uploadImage(ImageSource imageSource) async {
     try {
       await context
           .read<NewTwtViewModel>()
-          .prompUserForImageAndUpload()
+          .prompUserForImageAndUpload(imageSource)
           .then((imageURL) {
         if (imageURL == null) return;
         _textController.value = _textController.value.copyWith(
@@ -187,7 +189,7 @@ class _NewTwtState extends State<NewTwt> {
                               ),
                             ),
                             FutureBuilder(
-                              future: _uploadImageFuture,
+                              future: _uploadImageFromGalleryFuture,
                               builder: (context, snapshot) {
                                 final isLoading = snapshot.connectionState ==
                                     ConnectionState.waiting;
@@ -195,26 +197,61 @@ class _NewTwtState extends State<NewTwt> {
                                 void _onPressed() {
                                   setState(
                                     () {
-                                      _uploadImageFuture = _uploadImage();
+                                      _uploadImageFromGalleryFuture =
+                                          _uploadImage(
+                                        ImageSource.gallery,
+                                      );
                                     },
                                   );
                                 }
 
                                 return IconButton(
-                                  tooltip: 'Upload Image',
+                                  tooltip: 'Upload image from gallery',
                                   icon: isLoading
-                                      ? SizedBox(
+                                      ? const SizedBox(
                                           height: 16,
                                           width: 16,
                                           child: CircularProgressIndicator(
                                             strokeWidth: 2,
                                           ),
                                         )
-                                      : Icon(Icons.upload_file),
+                                      : Icon(Icons.photo_library),
                                   onPressed: isLoading ? null : _onPressed,
                                 );
                               },
                             ),
+                            FutureBuilder(
+                              future: _uploadImageFromCameraFuture,
+                              builder: (context, snapshot) {
+                                final isLoading = snapshot.connectionState ==
+                                    ConnectionState.waiting;
+
+                                void _onPressed() {
+                                  setState(
+                                    () {
+                                      _uploadImageFromCameraFuture =
+                                          _uploadImage(
+                                        ImageSource.camera,
+                                      );
+                                    },
+                                  );
+                                }
+
+                                return IconButton(
+                                  tooltip: 'Upload image from camera',
+                                  icon: isLoading
+                                      ? const SizedBox(
+                                          height: 16,
+                                          width: 16,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : Icon(Icons.camera_alt),
+                                  onPressed: isLoading ? null : _onPressed,
+                                );
+                              },
+                            )
                           ],
                         ),
                       ),
