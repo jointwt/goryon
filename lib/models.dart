@@ -87,8 +87,8 @@ class Twt {
         return "[$prefix$nick]($url)";
       });
 
-  List<String> get mentions =>
-      mentionsExp.allMatches(text).map((e) => e.group(1)).toSet().toList();
+  Set<String> get mentions =>
+      mentionsExp.allMatches(text).map((e) => e.group(1)).toSet();
 
   String get subject {
     final match = subjectExp.firstMatch(text);
@@ -109,11 +109,11 @@ class Twt {
       });
     }
 
-    if (mentions.isEmpty) {
-      return '@${twter.nick} ';
-    }
+    final _mentions = mentions
+      ..add(twter.nick)
+      ..remove(usernameToExclude);
 
-    return "${mentions.where((element) => element != usernameToExclude).map((e) => "@$e").join(" ")} $subject ";
+    return "${_mentions.map((e) => "@$e").join(" ")} $subject ";
   }
 
   factory Twt.fromJson(Map<String, dynamic> json) => _$TwtFromJson(json);
