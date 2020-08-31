@@ -24,6 +24,7 @@ class NewTwt extends StatefulWidget {
 class _NewTwtState extends State<NewTwt> {
   final _random = Random();
   final _formKey = GlobalKey<FormState>();
+  final _scrollbarController = ScrollController();
 
   Future _savePostFuture;
   Future _uploadImageFromGalleryFuture;
@@ -140,6 +141,8 @@ class _NewTwtState extends State<NewTwt> {
                     SizedBox(
                       height: 64,
                       child: Scrollbar(
+                        controller: _scrollbarController,
+                        isAlwaysShown: true,
                         child: ListView(
                           scrollDirection: Axis.horizontal,
                           children: [
