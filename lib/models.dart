@@ -109,6 +109,10 @@ class Twt {
       });
     }
 
+    if (mentions.isEmpty) {
+      return '@${twter.nick} ';
+    }
+
     return "${mentions.where((element) => element != usernameToExclude).map((e) => "@$e").join(" ")} $subject ";
   }
 
