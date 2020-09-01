@@ -179,3 +179,33 @@ class NewTwtViewModel {
     return _api.uploadImage(pickedFile.path);
   }
 }
+
+class ProfileViewModel extends ChangeNotifier {
+  final Api _api;
+  Profile _profile;
+  bool _isLoading = false;
+
+  bool get isLoading => _isLoading;
+  Profile get profile => _profile;
+
+  set isLoading(bool isLoading) {
+    _isLoading = isLoading;
+    notifyListeners();
+  }
+
+  set profile(Profile profile) {
+    _profile = profile;
+    notifyListeners();
+  }
+
+  ProfileViewModel(this._api);
+
+  void fetchProfile(String name) async {
+    isLoading = true;
+    try {
+      profile = await _api.getProfile(name);
+    } finally {
+      isLoading = false;
+    }
+  }
+}

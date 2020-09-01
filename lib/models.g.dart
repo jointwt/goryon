@@ -107,3 +107,25 @@ Map<String, dynamic> _$PostRequestToJson(PostRequest instance) =>
       'post_as': instance.postAs,
       'text': instance.text,
     };
+
+Profile _$ProfileFromJson(Map<String, dynamic> json) {
+  return Profile(
+    json['Type'] as String,
+    json['Username'] as String,
+    json['URL'] == null ? null : Uri.parse(json['URL'] as String),
+    (json['Followers'] as Map<String, dynamic>)?.map(
+      (k, e) => MapEntry(k, e as String),
+    ),
+    (json['Following'] as Map<String, dynamic>)?.map(
+      (k, e) => MapEntry(k, e as String),
+    ),
+  );
+}
+
+Map<String, dynamic> _$ProfileToJson(Profile instance) => <String, dynamic>{
+      'Type': instance.type,
+      'Username': instance.username,
+      'URL': instance.uri?.toString(),
+      'Followers': instance.followers,
+      'Following': instance.following,
+    };

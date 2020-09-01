@@ -144,3 +144,22 @@ class PostRequest {
       _$PostRequestFromJson(json);
   Map<String, dynamic> toJson() => _$PostRequestToJson(this);
 }
+
+@JsonSerializable()
+class Profile {
+  @JsonKey(name: 'Type')
+  final String type;
+  @JsonKey(name: 'Username')
+  final String username;
+  @JsonKey(name: 'URL')
+  final Uri uri;
+  @JsonKey(name: 'Followers')
+  final Map<String, String> followers;
+  @JsonKey(name: 'Following')
+  final Map<String, String> following;
+
+  Profile(this.type, this.username, this.uri, this.followers, this.following);
+  factory Profile.fromJson(Map<String, dynamic> json) =>
+      _$ProfileFromJson(json);
+  Map<String, dynamic> toJson() => _$ProfileToJson(this);
+}
