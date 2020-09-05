@@ -108,6 +108,29 @@ Map<String, dynamic> _$PostRequestToJson(PostRequest instance) =>
       'text': instance.text,
     };
 
+ProfileResponse _$ProfileResponseFromJson(Map<String, dynamic> json) {
+  return ProfileResponse(
+    json['profile'] == null
+        ? null
+        : Profile.fromJson(json['profile'] as Map<String, dynamic>),
+    (json['links'] as List)
+        ?.map(
+            (e) => e == null ? null : Link.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+    (json['alternatives'] as List)
+        ?.map((e) =>
+            e == null ? null : Alternative.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
+}
+
+Map<String, dynamic> _$ProfileResponseToJson(ProfileResponse instance) =>
+    <String, dynamic>{
+      'profile': instance.profile,
+      'links': instance.links,
+      'alternatives': instance.alternatives,
+    };
+
 Profile _$ProfileFromJson(Map<String, dynamic> json) {
   return Profile(
     json['Type'] as String,
@@ -128,4 +151,31 @@ Map<String, dynamic> _$ProfileToJson(Profile instance) => <String, dynamic>{
       'URL': instance.uri?.toString(),
       'Followers': instance.followers,
       'Following': instance.following,
+    };
+
+Link _$LinkFromJson(Map<String, dynamic> json) {
+  return Link(
+    json['Href'] as String,
+    json['Rel'] as String,
+  );
+}
+
+Map<String, dynamic> _$LinkToJson(Link instance) => <String, dynamic>{
+      'Href': instance.href,
+      'Rel': instance.rel,
+    };
+
+Alternative _$AlternativeFromJson(Map<String, dynamic> json) {
+  return Alternative(
+    json['Type'] as String,
+    json['Title'] as String,
+    json['URL'] as String,
+  );
+}
+
+Map<String, dynamic> _$AlternativeToJson(Alternative instance) =>
+    <String, dynamic>{
+      'Type': instance.type,
+      'Title': instance.title,
+      'URL': instance.url,
     };

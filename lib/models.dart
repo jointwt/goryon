@@ -146,6 +146,19 @@ class PostRequest {
 }
 
 @JsonSerializable()
+class ProfileResponse {
+  final Profile profile;
+  final List<Link> links;
+  final List<Alternative> alternatives;
+
+  ProfileResponse(this.profile, this.links, this.alternatives);
+
+  factory ProfileResponse.fromJson(Map<String, dynamic> json) =>
+      _$ProfileResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$ProfileResponseToJson(this);
+}
+
+@JsonSerializable()
 class Profile {
   @JsonKey(name: 'Type')
   final String type;
@@ -162,4 +175,31 @@ class Profile {
   factory Profile.fromJson(Map<String, dynamic> json) =>
       _$ProfileFromJson(json);
   Map<String, dynamic> toJson() => _$ProfileToJson(this);
+}
+
+@JsonSerializable()
+class Link {
+  @JsonKey(name: 'Href')
+  final String href;
+  @JsonKey(name: 'Rel')
+  final String rel;
+
+  Link(this.href, this.rel);
+  factory Link.fromJson(Map<String, dynamic> json) => _$LinkFromJson(json);
+  Map<String, dynamic> toJson() => _$LinkToJson(this);
+}
+
+@JsonSerializable()
+class Alternative {
+  @JsonKey(name: 'Type')
+  final String type;
+  @JsonKey(name: 'Title')
+  final String title;
+  @JsonKey(name: 'URL')
+  final String url;
+
+  Alternative(this.type, this.title, this.url);
+  factory Alternative.fromJson(Map<String, dynamic> json) =>
+      _$AlternativeFromJson(json);
+  Map<String, dynamic> toJson() => _$AlternativeToJson(this);
 }
