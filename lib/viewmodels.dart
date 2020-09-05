@@ -175,6 +175,14 @@ class ProfileViewModel extends ChangeNotifier {
   Profile get profile => _profileReponse.profile;
   bool get hasProfile => _profileReponse?.profile != null;
 
+  Map<String, String> get following => _profileReponse?.profile?.following;
+  int get followingCount => following?.length ?? 0;
+  bool get hasFollowing => followingCount > 0;
+
+  Map<String, String> get followers => _profileReponse?.profile?.followers;
+  int get followerCount => followers?.length ?? 0;
+  bool get hasFollowers => followerCount > 0;
+
   set profileResponse(ProfileResponse profileResponse) {
     _profileReponse = profileResponse;
     notifyListeners();

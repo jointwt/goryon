@@ -151,6 +151,7 @@ class _NewTwtState extends State<NewTwt> {
                         controller: _scrollbarController,
                         isAlwaysShown: true,
                         child: ListView(
+                          controller: _scrollbarController,
                           scrollDirection: Axis.horizontal,
                           children: [
                             IconButton(

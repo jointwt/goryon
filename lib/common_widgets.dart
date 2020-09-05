@@ -1,21 +1,26 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:goryon/screens/profile.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:goryon/screens/profile.dart';
+
 import 'api.dart';
-import 'viewmodels.dart';
 import 'models.dart';
 import 'screens/discover.dart';
 import 'screens/follow.dart';
 import 'screens/newtwt.dart';
 import 'screens/timeline.dart';
+import 'viewmodels.dart';
 
 class Avatar extends StatelessWidget {
-  const Avatar({Key key, this.imageUrl, this.radius = 20}) : super(key: key);
+  const Avatar({
+    Key key,
+    @required this.imageUrl,
+    this.radius = 20,
+  }) : super(key: key);
 
   final String imageUrl;
   final double radius;
@@ -33,6 +38,34 @@ class Avatar extends StatelessWidget {
       },
       placeholder: (context, url) => CircularProgressIndicator(),
       errorWidget: (context, url, error) => Icon(Icons.error),
+    );
+  }
+}
+
+class AvatarWithBorder extends StatelessWidget {
+  final String imageUrl;
+  final double radius;
+  final Color borderColor;
+  final double borderThickness;
+
+  const AvatarWithBorder({
+    Key key,
+    @required this.imageUrl,
+    this.borderColor,
+    this.borderThickness = 1,
+    this.radius = 20,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor:
+          this.borderColor ?? Theme.of(context).scaffoldBackgroundColor,
+      child: Avatar(
+        imageUrl: imageUrl,
+        radius: radius - this.borderThickness,
+      ),
     );
   }
 }
@@ -94,13 +127,9 @@ class AppDrawer extends StatelessWidget {
             return UserAccountsDrawerHeader(
               margin: const EdgeInsets.all(0),
               // Avatar border
-              currentAccountPicture: CircleAvatar(
+              currentAccountPicture: AvatarWithBorder(
                 radius: avatarRadius,
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                child: Avatar(
-                  imageUrl: user.imageUrl,
-                  radius: avatarRadius - 1,
-                ),
+                imageUrl: user.imageUrl,
               ),
               accountName: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

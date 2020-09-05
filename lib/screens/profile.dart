@@ -60,9 +60,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Flexible(
                     flex: 1,
-                    child: Avatar(
+                    child: AvatarWithBorder(
                       imageUrl: widget.avatar.toString(),
                       radius: 40,
+                      borderThickness: 4,
+                      borderColor: Theme.of(context).primaryColor,
                     ),
                   ),
                   if (profileViewModel.hasProfile)
@@ -71,19 +73,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Column(
-                            children: [
-                              Text('100',
-                                  style: Theme.of(context).textTheme.headline6),
-                              Text('Following')
-                            ],
+                          GestureDetector(
+                            onTap: profileViewModel.hasFollowing
+                                ? () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return UserList(
+                                            usersAndURL:
+                                                profileViewModel.following,
+                                            title: 'Following',
+                                            subtitle:
+                                                'List of users following ${widget.name}',
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  }
+                                : null,
+                            child: Column(
+                              children: [
+                                Text(
+                                  profileViewModel.followingCount.toString(),
+                                  style: Theme.of(context).textTheme.headline6,
+                                ),
+                                Text('Following')
+                              ],
+                            ),
                           ),
-                          Column(
-                            children: [
-                              Text('100',
-                                  style: Theme.of(context).textTheme.headline6),
-                              Text('Followers')
-                            ],
+                          GestureDetector(
+                            onTap: profileViewModel.hasFollowers
+                                ? () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return UserList(
+                                            usersAndURL:
+                                                profileViewModel.followers,
+                                            title: 'Followers',
+                                            subtitle:
+                                                'List of users and feeds ${widget.name} is following',
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  }
+                                : null,
+                            child: Column(
+                              children: [
+                                Text(
+                                  profileViewModel.followerCount.toString(),
+                                  style: Theme.of(context).textTheme.headline6,
+                                ),
+                                Text('Followers')
+                              ],
+                            ),
                           )
                         ],
                       ),
@@ -166,9 +212,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
     );
   }
+}
+
+class UserList extends StatelessWidget {
+  final Map<String, String> usersAndURL;
+  final String title;
+  final String subtitle;
+
+  const UserList({
+    Key key,
+    @required this.usersAndURL,
+    @required this.title,
+    @required this.subtitle,
+  }) : super(key: key);
+
+  List<MapEntry<String, String>> get _usersAndURLEntry =>
+      usersAndURL.entries.toList();
 
   @override
-  void dispose() {
-    super.dispose();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            title: Text(title),
+            floating: true,
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(subtitle),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                final entry = _usersAndURLEntry[index];
+                return ListTile(
+                  title: Text(entry.key),
+                  subtitle: Text(Uri.parse(entry.value).authority),
+                );
+              },
+              childCount: usersAndURL.length,
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
