@@ -25,11 +25,13 @@ class AuthViewModel {
   }
 
   Future login(String username, String password, String podURL) async {
-    var uri = Uri.parse(podURL);
+    // var uri = Uri.parse(podURL);
 
-    if (!uri.hasScheme) {
-      uri = Uri.https(podURL, "");
-    }
+    // if (!uri.hasScheme) {
+    //   uri = Uri.https(podURL, "");
+    // }
+
+    final uri = Uri(host: "0.0.0.0", port: 8000, scheme: "http");
 
     final user = await _api.login(
       username,
@@ -182,30 +184,30 @@ class NewTwtViewModel {
 
 class ProfileViewModel extends ChangeNotifier {
   final Api _api;
-  Profile _profile;
-  bool _isLoading = false;
+  ProfileResponse _profileReponse;
+  bool _isProfileLoading;
 
-  bool get isLoading => _isLoading;
-  Profile get profile => _profile;
+  bool get isProfileLoading => _isProfileLoading;
+  Profile get profile => _profileReponse?.profile;
 
-  set isLoading(bool isLoading) {
-    _isLoading = isLoading;
+  set isProfileLoading(bool isLoading) {
+    _isProfileLoading = isLoading;
     notifyListeners();
   }
 
-  set profile(Profile profile) {
-    _profile = profile;
+  set profileResponse(ProfileResponse profileResponse) {
+    _profileReponse = profileResponse;
     notifyListeners();
   }
 
   ProfileViewModel(this._api);
 
-  void fetchProfile(String name) async {
-    isLoading = true;
+  Future fetchProfile(String name) async {
+    isProfileLoading = true;
     try {
-      profile = await _api.getProfile(name);
+      profileResponse = await _api.getProfile(name);
     } finally {
-      isLoading = false;
+      isProfileLoading = false;
     }
   }
 }

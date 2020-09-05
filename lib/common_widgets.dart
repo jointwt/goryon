@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:goryon/screens/profile.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -174,9 +175,25 @@ class _PostListState extends State<PostList> {
               return ListTile(
                 isThreeLine: true,
                 leading: Avatar(imageUrl: twt.twter.avatar.toString()),
-                title: Text(
-                  twt.twter.nick,
-                  style: Theme.of(context).textTheme.headline6,
+                title: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return ProfileScreen(
+                            name: twt.twter.nick,
+                            avatar: twt.twter.avatar,
+                            uri: twt.twter.uri,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  child: Text(
+                    twt.twter.nick,
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
                 ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

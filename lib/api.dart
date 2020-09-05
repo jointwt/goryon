@@ -171,16 +171,16 @@ class Api {
     return jsonDecode(response.body)['Path'];
   }
 
-  Future<Profile> getProfile(String name) async {
+  Future<ProfileResponse> getProfile(String name) async {
     final _user = await user;
     final response = await _httpClient.get(
       _user.podURL.replace(path: "/api/v1/profile/$name"),
     );
 
     if (response.statusCode >= 400) {
-      throw http.ClientException('Failed post tweet. Please try again later');
+      throw http.ClientException('Failed fetch tweet. Please try again later');
     }
 
-    return Profile.fromJson(jsonDecode(response.body));
+    return ProfileResponse.fromJson(jsonDecode(response.body));
   }
 }

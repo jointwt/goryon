@@ -23,7 +23,9 @@ class _TimelineState extends State<Timeline> {
     try {
       context.read<TimelineViewModel>().gotoNextPage();
     } on http.ClientException catch (e) {
-      Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      });
     }
   }
 
