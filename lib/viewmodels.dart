@@ -107,25 +107,17 @@ class TimelineViewModel extends ChangeNotifier {
 class DiscoverViewModel extends ChangeNotifier {
   DiscoverViewModel(this._api) {
     _twts = [];
-    _isEntireListLoading = false;
     _isBottomListLoading = false;
   }
 
   final Api _api;
-  bool _isEntireListLoading;
   bool _isBottomListLoading;
   TimelineResponse _lastTimelineResponse;
   List<Twt> _twts;
 
-  bool get isEntireListLoading => _isEntireListLoading;
   bool get isBottomListLoading => _isBottomListLoading;
 
   List<Twt> get twts => _twts;
-
-  set isEntireListLoading(bool isLoading) {
-    _isEntireListLoading = isLoading;
-    notifyListeners();
-  }
 
   set isBottomListLoading(bool isLoading) {
     _isBottomListLoading = isLoading;
@@ -138,18 +130,12 @@ class DiscoverViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void fetchNewPost() async {
-    isEntireListLoading = true;
-
-    try {
-      _lastTimelineResponse = await _api.discover(0);
-      _twts = _lastTimelineResponse.twts;
-    } finally {
-      isEntireListLoading = false;
-    }
+  Future<void> fetchNewPost() async {
+    _lastTimelineResponse = await _api.discover(0);
+    _twts = _lastTimelineResponse.twts;
   }
 
-  void gotoNextPage() async {
+  Future<void> gotoNextPage() async {
     if (_lastTimelineResponse.pagerResponse.currentPage ==
         _lastTimelineResponse.pagerResponse.maxPages) {
       return;
@@ -185,15 +171,9 @@ class NewTwtViewModel {
 class ProfileViewModel extends ChangeNotifier {
   final Api _api;
   ProfileResponse _profileReponse;
-  bool _isProfileLoading;
 
-  bool get isProfileLoading => _isProfileLoading;
-  Profile get profile => _profileReponse?.profile;
-
-  set isProfileLoading(bool isLoading) {
-    _isProfileLoading = isLoading;
-    notifyListeners();
-  }
+  Profile get profile => _profileReponse.profile;
+  bool get hasProfile => _profileReponse?.profile != null;
 
   set profileResponse(ProfileResponse profileResponse) {
     _profileReponse = profileResponse;
@@ -203,11 +183,6 @@ class ProfileViewModel extends ChangeNotifier {
   ProfileViewModel(this._api);
 
   Future fetchProfile(String name) async {
-    isProfileLoading = true;
-    try {
-      profileResponse = await _api.getProfile(name);
-    } finally {
-      isProfileLoading = false;
-    }
+    profileResponse = await _api.getProfile(name);
   }
 }

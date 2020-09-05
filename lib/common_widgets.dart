@@ -6,6 +6,7 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'api.dart';
 import 'viewmodels.dart';
 import 'models.dart';
 import 'screens/discover.dart';
@@ -181,10 +182,15 @@ class _PostListState extends State<PostList> {
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return ProfileScreen(
-                            name: twt.twter.nick,
-                            avatar: twt.twter.avatar,
-                            uri: twt.twter.uri,
+                          return ChangeNotifierProvider(
+                            create: (_) => ProfileViewModel(
+                              context.read<Api>(),
+                            ),
+                            child: ProfileScreen(
+                              name: twt.twter.nick,
+                              avatar: twt.twter.avatar,
+                              uri: twt.twter.uri,
+                            ),
                           );
                         },
                       ),

@@ -45,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   List<Widget> buildSlivers() {
-    // final profileViewModel = context.read<ProfileViewModel>();
+    final profileViewModel = context.read<ProfileViewModel>();
 
     return [
       SliverAppBar(title: Text(widget.name)),
@@ -65,28 +65,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       radius: 40,
                     ),
                   ),
-                  Flexible(
-                    flex: 2,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Column(
-                          children: [
-                            Text('100',
-                                style: Theme.of(context).textTheme.headline6),
-                            Text('Following')
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Text('100',
-                                style: Theme.of(context).textTheme.headline6),
-                            Text('Followers')
-                          ],
-                        )
-                      ],
+                  if (profileViewModel.hasProfile)
+                    Flexible(
+                      flex: 2,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Column(
+                            children: [
+                              Text('100',
+                                  style: Theme.of(context).textTheme.headline6),
+                              Text('Following')
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Text('100',
+                                  style: Theme.of(context).textTheme.headline6),
+                              Text('Followers')
+                            ],
+                          )
+                        ],
+                      ),
                     ),
-                  ),
                 ],
               ),
               SizedBox(height: 16),
@@ -111,24 +112,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
       SliverList(
         delegate: SliverChildListDelegate.fixed(
           [
-            ListTile(
-              dense: true,
-              title: Text('Blogs'),
-              leading: Icon(Icons.list_alt),
-              onTap: () {},
-            ),
+            if (profileViewModel.hasProfile)
+              ListTile(
+                dense: true,
+                title: Text('Blogs'),
+                leading: Icon(Icons.list_alt),
+                onTap: () {},
+              ),
             ListTile(
               dense: true,
               title: Text('Twtxt'),
               leading: Icon(Icons.link),
               onTap: () {},
             ),
-            ListTile(
-              dense: true,
-              title: Text('Atom'),
-              leading: Icon(Icons.rss_feed),
-              onTap: () {},
-            ),
+            if (profileViewModel.hasProfile)
+              ListTile(
+                dense: true,
+                title: Text('Atom'),
+                leading: Icon(Icons.rss_feed),
+                onTap: () {},
+              ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Divider(),
@@ -162,5 +165,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
