@@ -60,6 +60,10 @@ class Twter {
 
   Twter({this.nick, this.uri, this.avatar});
 
+  bool isExternal(Uri podUri) {
+    return podUri.authority != uri.authority;
+  }
+
   factory Twter.fromJson(Map<String, dynamic> json) => _$TwterFromJson(json);
   Map<String, dynamic> toJson() => _$TwterToJson(this);
 }
@@ -150,8 +154,9 @@ class ProfileResponse {
   final Profile profile;
   final List<Link> links;
   final List<Alternative> alternatives;
+  final Twter twter;
 
-  ProfileResponse(this.profile, this.links, this.alternatives);
+  ProfileResponse(this.profile, this.links, this.alternatives, this.twter);
 
   factory ProfileResponse.fromJson(Map<String, dynamic> json) =>
       _$ProfileResponseFromJson(json);
@@ -170,8 +175,17 @@ class Profile {
   final Map<String, String> followers;
   @JsonKey(name: 'Following')
   final Map<String, String> following;
+  @JsonKey(name: 'Tagline', defaultValue: '')
+  final String tagline;
 
-  Profile(this.type, this.username, this.uri, this.followers, this.following);
+  Profile(
+    this.type,
+    this.username,
+    this.uri,
+    this.followers,
+    this.following,
+    this.tagline,
+  );
   factory Profile.fromJson(Map<String, dynamic> json) =>
       _$ProfileFromJson(json);
   Map<String, dynamic> toJson() => _$ProfileToJson(this);

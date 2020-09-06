@@ -178,7 +178,30 @@ class Api {
     );
 
     if (response.statusCode >= 400) {
-      throw http.ClientException('Failed fetch tweet. Please try again later');
+      throw http.ClientException(
+        'Failed fetch profile. Please try again later',
+      );
+    }
+
+    return ProfileResponse.fromJson(jsonDecode(response.body));
+  }
+
+  Future<ProfileResponse> getExternalProfile(String nick, String url) async {
+    final _user = await user;
+    final response = await _httpClient.get(
+      _user.podURL.replace(
+        path: "/api/v1/external",
+        queryParameters: {
+          'url': url,
+          'nick': nick,
+        },
+      ),
+    );
+
+    if (response.statusCode >= 400) {
+      throw http.ClientException(
+        'Failed fetch profile. Please try again later',
+      );
     }
 
     return ProfileResponse.fromJson(jsonDecode(response.body));

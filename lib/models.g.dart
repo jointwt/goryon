@@ -121,6 +121,9 @@ ProfileResponse _$ProfileResponseFromJson(Map<String, dynamic> json) {
         ?.map((e) =>
             e == null ? null : Alternative.fromJson(e as Map<String, dynamic>))
         ?.toList(),
+    json['twter'] == null
+        ? null
+        : Twter.fromJson(json['twter'] as Map<String, dynamic>),
   );
 }
 
@@ -129,6 +132,7 @@ Map<String, dynamic> _$ProfileResponseToJson(ProfileResponse instance) =>
       'profile': instance.profile,
       'links': instance.links,
       'alternatives': instance.alternatives,
+      'twter': instance.twter,
     };
 
 Profile _$ProfileFromJson(Map<String, dynamic> json) {
@@ -142,6 +146,7 @@ Profile _$ProfileFromJson(Map<String, dynamic> json) {
     (json['Following'] as Map<String, dynamic>)?.map(
       (k, e) => MapEntry(k, e as String),
     ),
+    json['Tagline'] as String ?? '',
   );
 }
 
@@ -151,6 +156,7 @@ Map<String, dynamic> _$ProfileToJson(Profile instance) => <String, dynamic>{
       'URL': instance.uri?.toString(),
       'Followers': instance.followers,
       'Following': instance.following,
+      'Tagline': instance.tagline,
     };
 
 Link _$LinkFromJson(Map<String, dynamic> json) {

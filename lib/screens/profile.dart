@@ -3,19 +3,18 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../common_widgets.dart';
-import '../models.dart';
 import '../viewmodels.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String name;
-  final Uri avatar;
   final Uri uri;
+  final bool isExternalProfile;
 
   const ProfileScreen({
     Key key,
     @required this.name,
-    @required this.avatar,
     @required this.uri,
+    @required this.isExternalProfile,
   }) : super(key: key);
 
   @override
@@ -31,12 +30,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future _fetchProfile() async {
-    if (widget.uri.authority != context.read<User>().podURL.authority) {
-      return;
-    }
-
     try {
-      await context.read<ProfileViewModel>().fetchProfile(widget.name);
+      if (widget.isExternalProfile) {
+        await context.read<ProfileViewModel>().fetchProfile(
+              widget.name,
+              widget.uri.toString(),
+            );
+      } else {
+        await context.read<ProfileViewModel>().fetchProfile(widget.name);
+      }
     } on http.ClientException catch (e) {
       Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (e) {
@@ -61,13 +63,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Flexible(
                     flex: 1,
                     child: AvatarWithBorder(
-                      imageUrl: widget.avatar.toString(),
+                      imageUrl: profileViewModel.twter.avatar.toString(),
                       radius: 40,
                       borderThickness: 4,
                       borderColor: Theme.of(context).primaryColor,
                     ),
                   ),
-                  if (profileViewModel.hasProfile)
+                  if (!widget.isExternalProfile)
                     Flexible(
                       flex: 2,
                       child: Row(
@@ -79,6 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
+                                        fullscreenDialog: true,
                                         builder: (context) {
                                           return UserList(
                                             usersAndURL:
@@ -108,6 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
+                                        fullscreenDialog: true,
                                         builder: (context) {
                                           return UserList(
                                             usersAndURL:
@@ -142,7 +146,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Flexible(
                     flex: 2,
-                    child: Text('My description ' * 5),
+                    child: Text(profileViewModel.profile.tagline),
                   ),
                   Flexible(
                     flex: 1,
@@ -158,26 +162,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
       SliverList(
         delegate: SliverChildListDelegate.fixed(
           [
-            if (profileViewModel.hasProfile)
-              ListTile(
-                dense: true,
-                title: Text('Blogs'),
-                leading: Icon(Icons.list_alt),
-                onTap: () {},
-              ),
             ListTile(
               dense: true,
               title: Text('Twtxt'),
               leading: Icon(Icons.link),
               onTap: () {},
             ),
-            if (profileViewModel.hasProfile)
+            if (!widget.isExternalProfile) ...[
+              ListTile(
+                dense: true,
+                title: Text('Blogs'),
+                leading: Icon(Icons.list_alt),
+                onTap: () {},
+              ),
               ListTile(
                 dense: true,
                 title: Text('Atom'),
                 leading: Icon(Icons.rss_feed),
                 onTap: () {},
               ),
+            ],
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Divider(),

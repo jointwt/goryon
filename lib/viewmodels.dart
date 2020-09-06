@@ -173,6 +173,7 @@ class ProfileViewModel extends ChangeNotifier {
   ProfileResponse _profileReponse;
 
   Profile get profile => _profileReponse.profile;
+  Twter get twter => _profileReponse.twter;
   bool get hasProfile => _profileReponse?.profile != null;
 
   Map<String, String> get following => _profileReponse?.profile?.following;
@@ -190,7 +191,11 @@ class ProfileViewModel extends ChangeNotifier {
 
   ProfileViewModel(this._api);
 
-  Future fetchProfile(String name) async {
+  Future fetchProfile(String name, [String url]) async {
+    if (url != null) {
+      profileResponse = await _api.getExternalProfile(name, url);
+      return;
+    }
     profileResponse = await _api.getProfile(name);
   }
 }
