@@ -5,21 +5,30 @@ part 'models.g.dart';
 
 @JsonSerializable()
 class User {
-  final String username;
-  final Uri podURL;
+  final Profile profile;
   final String token;
+  final Twter twter;
 
   User({
-    @required this.username,
-    @required this.podURL,
     @required this.token,
+    @required this.profile,
+    @required this.twter,
   });
-
-  String get imageUrl =>
-      podURL.replace(path: "/user/$username/avatar").toString();
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
   Map<String, dynamic> toJson() => _$UserToJson(this);
+
+  User copyWith({
+    Profile profile,
+    String token,
+    Twter twter,
+  }) {
+    return User(
+      profile: profile ?? this.profile,
+      token: token ?? this.token,
+      twter: twter ?? this.twter,
+    );
+  }
 }
 
 @JsonSerializable()

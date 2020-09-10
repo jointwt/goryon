@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../api.dart';
 import '../common_widgets.dart';
 import '../viewmodels.dart';
 
@@ -87,8 +88,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             usersAndURL:
                                                 profileViewModel.following,
                                             title: 'Following',
-                                            subtitle:
-                                                'List of users following ${widget.name}',
                                           );
                                         },
                                       ),
@@ -117,8 +116,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             usersAndURL:
                                                 profileViewModel.followers,
                                             title: 'Followers',
-                                            subtitle:
-                                                'List of users and feeds ${widget.name} is following',
                                           );
                                         },
                                       ),
@@ -221,13 +218,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 class UserList extends StatelessWidget {
   final Map<String, String> usersAndURL;
   final String title;
-  final String subtitle;
 
   const UserList({
     Key key,
     @required this.usersAndURL,
     @required this.title,
-    @required this.subtitle,
   }) : super(key: key);
 
   List<MapEntry<String, String>> get _usersAndURLEntry =>
@@ -242,19 +237,32 @@ class UserList extends StatelessWidget {
             title: Text(title),
             floating: true,
           ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(subtitle),
-            ),
-          ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 final entry = _usersAndURLEntry[index];
                 return ListTile(
                   title: Text(entry.key),
-                  subtitle: Text(Uri.parse(entry.value).authority),
+                  subtitle: Text(Uri.parse(entry.value).host),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return ChangeNotifierProvider(
+                            create: (_) => ProfileViewModel(
+                              context.read<Api>(),
+                            ),
+                            child: ProfileScreen(
+                              isExternalProfile: false,
+                              name: entry.key,
+                              uri: Uri.parse(entry.value),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
                 );
               },
               childCount: usersAndURL.length,

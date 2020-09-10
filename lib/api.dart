@@ -10,7 +10,7 @@ import 'models.dart';
 class Api {
   final http.Client _httpClient;
   final FlutterSecureStorage _flutterSecureStorage;
-  final String tokenKey = 'token';
+  final String tokenKey = 'provile-v1';
 
   Api(this._httpClient, this._flutterSecureStorage);
 
@@ -43,15 +43,31 @@ class Api {
       throw http.ClientException('Failed to login');
     }
 
+    final profileReponse = await getProfile(username, podURI);
+
     final user = User(
-      username: username,
-      podURL: podURI,
+      profile: profileReponse.profile,
+      twter: profileReponse.twter,
       token: AuthReponse.fromJson(jsonDecode(response.body)).token,
     );
 
     await _flutterSecureStorage.write(key: tokenKey, value: jsonEncode(user));
 
     return user;
+  }
+
+  Future<User> loginUsingCachedData() async {
+    var _user = await user;
+
+    final profileReponse =
+        await getProfile(_user.profile.username, _user.profile.uri);
+
+    _user = _user.copyWith(
+        profile: profileReponse.profile, twter: profileReponse.twter);
+
+    await _flutterSecureStorage.write(key: tokenKey, value: jsonEncode(_user));
+
+    return _user;
   }
 
   Future<void> register(
@@ -74,7 +90,7 @@ class Api {
   Future<TimelineResponse> timeline(int page) async {
     final _user = await user;
     final response = await _httpClient.post(
-      _user.podURL.replace(path: "/api/v1/timeline"),
+      _user.profile.uri.replace(path: "/api/v1/timeline"),
       body: jsonEncode({'page': page}),
       headers: {
         'Token': _user.token,
@@ -93,7 +109,7 @@ class Api {
   Future<TimelineResponse> discover(int page) async {
     final _user = await user;
     final response = await _httpClient.post(
-      _user.podURL.replace(path: "/api/v1/discover"),
+      _user.profile.uri.replace(path: "/api/v1/discover"),
       body: jsonEncode({'page': page}),
       headers: {
         'Token': _user.token,
@@ -112,7 +128,7 @@ class Api {
   Future<void> savePost(String text) async {
     final _user = await user;
     final response = await _httpClient.post(
-      _user.podURL.replace(path: "/api/v1/post"),
+      _user.profile.uri.replace(path: "/api/v1/post"),
       body: jsonEncode({'text': text, 'post_as': "me"}),
       headers: {
         'Token': _user.token,
@@ -128,7 +144,7 @@ class Api {
   Future<void> follow(String nick, String url) async {
     final _user = await user;
     final response = await _httpClient.post(
-      _user.podURL.replace(path: "/api/v1/follow"),
+      _user.profile.uri.replace(path: "/api/v1/follow"),
       body: jsonEncode({'nick': nick, 'url': url}),
       headers: {
         'Token': _user.token,
@@ -147,7 +163,7 @@ class Api {
     final _user = await user;
     final request = http.MultipartRequest(
       'POST',
-      _user.podURL.replace(path: "/api/v1/upload"),
+      _user.profile.uri.replace(path: "/api/v1/upload"),
     )
       ..headers['Token'] = _user.token
       ..files.add(
@@ -171,10 +187,18 @@ class Api {
     return jsonDecode(response.body)['Path'];
   }
 
-  Future<ProfileResponse> getProfile(String name) async {
-    final _user = await user;
+  Future<ProfileResponse> getProfile(String name, [Uri uri]) async {
+    Uri _uri;
+
+    if (uri != null) {
+      _uri = uri;
+    } else {
+      final _user = await user;
+      _uri = _user.profile.uri;
+    }
+
     final response = await _httpClient.get(
-      _user.podURL.replace(path: "/api/v1/profile/$name"),
+      _uri.replace(path: "/api/v1/profile/$name"),
     );
 
     if (response.statusCode >= 400) {
@@ -183,18 +207,17 @@ class Api {
       );
     }
 
-    return ProfileResponse.fromJson(jsonDecode(response.body));
+    return ProfileResponse.fromJson(
+        jsonDecode(utf8.decode(response.bodyBytes)));
   }
 
   Future<ProfileResponse> getExternalProfile(String nick, String url) async {
     final _user = await user;
+    final uri = Uri.parse(url);
     final response = await _httpClient.get(
-      _user.podURL.replace(
+      _user.profile.uri.replace(
+        // TODO
         path: "/api/v1/external",
-        queryParameters: {
-          'url': url,
-          'nick': nick,
-        },
       ),
     );
 
@@ -204,6 +227,7 @@ class Api {
       );
     }
 
-    return ProfileResponse.fromJson(jsonDecode(response.body));
+    return ProfileResponse.fromJson(
+        jsonDecode(utf8.decode(response.bodyBytes)));
   }
 }

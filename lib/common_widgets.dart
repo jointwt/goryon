@@ -129,13 +129,13 @@ class AppDrawer extends StatelessWidget {
               // Avatar border
               currentAccountPicture: AvatarWithBorder(
                 radius: avatarRadius,
-                imageUrl: user.imageUrl,
+                imageUrl: user.twter.avatar.toString(),
               ),
               accountName: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(user.username),
-                  Text(user.podURL.authority),
+                  Text(user.profile.username),
+                  Text(user.profile.uri.authority),
                 ],
               ),
               accountEmail: null,
@@ -218,7 +218,7 @@ class _PostListState extends State<PostList> {
                               ),
                               child: ProfileScreen(
                                 isExternalProfile:
-                                    twt.twter.isExternal(user.podURL),
+                                    twt.twter.isExternal(user.profile.uri),
                                 name: twt.twter.nick,
                                 uri: twt.twter.uri,
                               ),
@@ -260,7 +260,8 @@ class _PostListState extends State<PostList> {
                           ),
                           onTapLink: (link) async {
                             final linkUri = Uri.parse(link);
-                            if (linkUri.authority == user.podURL.authority) {
+                            if (linkUri.authority ==
+                                user.profile.uri.authority) {
                               // TODO: handle app URLs
                               return;
                             }
@@ -294,7 +295,7 @@ class _PostListState extends State<PostList> {
                                   MaterialPageRoute(
                                     builder: (_) => NewTwt(
                                       initialText: twt.replyText(
-                                        context.read<User>().username,
+                                        context.read<User>().profile.username,
                                       ),
                                     ),
                                   ),

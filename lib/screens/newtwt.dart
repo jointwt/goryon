@@ -125,7 +125,7 @@ class _NewTwtState extends State<NewTwt> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Avatar(
-                imageUrl: user.imageUrl,
+                imageUrl: user.twter.avatar.toString(),
               ),
               const SizedBox(width: 16.0),
               Flexible(

@@ -13,7 +13,7 @@ class AuthViewModel {
   final _user = BehaviorSubject<User>();
 
   AuthViewModel(this._api) {
-    _api.user.then(_user.add);
+    _api.loginUsingCachedData().then(_user.add);
   }
 
   Stream get user => _user.stream;
@@ -25,13 +25,13 @@ class AuthViewModel {
   }
 
   Future login(String username, String password, String podURL) async {
-    // var uri = Uri.parse(podURL);
+    var uri = Uri.parse(podURL);
 
-    // if (!uri.hasScheme) {
-    //   uri = Uri.https(podURL, "");
-    // }
+    if (!uri.hasScheme) {
+      uri = Uri.https(podURL, "");
+    }
 
-    final uri = Uri(host: "0.0.0.0", port: 8000, scheme: "http");
+    // final uri = Uri(host: "0.0.0.0", port: 8000, scheme: "http");
 
     final user = await _api.login(
       username,

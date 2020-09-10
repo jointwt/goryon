@@ -8,16 +8,20 @@ part of 'models.dart';
 
 User _$UserFromJson(Map<String, dynamic> json) {
   return User(
-    username: json['username'] as String,
-    podURL: json['podURL'] == null ? null : Uri.parse(json['podURL'] as String),
     token: json['token'] as String,
+    profile: json['profile'] == null
+        ? null
+        : Profile.fromJson(json['profile'] as Map<String, dynamic>),
+    twter: json['twter'] == null
+        ? null
+        : Twter.fromJson(json['twter'] as Map<String, dynamic>),
   );
 }
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
-      'username': instance.username,
-      'podURL': instance.podURL?.toString(),
+      'profile': instance.profile,
       'token': instance.token,
+      'twter': instance.twter,
     };
 
 AuthReponse _$AuthReponseFromJson(Map<String, dynamic> json) {
