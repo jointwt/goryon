@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../api.dart';
 import '../common_widgets.dart';
+import '../models.dart';
 import '../viewmodels.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -164,6 +165,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
               title: Text('Twtxt'),
               leading: Icon(Icons.link),
               onTap: () {},
+            ),
+            Consumer<User>(
+              builder: (context, user, _) {
+                if (user.profile.isFollowing(widget.uri.toString())) {
+                  return ListTile(
+                    dense: true,
+                    title: Text('Unfollow'),
+                    leading: Icon(Icons.person_remove_sharp),
+                    onTap: () {},
+                  );
+                }
+
+                return ListTile(
+                  dense: true,
+                  title: Text('Follow'),
+                  leading: Icon(Icons.person_add_alt),
+                  onTap: () {},
+                );
+              },
             ),
             if (!widget.isExternalProfile) ...[
               ListTile(
