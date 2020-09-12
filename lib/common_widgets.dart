@@ -222,7 +222,9 @@ class _PostListState extends State<PostList> {
             delegate: SliverChildBuilderDelegate(
               (_, idx) {
                 final twt = widget.twts[idx];
-                final isPodMember = twt.twter.isPodMember(user.profile.uri);
+                final isPodMember = user.isTwtxtUserPath(
+                  user.profile.uri.toString(),
+                );
 
                 return ListTile(
                   isThreeLine: true,
@@ -279,9 +281,22 @@ class _PostListState extends State<PostList> {
                             ),
                           ),
                           onTapLink: (link) async {
-                            final linkUri = Uri.parse(link);
-                            if (linkUri.authority == user.profile.uri) {
-                              // TODO: handle app URLs
+                            if (user.isTwtxtUserPath(link)) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return ChangeNotifierProvider(
+                                      create: (_) => ProfileViewModel(api),
+                                      child: ProfileScreen(
+                                        isExternalProfile: !isPodMember,
+                                        name: twt.twter.nick,
+                                        uri: twt.twter.uri,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
                               return;
                             }
 

@@ -29,6 +29,21 @@ class User {
       twter: twter ?? this.twter,
     );
   }
+
+  bool isTwtxtUserPath(String url) {
+    final uri = Uri.parse(url);
+
+    // Only allow  viewing the profile for internal users for now
+    if (profile.uri.authority != uri.authority) {
+      return false;
+    }
+
+    if (uri.pathSegments.length != 3) {
+      return false;
+    }
+
+    return uri.pathSegments[0] == "user" && uri.pathSegments[2] == "twtxt.txt";
+  }
 }
 
 @JsonSerializable()
