@@ -222,9 +222,10 @@ class _PostListState extends State<PostList> {
             delegate: SliverChildBuilderDelegate(
               (_, idx) {
                 final twt = widget.twts[idx];
-                final isPodMember = user.isTwtxtUserPath(
-                  user.profile.uri.toString(),
-                );
+                final isPodMember = user.getNickFromTwtxtURL(
+                      user.profile.uri.toString(),
+                    ) !=
+                    null;
 
                 return ListTile(
                   isThreeLine: true,
@@ -239,7 +240,6 @@ class _PostListState extends State<PostList> {
                                   return ChangeNotifierProvider(
                                     create: (_) => ProfileViewModel(api),
                                     child: ProfileScreen(
-                                      isExternalProfile: !isPodMember,
                                       name: twt.twter.nick,
                                       uri: twt.twter.uri,
                                     ),
@@ -281,7 +281,8 @@ class _PostListState extends State<PostList> {
                             ),
                           ),
                           onTapLink: (link) async {
-                            if (user.isTwtxtUserPath(link)) {
+                            final nick = user.getNickFromTwtxtURL(link);
+                            if (nick != null) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -289,9 +290,8 @@ class _PostListState extends State<PostList> {
                                     return ChangeNotifierProvider(
                                       create: (_) => ProfileViewModel(api),
                                       child: ProfileScreen(
-                                        isExternalProfile: !isPodMember,
-                                        name: twt.twter.nick,
-                                        uri: twt.twter.uri,
+                                        name: nick,
+                                        uri: Uri.parse(link),
                                       ),
                                     );
                                   },

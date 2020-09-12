@@ -10,13 +10,11 @@ import '../viewmodels.dart';
 class ProfileScreen extends StatefulWidget {
   final String name;
   final Uri uri;
-  final bool isExternalProfile;
 
   const ProfileScreen({
     Key key,
     @required this.name,
     @required this.uri,
-    @required this.isExternalProfile,
   }) : super(key: key);
 
   @override
@@ -35,14 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future _fetchProfile() async {
-    if (widget.isExternalProfile) {
-      await context.read<ProfileViewModel>().fetchProfile(
-            widget.name,
-            widget.uri.toString(),
-          );
-    } else {
-      await context.read<ProfileViewModel>().fetchProfile(widget.name);
-    }
+    await context.read<ProfileViewModel>().fetchProfile(widget.name);
   }
 
   Future _follow(String nick, String url, BuildContext context) async {
@@ -206,6 +197,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             Consumer<User>(
               builder: (context, user, _) {
+                if (user.profile.uri == widget.uri) {
+                  return Container();
+                }
+
                 if (user.profile.isFollowing(widget.uri.toString())) {
                   return FutureBuilder(
                     future: _unFollowFuture,
@@ -365,7 +360,6 @@ class UserList extends StatelessWidget {
                               context.read<Api>(),
                             ),
                             child: ProfileScreen(
-                              isExternalProfile: false,
                               name: entry.key,
                               uri: Uri.parse(entry.value),
                             ),

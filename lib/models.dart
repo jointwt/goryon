@@ -30,19 +30,23 @@ class User {
     );
   }
 
-  bool isTwtxtUserPath(String url) {
+  String getNickFromTwtxtURL(String url) {
     final uri = Uri.parse(url);
 
     // Only allow  viewing the profile for internal users for now
     if (profile.uri.authority != uri.authority) {
-      return false;
+      return null;
     }
 
     if (uri.pathSegments.length != 3) {
-      return false;
+      return null;
     }
 
-    return uri.pathSegments[0] == "user" && uri.pathSegments[2] == "twtxt.txt";
+    if (uri.pathSegments[0] == "user" && uri.pathSegments[2] == "twtxt.txt") {
+      return uri.pathSegments[1];
+    }
+
+    return null;
   }
 }
 
