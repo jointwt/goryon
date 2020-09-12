@@ -66,6 +66,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future _unFollow(String nick, BuildContext context) async {
     try {
       await context.read<AuthViewModel>().unfollow(nick);
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Successfully unfollowed $nick'),
+        ),
+      );
     } catch (e) {
       Scaffold.of(context).showSnackBar(
         SnackBar(
