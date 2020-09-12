@@ -13,7 +13,7 @@ class Discover extends StatefulWidget {
 }
 
 class _DiscoverState extends State<Discover> {
-  Future<void> _fetchNewPostFuture;
+  Future _fetchNewPostFuture;
   @override
   void initState() {
     super.initState();
@@ -36,9 +36,8 @@ class _DiscoverState extends State<Discover> {
         await context.read<DiscoverViewModel>().fetchNewPost();
       } on http.ClientException catch (e) {
         Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+        rethrow;
       }
-
-      return null;
     }
 
     setState(() {

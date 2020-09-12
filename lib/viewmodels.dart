@@ -27,28 +27,26 @@ class AuthViewModel {
     _user.add(null);
   }
 
-  Future unfollow(String nick) async {
+  Future<void> unfollow(String nick) async {
     final user = await _user.first;
     _api.unfollow(nick);
     user.profile.following.remove(nick);
     _user.add(user);
   }
 
-  Future follow(String nick, String url) async {
+  Future<void> follow(String nick, String url) async {
     final user = await _user.first;
     _api.follow(nick, url);
     user.profile.following.putIfAbsent(nick, () => url);
     _user.add(user);
   }
 
-  Future login(String username, String password, String podURL) async {
+  Future<void> login(String username, String password, String podURL) async {
     var uri = Uri.parse(podURL);
 
     if (!uri.hasScheme) {
       uri = Uri.https(podURL, "");
     }
-
-    // final uri = Uri(host: "0.0.0.0", port: 8000, scheme: "http");
 
     final user = await _api.login(
       username,
@@ -208,7 +206,7 @@ class ProfileViewModel extends ChangeNotifier {
 
   ProfileViewModel(this._api);
 
-  Future fetchProfile(String name, [String url]) async {
+  Future<void> fetchProfile(String name, [String url]) async {
     if (url != null) {
       profileResponse = await _api.getExternalProfile(name, url);
       return;
