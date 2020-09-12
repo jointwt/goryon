@@ -80,7 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final profileViewModel = context.read<ProfileViewModel>();
 
     return [
-      SliverAppBar(title: Text(widget.name)),
+      SliverAppBar(title: Text(widget.name), pinned: true),
       SliverToBoxAdapter(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -341,7 +341,7 @@ class UserList extends StatelessWidget {
         slivers: [
           SliverAppBar(
             title: Text(title),
-            floating: true,
+            pinned: true,
           ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
