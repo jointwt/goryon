@@ -13,7 +13,10 @@ class AuthViewModel {
   final _user = BehaviorSubject<User>();
 
   AuthViewModel(this._api) {
-    _api.loginUsingCachedData().then(_user.add);
+    _api.loginUsingCachedData().then(_user.add).catchError((_) {
+      _api.clearUserToken();
+      _user.add(null);
+    });
   }
 
   Stream get user => _user.stream;
@@ -22,6 +25,20 @@ class AuthViewModel {
     if (_user.value == null) return;
     _api.clearUserToken();
     _user.add(null);
+  }
+
+  Future unfollow(String nick) async {
+    final user = await _user.first;
+    _api.unfollow(nick);
+    user.profile.following.remove(nick);
+    _user.add(user);
+  }
+
+  Future follow(String nick, String url) async {
+    final user = await _user.first;
+    _api.follow(nick, url);
+    user.profile.following.putIfAbsent(nick, () => url);
+    _user.add(user);
   }
 
   Future login(String username, String password, String podURL) async {

@@ -195,38 +195,39 @@ class _PostListState extends State<PostList> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<User>(
-      builder: (context, user, _) => CustomScrollView(
+    return Consumer2<User, Api>(
+      builder: (context, user, api, _) => CustomScrollView(
         controller: _scrollController,
         slivers: [
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (_, idx) {
                 final twt = widget.twts[idx];
+                final isPodMember = twt.twter.isPodMember(user.profile.uri);
+
                 return ListTile(
                   isThreeLine: true,
                   leading: Avatar(imageUrl: twt.twter.avatar.toString()),
                   title: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return ChangeNotifierProvider(
-                              create: (_) => ProfileViewModel(
-                                context.read<Api>(),
-                              ),
-                              child: ProfileScreen(
-                                isExternalProfile:
-                                    twt.twter.isExternal(user.profile.uri),
-                                name: twt.twter.nick,
-                                uri: twt.twter.uri,
+                    onTap: isPodMember
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return ChangeNotifierProvider(
+                                    create: (_) => ProfileViewModel(api),
+                                    child: ProfileScreen(
+                                      isExternalProfile: !isPodMember,
+                                      name: twt.twter.nick,
+                                      uri: twt.twter.uri,
+                                    ),
+                                  );
+                                },
                               ),
                             );
-                          },
-                        ),
-                      );
-                    },
+                          }
+                        : null,
                     child: Text(
                       twt.twter.nick,
                       style: Theme.of(context).textTheme.headline6,
@@ -238,7 +239,7 @@ class _PostListState extends State<PostList> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: MarkdownBody(
-                          styleSheet: MarkdownStyleSheet(textScaleFactor: 1.2),
+                          styleSheet: MarkdownStyleSheet(),
                           imageBuilder: (uri, title, alt) => GestureDetector(
                             onTap: () async {
                               if (await canLaunch(uri.toString())) {
@@ -260,8 +261,7 @@ class _PostListState extends State<PostList> {
                           ),
                           onTapLink: (link) async {
                             final linkUri = Uri.parse(link);
-                            if (linkUri.authority ==
-                                user.profile.uri.authority) {
+                            if (linkUri.authority == user.profile.uri) {
                               // TODO: handle app URLs
                               return;
                             }
@@ -281,33 +281,28 @@ class _PostListState extends State<PostList> {
                           extensionSet: md.ExtensionSet.gitHubWeb,
                         ),
                       ),
-                      Divider(height: 0),
-                      ButtonTheme.fromButtonThemeData(
-                        data: Theme.of(context).buttonTheme.copyWith(
-                              minWidth: 0,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                            ),
-                        child: FlatButton(
-                          onPressed: () async {
-                            if (await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => NewTwt(
-                                      initialText: twt.replyText(
-                                        context.read<User>().profile.username,
-                                      ),
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          shape: StadiumBorder(),
+                        ),
+                        onPressed: () async {
+                          if (await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => NewTwt(
+                                    initialText: twt.replyText(
+                                      user.profile.username,
                                     ),
                                   ),
-                                ) ??
-                                false) {
-                              widget.fetchNewPost();
-                            }
-                          },
-                          child: Text(
-                            "Reply",
-                            style: Theme.of(context).textTheme.button,
-                          ),
+                                ),
+                              ) ??
+                              false) {
+                            widget.fetchNewPost();
+                          }
+                        },
+                        child: Text(
+                          "Reply",
+                          style: Theme.of(context).textTheme.button,
                         ),
                       ),
                       Divider(height: 0),

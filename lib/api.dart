@@ -159,6 +159,24 @@ class Api {
     }
   }
 
+  Future<void> unfollow(String nick) async {
+    final _user = await user;
+    final response = await _httpClient.post(
+      _user.profile.uri.replace(path: "/api/v1/unfollow"),
+      body: jsonEncode({'nick': nick}),
+      headers: {
+        'Token': _user.token,
+        HttpHeaders.contentTypeHeader: ContentType.json.toString(),
+      },
+    );
+
+    if (response.statusCode >= 400) {
+      throw http.ClientException(
+        'Follow request failed. Please try again later',
+      );
+    }
+  }
+
   Future<String> uploadImage(String filePath) async {
     final _user = await user;
     final request = http.MultipartRequest(
@@ -212,22 +230,6 @@ class Api {
   }
 
   Future<ProfileResponse> getExternalProfile(String nick, String url) async {
-    final _user = await user;
-    final uri = Uri.parse(url);
-    final response = await _httpClient.get(
-      _user.profile.uri.replace(
-        // TODO
-        path: "/api/v1/external",
-      ),
-    );
-
-    if (response.statusCode >= 400) {
-      throw http.ClientException(
-        'Failed fetch profile. Please try again later',
-      );
-    }
-
-    return ProfileResponse.fromJson(
-        jsonDecode(utf8.decode(response.bodyBytes)));
+    throw UnimplementedError('getExternalProfile needs to be implemented');
   }
 }

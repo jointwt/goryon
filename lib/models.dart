@@ -69,8 +69,8 @@ class Twter {
 
   Twter({this.nick, this.uri, this.avatar});
 
-  bool isExternal(Uri podUri) {
-    return podUri.authority != uri.authority;
+  bool isPodMember(Uri podUri) {
+    return podUri.authority == uri.authority;
   }
 
   factory Twter.fromJson(Map<String, dynamic> json) => _$TwterFromJson(json);

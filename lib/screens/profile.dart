@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../api.dart';
 import '../common_widgets.dart';
@@ -25,6 +25,9 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   Future _fetchProfileFuture;
+  Future _followFuture;
+  Future _unFollowFuture;
+
   @override
   void initState() {
     super.initState();
@@ -32,19 +35,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future _fetchProfile() async {
+    if (widget.isExternalProfile) {
+      await context.read<ProfileViewModel>().fetchProfile(
+            widget.name,
+            widget.uri.toString(),
+          );
+    } else {
+      await context.read<ProfileViewModel>().fetchProfile(widget.name);
+    }
+  }
+
+  Future _follow(String nick, String url) async {
     try {
-      if (widget.isExternalProfile) {
-        await context.read<ProfileViewModel>().fetchProfile(
-              widget.name,
-              widget.uri.toString(),
-            );
-      } else {
-        await context.read<ProfileViewModel>().fetchProfile(widget.name);
-      }
-    } on http.ClientException catch (e) {
-      Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      await context.read<AuthViewModel>().follow(nick, url);
     } catch (e) {
-      print(e);
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to follow $nick'),
+        ),
+      );
+      rethrow;
+    }
+  }
+
+  Future _unFollow(String nick) async {
+    try {
+      await context.read<AuthViewModel>().unfollow(nick);
+    } catch (e) {
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to unfollow $nick'),
+        ),
+      );
+      rethrow;
     }
   }
 
@@ -164,41 +187,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
               dense: true,
               title: Text('Twtxt'),
               leading: Icon(Icons.link),
-              onTap: () {},
+              onTap: () async {
+                final link = profileViewModel.profile.uri.toString();
+                if (await canLaunch(link)) {
+                  await launch(link);
+                  return;
+                }
+              },
             ),
             Consumer<User>(
               builder: (context, user, _) {
                 if (user.profile.isFollowing(widget.uri.toString())) {
-                  return ListTile(
-                    dense: true,
-                    title: Text('Unfollow'),
-                    leading: Icon(Icons.person_remove_sharp),
-                    onTap: () {},
+                  return FutureBuilder(
+                    future: _unFollowFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return ListTile(
+                          leading: CircularProgressIndicator(),
+                        );
+                      }
+                      return ListTile(
+                        dense: true,
+                        title: Text('Unfollow'),
+                        leading: Icon(Icons.person_remove_sharp),
+                        onTap: () {
+                          setState(() {
+                            _unFollowFuture = _unFollow(
+                              profileViewModel.twter.nick,
+                            );
+                          });
+                        },
+                      );
+                    },
                   );
                 }
 
-                return ListTile(
-                  dense: true,
-                  title: Text('Follow'),
-                  leading: Icon(Icons.person_add_alt),
-                  onTap: () {},
+                return FutureBuilder(
+                  future: _followFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return ListTile(
+                        leading: CircularProgressIndicator(),
+                      );
+                    }
+
+                    return ListTile(
+                      dense: true,
+                      title: Text('Follow'),
+                      leading: Icon(Icons.person_add_alt),
+                      onTap: () {
+                        setState(() {
+                          _unFollowFuture = _follow(
+                            profileViewModel.twter.nick,
+                            profileViewModel.twter.uri.toString(),
+                          );
+                        });
+                      },
+                    );
+                  },
                 );
               },
             ),
-            if (!widget.isExternalProfile) ...[
-              ListTile(
-                dense: true,
-                title: Text('Blogs'),
-                leading: Icon(Icons.list_alt),
-                onTap: () {},
-              ),
-              ListTile(
-                dense: true,
-                title: Text('Atom'),
-                leading: Icon(Icons.rss_feed),
-                onTap: () {},
-              ),
-            ],
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Divider(),
@@ -221,6 +270,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             body: Center(
               child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(widget.name),
+            ),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Failed to load profile'),
+                  SizedBox(height: 32),
+                  RaisedButton(
+                    color: Theme.of(context).colorScheme.error,
+                    onPressed: () {
+                      setState(() {
+                        _fetchProfileFuture = _fetchProfile();
+                      });
+                    },
+                    child: const Text('Tap to retry'),
+                  )
+                ],
+              ),
             ),
           );
         }
