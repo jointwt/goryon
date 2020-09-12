@@ -45,9 +45,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future _follow(String nick, String url) async {
+  Future _follow(String nick, String url, BuildContext context) async {
     try {
       await context.read<AuthViewModel>().follow(nick, url);
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Successfully followed $nick'),
+        ),
+      );
     } catch (e) {
       Scaffold.of(context).showSnackBar(
         SnackBar(
@@ -58,7 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future _unFollow(String nick) async {
+  Future _unFollow(String nick, BuildContext context) async {
     try {
       await context.read<AuthViewModel>().unfollow(nick);
     } catch (e) {
@@ -94,71 +99,70 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       borderColor: Theme.of(context).primaryColor,
                     ),
                   ),
-                  if (!widget.isExternalProfile)
-                    Flexible(
-                      flex: 2,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          GestureDetector(
-                            onTap: profileViewModel.hasFollowing
-                                ? () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        fullscreenDialog: true,
-                                        builder: (context) {
-                                          return UserList(
-                                            usersAndURL:
-                                                profileViewModel.following,
-                                            title: 'Following',
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  }
-                                : null,
-                            child: Column(
-                              children: [
-                                Text(
-                                  profileViewModel.followingCount.toString(),
-                                  style: Theme.of(context).textTheme.headline6,
-                                ),
-                                Text('Following')
-                              ],
-                            ),
+                  Flexible(
+                    flex: 2,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        GestureDetector(
+                          onTap: profileViewModel.hasFollowing
+                              ? () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      fullscreenDialog: true,
+                                      builder: (context) {
+                                        return UserList(
+                                          usersAndURL:
+                                              profileViewModel.following,
+                                          title: 'Following',
+                                        );
+                                      },
+                                    ),
+                                  );
+                                }
+                              : null,
+                          child: Column(
+                            children: [
+                              Text(
+                                profileViewModel.followingCount.toString(),
+                                style: Theme.of(context).textTheme.headline6,
+                              ),
+                              Text('Following')
+                            ],
                           ),
-                          GestureDetector(
-                            onTap: profileViewModel.hasFollowers
-                                ? () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        fullscreenDialog: true,
-                                        builder: (context) {
-                                          return UserList(
-                                            usersAndURL:
-                                                profileViewModel.followers,
-                                            title: 'Followers',
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  }
-                                : null,
-                            child: Column(
-                              children: [
-                                Text(
-                                  profileViewModel.followerCount.toString(),
-                                  style: Theme.of(context).textTheme.headline6,
-                                ),
-                                Text('Followers')
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
+                        ),
+                        GestureDetector(
+                          onTap: profileViewModel.hasFollowers
+                              ? () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      fullscreenDialog: true,
+                                      builder: (context) {
+                                        return UserList(
+                                          usersAndURL:
+                                              profileViewModel.followers,
+                                          title: 'Followers',
+                                        );
+                                      },
+                                    ),
+                                  );
+                                }
+                              : null,
+                          child: Column(
+                            children: [
+                              Text(
+                                profileViewModel.followerCount.toString(),
+                                style: Theme.of(context).textTheme.headline6,
+                              ),
+                              Text('Followers')
+                            ],
+                          ),
+                        )
+                      ],
                     ),
+                  ),
                 ],
               ),
               SizedBox(height: 16),
@@ -201,22 +205,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   return FutureBuilder(
                     future: _unFollowFuture,
                     builder: (context, snapshot) {
+                      Widget leading = Icon(Icons.person_add_alt);
+                      Function onTap = () {
+                        setState(() {
+                          _unFollowFuture = _unFollow(
+                            profileViewModel.twter.nick,
+                            context,
+                          );
+                        });
+                      };
+
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return ListTile(
-                          leading: CircularProgressIndicator(),
-                        );
+                        leading = SizedSpinner();
+                        onTap = null;
                       }
+
                       return ListTile(
                         dense: true,
                         title: Text('Unfollow'),
-                        leading: Icon(Icons.person_remove_sharp),
-                        onTap: () {
-                          setState(() {
-                            _unFollowFuture = _unFollow(
-                              profileViewModel.twter.nick,
-                            );
-                          });
-                        },
+                        leading: leading,
+                        onTap: onTap,
                       );
                     },
                   );
@@ -225,24 +233,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 return FutureBuilder(
                   future: _followFuture,
                   builder: (context, snapshot) {
+                    Widget leading = Icon(Icons.person_add_alt);
+                    Function onTap = () {
+                      setState(() {
+                        _followFuture = _follow(
+                          profileViewModel.twter.nick,
+                          profileViewModel.twter.uri.toString(),
+                          context,
+                        );
+                      });
+                    };
+
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return ListTile(
-                        leading: CircularProgressIndicator(),
-                      );
+                      leading = SizedSpinner();
+                      onTap = null;
                     }
 
                     return ListTile(
                       dense: true,
                       title: Text('Follow'),
-                      leading: Icon(Icons.person_add_alt),
-                      onTap: () {
-                        setState(() {
-                          _unFollowFuture = _follow(
-                            profileViewModel.twter.nick,
-                            profileViewModel.twter.uri.toString(),
-                          );
-                        });
-                      },
+                      leading: leading,
+                      onTap: onTap,
                     );
                   },
                 );
