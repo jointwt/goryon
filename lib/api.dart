@@ -43,11 +43,11 @@ class Api {
       throw http.ClientException('Failed to login');
     }
 
-    final profileReponse = await getProfile(username, podURI);
+    final profileResponse = await getProfile(username, podURI);
 
     final user = User(
-      profile: profileReponse.profile,
-      twter: profileReponse.twter,
+      profile: profileResponse.profile,
+      twter: profileResponse.twter,
       token: AuthReponse.fromJson(jsonDecode(response.body)).token,
     );
 
@@ -59,11 +59,11 @@ class Api {
   Future<User> loginUsingCachedData() async {
     var _user = await user;
 
-    final profileReponse =
+    final profileResponse =
         await getProfile(_user.profile.username, _user.profile.uri);
 
     _user = _user.copyWith(
-        profile: profileReponse.profile, twter: profileReponse.twter);
+        profile: profileResponse.profile, twter: profileResponse.twter);
 
     await _flutterSecureStorage.write(key: tokenKey, value: jsonEncode(_user));
 

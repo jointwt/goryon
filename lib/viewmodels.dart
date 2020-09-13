@@ -185,22 +185,22 @@ class NewTwtViewModel {
 
 class ProfileViewModel extends ChangeNotifier {
   final Api _api;
-  ProfileResponse _profileReponse;
+  ProfileResponse _profileResponse;
 
-  Profile get profile => _profileReponse.profile;
-  Twter get twter => _profileReponse.twter;
-  bool get hasProfile => _profileReponse?.profile != null;
+  Profile get profile => _profileResponse.profile;
+  Twter get twter => _profileResponse.twter;
+  bool get hasProfile => _profileResponse?.profile != null;
 
-  Map<String, String> get following => _profileReponse?.profile?.following;
+  Map<String, String> get following => _profileResponse?.profile?.following;
   int get followingCount => following?.length ?? 0;
   bool get hasFollowing => followingCount > 0;
 
-  Map<String, String> get followers => _profileReponse?.profile?.followers;
+  Map<String, String> get followers => _profileResponse?.profile?.followers;
   int get followerCount => followers?.length ?? 0;
   bool get hasFollowers => followerCount > 0;
 
   set profileResponse(ProfileResponse profileResponse) {
-    _profileReponse = profileResponse;
+    _profileResponse = profileResponse;
     notifyListeners();
   }
 
