@@ -215,6 +215,25 @@ class _PostListState extends State<PostList> {
     }
   }
 
+  void pushToProfileScreen(String nick, Uri uri) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return Consumer<Api>(
+            builder: (context, api, child) => ChangeNotifierProvider(
+              create: (_) => ProfileViewModel(api),
+              child: ProfileScreen(
+                name: nick,
+                uri: uri,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer2<User, Api>(
@@ -225,33 +244,22 @@ class _PostListState extends State<PostList> {
             delegate: SliverChildBuilderDelegate(
               (_, idx) {
                 final twt = widget.twts[idx];
-                final isPodMember = user.getNickFromTwtxtURL(
-                      user.profile.uri.toString(),
-                    ) !=
-                    null;
+
+                Function onTap = user.getNickFromTwtxtURL(
+                          user.profile.uri.toString(),
+                        ) !=
+                        null
+                    ? () => pushToProfileScreen(twt.twter.nick, twt.twter.uri)
+                    : null;
 
                 return ListTile(
                   isThreeLine: true,
-                  leading: Avatar(imageUrl: twt.twter.avatar.toString()),
+                  leading: GestureDetector(
+                    onTap: onTap,
+                    child: Avatar(imageUrl: twt.twter.avatar.toString()),
+                  ),
                   title: GestureDetector(
-                    onTap: isPodMember
-                        ? () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return ChangeNotifierProvider(
-                                    create: (_) => ProfileViewModel(api),
-                                    child: ProfileScreen(
-                                      name: twt.twter.nick,
-                                      uri: twt.twter.uri,
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          }
-                        : null,
+                    onTap: onTap,
                     child: Text(
                       twt.twter.nick,
                       style: Theme.of(context).textTheme.headline6,
@@ -289,20 +297,7 @@ class _PostListState extends State<PostList> {
                           onTapLink: (link) async {
                             final nick = user.getNickFromTwtxtURL(link);
                             if (nick != null) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return ChangeNotifierProvider(
-                                      create: (_) => ProfileViewModel(api),
-                                      child: ProfileScreen(
-                                        name: nick,
-                                        uri: Uri.parse(link),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              );
+                              pushToProfileScreen(nick, Uri.parse(link));
                               return;
                             }
 
