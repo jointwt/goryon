@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:goryon/screens/videoscreen.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -240,6 +241,7 @@ class _PostListState extends State<PostList> {
   Widget build(BuildContext context) {
     return Consumer2<User, Api>(
       builder: (context, user, api, _) => CustomScrollView(
+        cacheExtent: 1000,
         controller: _scrollController,
         slivers: [
           SliverList(
@@ -278,35 +280,76 @@ class _PostListState extends State<PostList> {
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: MarkdownBody(
                           styleSheet: MarkdownStyleSheet(),
-                          imageBuilder: (uri, title, alt) =>
-                              GestureDetector(onTap: () async {
-                            if (await canLaunch(uri.toString())) {
-                              await launch(uri.toString());
-                              return;
-                            }
-
-                            Scaffold.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Failed to launch image'),
-                              ),
-                            );
-                          }, child: Builder(
+                          imageBuilder: (uri, title, alt) => Builder(
                             builder: (context) {
-                              print(path.extension(uri.path));
+                              Uri newUri = uri;
+                              bool isVideoThumbnail = false;
+
                               if (path.extension(uri.path) == '.webm') {
-                                return TwtAssetVideo(videoURL: uri.toString());
+                                isVideoThumbnail = true;
+                                newUri = uri.replace(
+                                  path:
+                                      '${path.withoutExtension(uri.path)}.webp',
+                                );
                               }
 
-                              return CachedNetworkImage(
-                                httpHeaders: {
-                                  HttpHeaders.acceptHeader: "image/webp"
+                              final image = GestureDetector(
+                                onTap: () async {
+                                  if (isVideoThumbnail) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return VideoScreen(
+                                            title: title ?? '',
+                                            videoURL: uri.toString(),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                    return;
+                                  }
+
+                                  if (await canLaunch(uri.toString())) {
+                                    await launch(uri.toString());
+                                    return;
+                                  }
+
+                                  Scaffold.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Failed to launch image'),
+                                    ),
+                                  );
                                 },
-                                imageUrl: uri.toString(),
-                                placeholder: (context, url) =>
-                                    CircularProgressIndicator(),
+                                child: CachedNetworkImage(
+                                  httpHeaders: {
+                                    HttpHeaders.acceptHeader: "image/webp"
+                                  },
+                                  imageUrl: newUri.toString(),
+                                  placeholder: (context, url) =>
+                                      CircularProgressIndicator(),
+                                ),
                               );
+
+                              if (isVideoThumbnail) {
+                                return Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    image,
+                                    Center(
+                                      child: Icon(
+                                        Icons.play_arrow,
+                                        color: Colors.white,
+                                        size: 100.0,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+
+                              return image;
                             },
-                          )),
+                          ),
                           onTapLink: (link) async {
                             final nick = user.getNickFromTwtxtURL(link);
                             if (nick != null) {
@@ -362,6 +405,7 @@ class _PostListState extends State<PostList> {
                   ),
                 );
               },
+              // addAutomaticKeepAlives: true,
               childCount: widget.twts.length,
             ),
           ),
@@ -437,7 +481,6 @@ class _TwtAssetVideoState extends State<TwtAssetVideo> {
     });
     _controller.setLooping(true);
     _controller.initialize().then((_) => setState(() {}));
-    _controller.play();
   }
 
   @override

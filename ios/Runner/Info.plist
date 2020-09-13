@@ -30,6 +30,11 @@
 	<string>This app uses the camera to take photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app uses reads photos from your photo library</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
