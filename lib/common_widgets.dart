@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:goryon/screens/profile.dart';
+import 'package:video_player/video_player.dart';
 
 import 'api.dart';
 import 'models.dart';
@@ -16,6 +17,7 @@ import 'screens/follow.dart';
 import 'screens/newtwt.dart';
 import 'screens/timeline.dart';
 import 'viewmodels.dart';
+import 'package:path/path.dart' as path;
 
 class Avatar extends StatelessWidget {
   const Avatar({
@@ -215,7 +217,7 @@ class _PostListState extends State<PostList> {
     }
   }
 
-  void pushToProfileScreen(String nick, Uri uri) {
+  void pushToProfileScreen(BuildContext context, String nick, Uri uri) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -249,7 +251,11 @@ class _PostListState extends State<PostList> {
                           user.profile.uri.toString(),
                         ) !=
                         null
-                    ? () => pushToProfileScreen(twt.twter.nick, twt.twter.uri)
+                    ? () => pushToProfileScreen(
+                          context,
+                          twt.twter.nick,
+                          twt.twter.uri,
+                        )
                     : null;
 
                 return ListTile(
@@ -272,32 +278,43 @@ class _PostListState extends State<PostList> {
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: MarkdownBody(
                           styleSheet: MarkdownStyleSheet(),
-                          imageBuilder: (uri, title, alt) => GestureDetector(
-                            onTap: () async {
-                              if (await canLaunch(uri.toString())) {
-                                await launch(uri.toString());
-                                return;
+                          imageBuilder: (uri, title, alt) =>
+                              GestureDetector(onTap: () async {
+                            if (await canLaunch(uri.toString())) {
+                              await launch(uri.toString());
+                              return;
+                            }
+
+                            Scaffold.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Failed to launch image'),
+                              ),
+                            );
+                          }, child: Builder(
+                            builder: (context) {
+                              print(path.extension(uri.path));
+                              if (path.extension(uri.path) == '.webm') {
+                                return TwtAssetVideo(videoURL: uri.toString());
                               }
 
-                              Scaffold.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Failed to launch image'),
-                                ),
+                              return CachedNetworkImage(
+                                httpHeaders: {
+                                  HttpHeaders.acceptHeader: "image/webp"
+                                },
+                                imageUrl: uri.toString(),
+                                placeholder: (context, url) =>
+                                    CircularProgressIndicator(),
                               );
                             },
-                            child: CachedNetworkImage(
-                              httpHeaders: {
-                                HttpHeaders.acceptHeader: "image/webp"
-                              },
-                              imageUrl: uri.toString(),
-                              placeholder: (context, url) =>
-                                  CircularProgressIndicator(),
-                            ),
-                          ),
+                          )),
                           onTapLink: (link) async {
                             final nick = user.getNickFromTwtxtURL(link);
                             if (nick != null) {
-                              pushToProfileScreen(nick, Uri.parse(link));
+                              pushToProfileScreen(
+                                context,
+                                nick,
+                                Uri.parse(link),
+                              );
                               return;
                             }
 
@@ -357,6 +374,100 @@ class _PostListState extends State<PostList> {
                 ),
               ),
             )
+        ],
+      ),
+    );
+  }
+}
+
+class _PlayPauseOverlay extends StatelessWidget {
+  const _PlayPauseOverlay({Key key, this.controller}) : super(key: key);
+
+  final VideoPlayerController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        AnimatedSwitcher(
+          duration: Duration(milliseconds: 50),
+          reverseDuration: Duration(milliseconds: 200),
+          child: controller.value.isPlaying
+              ? SizedBox.shrink()
+              : Container(
+                  color: Colors.black26,
+                  child: Center(
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                      size: 100.0,
+                    ),
+                  ),
+                ),
+        ),
+        GestureDetector(
+          onTap: () {
+            controller.value.isPlaying ? controller.pause() : controller.play();
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class TwtAssetVideo extends StatefulWidget {
+  final String videoURL;
+
+  const TwtAssetVideo({Key key, this.videoURL}) : super(key: key);
+
+  @override
+  _TwtAssetVideoState createState() => _TwtAssetVideoState();
+}
+
+class _TwtAssetVideoState extends State<TwtAssetVideo> {
+  VideoPlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.network(widget.videoURL);
+
+    _controller.addListener(() {
+      setState(() {});
+    });
+    _controller.setLooping(true);
+    _controller.initialize().then((_) => setState(() {}));
+    _controller.play();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.only(top: 20.0),
+          ),
+          Container(
+            padding: const EdgeInsets.all(20),
+            child: AspectRatio(
+              aspectRatio: _controller.value.aspectRatio,
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: <Widget>[
+                  VideoPlayer(_controller),
+                  _PlayPauseOverlay(controller: _controller),
+                  VideoProgressIndicator(_controller, allowScrubbing: true),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
