@@ -205,7 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   return FutureBuilder(
                     future: _unFollowFuture,
                     builder: (context, snapshot) {
-                      Widget leading = Icon(Icons.person_add_alt);
+                      Widget leading = Icon(Icons.person_remove);
                       Function onTap = () {
                         setState(() {
                           _unFollowFuture = _unFollow(
