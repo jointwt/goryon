@@ -297,12 +297,10 @@ class _PostListState extends State<PostList> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) {
-                                        return VideoScreen(
-                                          title: title ?? '',
-                                          videoURL: uri.toString(),
-                                        );
-                                      },
+                                      builder: (context) => VideoScreen(
+                                        title: title,
+                                        videoURL: uri.toString(),
+                                      ),
                                     ),
                                   );
                                   return;

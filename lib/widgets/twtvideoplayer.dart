@@ -37,9 +37,12 @@ class _PlayPauseOverlay extends StatelessWidget {
 }
 
 class TwtAssetVideo extends StatefulWidget {
+  @required
   final String videoURL;
+  final bool autoPlay;
 
-  const TwtAssetVideo({Key key, this.videoURL}) : super(key: key);
+  const TwtAssetVideo({Key key, this.videoURL, this.autoPlay = false})
+      : super(key: key);
 
   @override
   _TwtAssetVideoState createState() => _TwtAssetVideoState();
@@ -52,12 +55,14 @@ class _TwtAssetVideoState extends State<TwtAssetVideo> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(widget.videoURL);
-
     _controller.addListener(() {
       setState(() {});
     });
     _controller.setLooping(true);
     _controller.initialize().then((_) => setState(() {}));
+    if (widget.autoPlay) {
+      _controller.play();
+    }
   }
 
   @override

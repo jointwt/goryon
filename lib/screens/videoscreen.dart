@@ -3,6 +3,8 @@ import '../widgets/twtvideoplayer.dart';
 
 class VideoScreen extends StatelessWidget {
   final String title;
+
+  @required
   final String videoURL;
 
   const VideoScreen({Key key, this.title, this.videoURL}) : super(key: key);
@@ -10,10 +12,13 @@ class VideoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(title ?? ''),
       ),
       body: Center(
-        child: TwtAssetVideo(videoURL: videoURL),
+        child: TwtAssetVideo(
+          videoURL: videoURL,
+          autoPlay: true,
+        ),
       ),
     );
   }
