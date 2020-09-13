@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:goryon/screens/videoscreen.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -16,6 +15,7 @@ import '../screens/discover.dart';
 import '../screens/follow.dart';
 import '../screens/newtwt.dart';
 import '../screens/timeline.dart';
+import '../screens/videoscreen.dart';
 import '../viewmodels.dart';
 import 'package:path/path.dart' as path;
 
@@ -327,13 +327,13 @@ class _PostListState extends State<PostList> {
                                     CircularProgressIndicator(),
                               );
 
-                              if (isVideoThumbnail) {
-                                return GestureDetector(
-                                  onTap: onTap,
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      image,
+                              return GestureDetector(
+                                onTap: onTap,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    image,
+                                    if (isVideoThumbnail)
                                       Center(
                                         child: Icon(
                                           Icons.play_arrow,
@@ -341,14 +341,8 @@ class _PostListState extends State<PostList> {
                                           size: 100.0,
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                );
-                              }
-
-                              return GestureDetector(
-                                onTap: onTap,
-                                child: image,
+                                  ],
+                                ),
                               );
                             },
                           ),
