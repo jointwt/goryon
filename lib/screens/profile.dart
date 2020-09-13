@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../api.dart';
-import '../common_widgets.dart';
+import '../widgets/common_widgets.dart';
 import '../models.dart';
 import '../viewmodels.dart';
 

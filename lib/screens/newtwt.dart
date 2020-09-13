@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 import '../api.dart';
-import '../common_widgets.dart';
+import '../widgets/common_widgets.dart';
 import '../models.dart';
 import '../strings.dart';
 import '../form_validators.dart';

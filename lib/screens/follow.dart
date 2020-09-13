@@ -4,7 +4,7 @@ import 'package:goryon/strings.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
-import '../common_widgets.dart';
+import '../widgets/common_widgets.dart';
 import '../form_validators.dart';
 
 class Follow extends StatefulWidget {

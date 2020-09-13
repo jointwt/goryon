@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../common_widgets.dart';
+import '../widgets/twtvideoplayer.dart';
 
 class VideoScreen extends StatelessWidget {
   final String title;
@@ -14,9 +13,7 @@ class VideoScreen extends StatelessWidget {
         title: Text(title),
       ),
       body: Center(
-        child: TwtAssetVideo(
-          videoURL: videoURL,
-        ),
+        child: TwtAssetVideo(videoURL: videoURL),
       ),
     );
   }

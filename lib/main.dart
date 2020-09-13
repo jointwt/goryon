@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import 'api.dart';
-import 'common_widgets.dart';
+import 'widgets/common_widgets.dart';
 import 'screens/auth_widget.dart';
 import 'strings.dart';
 import 'viewmodels.dart';
