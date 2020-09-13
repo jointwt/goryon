@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -33,6 +35,7 @@ class Avatar extends StatelessWidget {
 
     return CachedNetworkImage(
       imageUrl: imageUrl,
+      httpHeaders: {HttpHeaders.acceptHeader: "image/webp"},
       imageBuilder: (context, imageProvider) {
         return CircleAvatar(backgroundImage: imageProvider, radius: radius);
       },
@@ -275,6 +278,9 @@ class _PostListState extends State<PostList> {
                               );
                             },
                             child: CachedNetworkImage(
+                              httpHeaders: {
+                                HttpHeaders.acceptHeader: "image/webp"
+                              },
                               imageUrl: uri.toString(),
                               placeholder: (context, url) =>
                                   CircularProgressIndicator(),
