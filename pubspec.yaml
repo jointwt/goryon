@@ -32,6 +32,9 @@ dependencies:
   image_picker: ^0.6.7+7
   path: ^1.7.0
   video_player: ^0.10.12+2
+  jiffy: ^3.0.1
+
+
 
 
 

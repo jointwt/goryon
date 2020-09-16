@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,7 +16,6 @@ import '../screens/discover.dart';
 import '../screens/follow.dart';
 import '../screens/newtwt.dart';
 import '../screens/timeline.dart';
-import '../screens/videoscreen.dart';
 import '../viewmodels.dart';
 import 'package:path/path.dart' as path;
 
@@ -248,7 +248,7 @@ class _PostListState extends State<PostList> {
               (_, idx) {
                 final twt = widget.twts[idx];
 
-                Function onTwterTap = user.getNickFromTwtxtURL(
+                final onTwterTap = user.getNickFromTwtxtURL(
                           user.profile.uri.toString(),
                         ) !=
                         null
@@ -261,15 +261,37 @@ class _PostListState extends State<PostList> {
 
                 return ListTile(
                   isThreeLine: true,
-                  leading: GestureDetector(
-                    onTap: onTwterTap,
-                    child: Avatar(imageUrl: twt.twter.avatar.toString()),
-                  ),
                   title: GestureDetector(
                     onTap: onTwterTap,
-                    child: Text(
-                      twt.twter.nick,
-                      style: Theme.of(context).textTheme.headline6,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Avatar(imageUrl: twt.twter.avatar.toString()),
+                        SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              twt.twter.nick,
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                            SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Text(
+                                  Jiffy(twt.createdTime).format('jm'),
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  '(${Jiffy(twt.createdTime).fromNow()})',
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                   subtitle: Column(
@@ -292,20 +314,7 @@ class _PostListState extends State<PostList> {
                                 );
                               }
 
-                              final onTap = () async {
-                                if (isVideoThumbnail) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => VideoScreen(
-                                        title: title,
-                                        videoURL: uri.toString(),
-                                      ),
-                                    ),
-                                  );
-                                  return;
-                                }
-
+                              void onTap() async {
                                 if (await canLaunch(uri.toString())) {
                                   await launch(uri.toString());
                                   return;
@@ -316,7 +325,7 @@ class _PostListState extends State<PostList> {
                                     content: Text('Failed to launch image'),
                                   ),
                                 );
-                              };
+                              }
 
                               final image = CachedNetworkImage(
                                 httpHeaders: {
