@@ -189,7 +189,7 @@ class PostList extends StatefulWidget {
     @required this.gotoNextPage,
     @required this.twts,
     @required this.isBottomListLoading,
-    this.topSlivers,
+    this.topSlivers = const <Widget>[],
   }) : super(key: key);
 
   final Function fetchNewPost;
@@ -245,7 +245,7 @@ class _PostListState extends State<PostList> {
         cacheExtent: 1000,
         controller: _scrollController,
         slivers: [
-          ...(widget.topSlivers ?? []),
+          ...widget.topSlivers,
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (_, idx) {
@@ -282,7 +282,7 @@ class _PostListState extends State<PostList> {
                             Row(
                               children: [
                                 Text(
-                                  Jiffy(twt.createdTime).format('jm'),
+                                  Jiffy(twt.createdTime.toLocal()).format('jm'),
                                   style: Theme.of(context).textTheme.bodyText2,
                                 ),
                                 SizedBox(width: 8),
