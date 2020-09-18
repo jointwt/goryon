@@ -29,7 +29,7 @@ class _FollowState extends State<Follow> {
         return true;
       },
       child: Scaffold(
-        appBar: AppBar(elevation: 0),
+        appBar: AppBar(),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.stretch,

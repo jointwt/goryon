@@ -215,6 +215,10 @@ class Profile {
     this.tagline,
   );
 
+  String get mention {
+    return '@$username';
+  }
+
   bool isFollowing(String uri) {
     return following.containsValue(uri);
   }
