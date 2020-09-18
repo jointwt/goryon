@@ -33,7 +33,7 @@ class _DiscoverState extends State<Discover> {
   void _fetchNewPost() {
     Future<void> _fetch() async {
       try {
-        await context.read<DiscoverViewModel>().fetchNewPost();
+        await context.read<DiscoverViewModel>().refreshPost();
       } on http.ClientException catch (e) {
         Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
         rethrow;

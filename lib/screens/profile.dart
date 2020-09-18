@@ -6,6 +6,7 @@ import '../api.dart';
 import '../widgets/common_widgets.dart';
 import '../models.dart';
 import '../viewmodels.dart';
+import 'package:http/http.dart' as http;
 
 class ProfileScreen extends StatefulWidget {
   final String name;
@@ -29,7 +30,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchProfileFuture = _fetchProfile();
+    _fetchProfileFuture = _fetchProfile().then((_) async {
+      return await _fetchNewPost();
+    });
   }
 
   Future _fetchProfile() async {
@@ -69,6 +72,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       );
       rethrow;
+    }
+  }
+
+  Future<void> _fetchNewPost() async {
+    try {
+      await context.read<ProfileViewModel>().refreshPost();
+    } on http.ClientException catch (e) {
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      rethrow;
+    }
+  }
+
+  void _page(BuildContext context) async {
+    try {
+      await context.read<ProfileViewModel>().gotoNextPage();
+    } on http.ClientException catch (e) {
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
 
@@ -312,8 +332,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
 
         return Scaffold(
-          body: CustomScrollView(
-            slivers: buildSlivers(),
+          body: Consumer<ProfileViewModel>(
+            builder: (context, profileViewModel, child) {
+              return PostList(
+                isBottomListLoading: profileViewModel.isBottomListLoading,
+                gotoNextPage: () => _page(context),
+                fetchNewPost: profileViewModel.refreshPost,
+                twts: profileViewModel.twts,
+                topSlivers: buildSlivers(),
+              );
+            },
           ),
         );
       },

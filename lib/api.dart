@@ -87,7 +87,7 @@ class Api {
     }
   }
 
-  Future<TimelineResponse> timeline(int page) async {
+  Future<PagedResponse> timeline(int page) async {
     final _user = await user;
     final response = await _httpClient.post(
       _user.profile.uri.replace(path: "/api/v1/timeline"),
@@ -102,11 +102,10 @@ class Api {
       throw http.ClientException('Failed to get posts');
     }
 
-    return TimelineResponse.fromJson(
-        jsonDecode(utf8.decode(response.bodyBytes)));
+    return PagedResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
   }
 
-  Future<TimelineResponse> discover(int page) async {
+  Future<PagedResponse> discover(int page) async {
     final _user = await user;
     final response = await _httpClient.post(
       _user.profile.uri.replace(path: "/api/v1/discover"),
@@ -121,8 +120,7 @@ class Api {
       throw http.ClientException('Failed to get posts');
     }
 
-    return TimelineResponse.fromJson(
-        jsonDecode(utf8.decode(response.bodyBytes)));
+    return PagedResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
   }
 
   Future<void> savePost(String text) async {
@@ -231,5 +229,23 @@ class Api {
 
   Future<ProfileResponse> getExternalProfile(String nick, String url) async {
     throw UnimplementedError('getExternalProfile needs to be implemented');
+  }
+
+  Future<PagedResponse> getUserTwts(int page, String name) async {
+    final _user = await user;
+    final response = await _httpClient.post(
+      _user.profile.uri.replace(path: "/api/v1/profile/$name/twts"),
+      body: jsonEncode({'page': page}),
+      headers: {
+        'Token': _user.token,
+        HttpHeaders.contentTypeHeader: ContentType.json.toString(),
+      },
+    );
+
+    if (response.statusCode >= 400) {
+      throw http.ClientException('Failed to get posts');
+    }
+
+    return PagedResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
   }
 }

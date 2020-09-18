@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
               ),
               iconTheme: IconThemeData(color: Colors.black),
               actionsIconTheme: IconThemeData(color: Colors.black),
-              elevation: 0.5,
+              elevation: 0,
               color: Colors.grey[50],
             ),
             inputDecorationTheme: InputDecorationTheme(

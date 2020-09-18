@@ -82,8 +82,8 @@ Map<String, dynamic> _$TwtToJson(Twt instance) => <String, dynamic>{
       'Created': instance.createdTime?.toIso8601String(),
     };
 
-TimelineResponse _$TimelineResponseFromJson(Map<String, dynamic> json) {
-  return TimelineResponse(
+PagedResponse _$TimelineResponseFromJson(Map<String, dynamic> json) {
+  return PagedResponse(
     (json['twts'] as List)
         ?.map((e) => e == null ? null : Twt.fromJson(e as Map<String, dynamic>))
         ?.toList(),
@@ -93,7 +93,7 @@ TimelineResponse _$TimelineResponseFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$TimelineResponseToJson(TimelineResponse instance) =>
+Map<String, dynamic> _$TimelineResponseToJson(PagedResponse instance) =>
     <String, dynamic>{
       'twts': instance.twts,
       'Pager': instance.pagerResponse,

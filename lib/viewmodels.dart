@@ -67,7 +67,7 @@ class TimelineViewModel extends ChangeNotifier {
   final Api _api;
   bool _isEntireListLoading;
   bool _isBottomListLoading;
-  TimelineResponse _lastTimelineResponse;
+  PagedResponse _lastTimelineResponse;
   List<Twt> _twts;
 
   bool get isEntireListLoading => _isEntireListLoading;
@@ -127,7 +127,7 @@ class DiscoverViewModel extends ChangeNotifier {
 
   final Api _api;
   bool _isBottomListLoading;
-  TimelineResponse _lastTimelineResponse;
+  PagedResponse _lastTimelineResponse;
   List<Twt> _twts;
 
   bool get isBottomListLoading => _isBottomListLoading;
@@ -143,11 +143,6 @@ class DiscoverViewModel extends ChangeNotifier {
     _lastTimelineResponse = await _api.discover(0);
     _twts = _lastTimelineResponse.twts;
     notifyListeners();
-  }
-
-  Future<void> fetchNewPost() async {
-    _lastTimelineResponse = await _api.discover(0);
-    _twts = _lastTimelineResponse.twts;
   }
 
   Future<void> gotoNextPage() async {
@@ -186,6 +181,13 @@ class NewTwtViewModel {
 class ProfileViewModel extends ChangeNotifier {
   final Api _api;
   ProfileResponse _profileResponse;
+  bool _isBottomListLoading;
+  PagedResponse _lastTimelineResponse;
+  List<Twt> _twts;
+
+  bool get isBottomListLoading => _isBottomListLoading;
+
+  List<Twt> get twts => _twts;
 
   Profile get profile => _profileResponse.profile;
   Twter get twter => _profileResponse.twter;
@@ -204,7 +206,21 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  ProfileViewModel(this._api);
+  set isBottomListLoading(bool isLoading) {
+    _isBottomListLoading = isLoading;
+    notifyListeners();
+  }
+
+  Future refreshPost() async {
+    _lastTimelineResponse = await _api.getUserTwts(0, profile.username);
+    _twts = _lastTimelineResponse.twts;
+    notifyListeners();
+  }
+
+  ProfileViewModel(this._api) {
+    _twts = [];
+    _isBottomListLoading = false;
+  }
 
   Future<void> fetchProfile(String name, [String url]) async {
     if (url != null) {
@@ -212,5 +228,21 @@ class ProfileViewModel extends ChangeNotifier {
       return;
     }
     profileResponse = await _api.getProfile(name);
+  }
+
+  Future<void> gotoNextPage() async {
+    if (_lastTimelineResponse.pagerResponse.currentPage ==
+        _lastTimelineResponse.pagerResponse.maxPages) {
+      return;
+    }
+
+    isBottomListLoading = true;
+    try {
+      final page = _lastTimelineResponse.pagerResponse.currentPage + 1;
+      _lastTimelineResponse = await _api.getUserTwts(page, profile.username);
+      _twts = [..._twts, ..._lastTimelineResponse.twts];
+    } finally {
+      isBottomListLoading = false;
+    }
   }
 }

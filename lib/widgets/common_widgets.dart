@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:markdown/markdown.dart' as md;
+import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,7 +18,6 @@ import '../screens/follow.dart';
 import '../screens/newtwt.dart';
 import '../screens/timeline.dart';
 import '../viewmodels.dart';
-import 'package:path/path.dart' as path;
 
 class Avatar extends StatelessWidget {
   const Avatar({
@@ -189,12 +189,14 @@ class PostList extends StatefulWidget {
     @required this.gotoNextPage,
     @required this.twts,
     @required this.isBottomListLoading,
+    this.topSlivers,
   }) : super(key: key);
 
   final Function fetchNewPost;
   final Function gotoNextPage;
   final bool isBottomListLoading;
   final List<Twt> twts;
+  final List<Widget> topSlivers;
 
   @override
   _PostListState createState() => _PostListState();
@@ -243,6 +245,7 @@ class _PostListState extends State<PostList> {
         cacheExtent: 1000,
         controller: _scrollController,
         slivers: [
+          ...(widget.topSlivers ?? []),
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (_, idx) {
