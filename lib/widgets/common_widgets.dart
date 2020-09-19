@@ -325,30 +325,31 @@ class _PostListState extends State<PostList> {
                                 );
                               }
 
-                              final image = CachedNetworkImage(
-                                httpHeaders: {
-                                  HttpHeaders.acceptHeader: "image/webp"
-                                },
-                                imageUrl: newUri.toString(),
-                                placeholder: (context, url) =>
-                                    CircularProgressIndicator(),
-                              );
-
                               return GestureDetector(
                                 onTap: onTap,
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    image,
-                                    if (isVideoThumbnail)
-                                      Center(
-                                        child: Icon(
-                                          Icons.play_arrow,
-                                          color: Colors.white,
-                                          size: 100.0,
-                                        ),
-                                      ),
-                                  ],
+                                child: CachedNetworkImage(
+                                  httpHeaders: {
+                                    HttpHeaders.acceptHeader: "image/webp"
+                                  },
+                                  imageUrl: newUri.toString(),
+                                  placeholder: (context, url) =>
+                                      CircularProgressIndicator(),
+                                  imageBuilder: (context, imageProvider) {
+                                    return Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        Image(image: imageProvider),
+                                        if (isVideoThumbnail)
+                                          Center(
+                                            child: Icon(
+                                              Icons.play_arrow,
+                                              color: Colors.white,
+                                              size: 100.0,
+                                            ),
+                                          ),
+                                      ],
+                                    );
+                                  },
                                 ),
                               );
                             },
@@ -375,7 +376,7 @@ class _PostListState extends State<PostList> {
                               ),
                             );
                           },
-                          data: twt.text,
+                          data: twt.sanitizedTxt,
                           extensionSet: md.ExtensionSet.gitHubWeb,
                         ),
                       ),

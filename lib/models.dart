@@ -114,6 +114,14 @@ class Twt {
   Set<String> get mentions =>
       mentionsExp.allMatches(text).map((e) => e.group(1)).toSet();
 
+  String get sanitizedTxt =>
+      text.replaceAllMapped(mentionAndHashtagExp, (match) {
+        final prefix = match.group(1);
+        final nick = match.group(2);
+        final url = match.group(3);
+        return "[$prefix$nick]($url)";
+      });
+
   String get subject {
     final match = subjectExp.firstMatch(text);
     if (match == null) {
