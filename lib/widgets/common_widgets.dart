@@ -251,21 +251,16 @@ class _PostListState extends State<PostList> {
               (_, idx) {
                 final twt = widget.twts[idx];
 
-                final onTwterTap = user.getNickFromTwtxtURL(
-                          user.profile.uri.toString(),
-                        ) !=
-                        null
-                    ? () => pushToProfileScreen(
-                          context,
-                          twt.twter.nick,
-                          twt.twter.uri,
-                        )
-                    : null;
-
                 return ListTile(
                   isThreeLine: true,
                   title: GestureDetector(
-                    onTap: onTwterTap,
+                    onTap: () {
+                      pushToProfileScreen(
+                        context,
+                        twt.twter.nick,
+                        twt.twter.uri,
+                      );
+                    },
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -380,7 +375,7 @@ class _PostListState extends State<PostList> {
                               ),
                             );
                           },
-                          data: twt.sanitizedTxt,
+                          data: twt.text,
                           extensionSet: md.ExtensionSet.gitHubWeb,
                         ),
                       ),

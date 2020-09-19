@@ -38,11 +38,7 @@ class User {
       return null;
     }
 
-    if (uri.pathSegments.length != 3) {
-      return null;
-    }
-
-    if (uri.pathSegments[0] == "user" && uri.pathSegments[2] == "twtxt.txt") {
+    if (uri.pathSegments.length == 2 && uri.pathSegments[0] == "user") {
       return uri.pathSegments[1];
     }
 
@@ -79,14 +75,16 @@ class PagerResponse {
 
 @JsonSerializable()
 class Twter {
-  @JsonKey(name: 'Nick')
+  @JsonKey(name: 'nick')
   final String nick;
-  @JsonKey(name: 'URL')
+  @JsonKey(name: 'url')
   final Uri uri;
-  @JsonKey(name: 'Avatar')
+  @JsonKey(name: 'avatar')
   final Uri avatar;
+  @JsonKey(name: 'slug')
+  final String slug;
 
-  Twter({this.nick, this.uri, this.avatar});
+  Twter({this.nick, this.uri, this.avatar, this.slug});
 
   bool isPodMember(Uri podUri) {
     return podUri.authority == uri.authority;
@@ -98,26 +96,20 @@ class Twter {
 
 @JsonSerializable()
 class Twt {
-  @JsonKey(name: 'Twter')
+  @JsonKey(name: 'twter')
   final Twter twter;
-  @JsonKey(name: 'Text')
+  @JsonKey(name: 'text')
   final String text;
-  @JsonKey(name: 'Created')
+  @JsonKey(name: 'created')
   final DateTime createdTime;
+  @JsonKey(name: 'hash')
+  final String hash;
 
   static final mentionAndHashtagExp = RegExp(r'(@|#)<([^ ]+) *([^>]+)>');
   static final mentionsExp = RegExp(r"@<(.*?) .*?>");
   static final subjectExp = RegExp(r"^(@<.*>[, ]*)*(\(.*?\))(.*)");
 
-  Twt({this.twter, this.text, this.createdTime});
-
-  String get sanitizedTxt =>
-      text.replaceAllMapped(mentionAndHashtagExp, (match) {
-        final prefix = match.group(1);
-        final nick = match.group(2);
-        final url = match.group(3);
-        return "[$prefix$nick]($url)";
-      });
+  Twt({this.twter, this.text, this.createdTime, this.hash});
 
   Set<String> get mentions =>
       mentionsExp.allMatches(text).map((e) => e.group(1)).toSet();
@@ -161,8 +153,8 @@ class PagedResponse {
   PagedResponse(this.twts, this.pagerResponse);
 
   factory PagedResponse.fromJson(Map<String, dynamic> json) =>
-      _$TimelineResponseFromJson(json);
-  Map<String, dynamic> toJson() => _$TimelineResponseToJson(this);
+      _$PagedResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$PagedResponseToJson(this);
 }
 
 @JsonSerializable()

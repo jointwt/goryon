@@ -52,37 +52,41 @@ Map<String, dynamic> _$PagerResponseToJson(PagerResponse instance) =>
 
 Twter _$TwterFromJson(Map<String, dynamic> json) {
   return Twter(
-    nick: json['Nick'] as String,
-    uri: json['URL'] == null ? null : Uri.parse(json['URL'] as String),
-    avatar: json['Avatar'] == null ? null : Uri.parse(json['Avatar'] as String),
+    nick: json['nick'] as String,
+    uri: json['url'] == null ? null : Uri.parse(json['url'] as String),
+    avatar: json['avatar'] == null ? null : Uri.parse(json['avatar'] as String),
+    slug: json['slug'] as String,
   );
 }
 
 Map<String, dynamic> _$TwterToJson(Twter instance) => <String, dynamic>{
-      'Nick': instance.nick,
-      'URL': instance.uri?.toString(),
-      'Avatar': instance.avatar?.toString(),
+      'nick': instance.nick,
+      'url': instance.uri?.toString(),
+      'avatar': instance.avatar?.toString(),
+      'slug': instance.slug,
     };
 
 Twt _$TwtFromJson(Map<String, dynamic> json) {
   return Twt(
-    twter: json['Twter'] == null
+    twter: json['twter'] == null
         ? null
-        : Twter.fromJson(json['Twter'] as Map<String, dynamic>),
-    text: json['Text'] as String,
-    createdTime: json['Created'] == null
+        : Twter.fromJson(json['twter'] as Map<String, dynamic>),
+    text: json['text'] as String,
+    createdTime: json['created'] == null
         ? null
-        : DateTime.parse(json['Created'] as String),
+        : DateTime.parse(json['created'] as String),
+    hash: json['hash'] as String,
   );
 }
 
 Map<String, dynamic> _$TwtToJson(Twt instance) => <String, dynamic>{
-      'Twter': instance.twter,
-      'Text': instance.text,
-      'Created': instance.createdTime?.toIso8601String(),
+      'twter': instance.twter,
+      'text': instance.text,
+      'created': instance.createdTime?.toIso8601String(),
+      'hash': instance.hash,
     };
 
-PagedResponse _$TimelineResponseFromJson(Map<String, dynamic> json) {
+PagedResponse _$PagedResponseFromJson(Map<String, dynamic> json) {
   return PagedResponse(
     (json['twts'] as List)
         ?.map((e) => e == null ? null : Twt.fromJson(e as Map<String, dynamic>))
@@ -93,7 +97,7 @@ PagedResponse _$TimelineResponseFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$TimelineResponseToJson(PagedResponse instance) =>
+Map<String, dynamic> _$PagedResponseToJson(PagedResponse instance) =>
     <String, dynamic>{
       'twts': instance.twts,
       'Pager': instance.pagerResponse,
