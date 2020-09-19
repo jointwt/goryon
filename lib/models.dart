@@ -38,7 +38,11 @@ class User {
       return null;
     }
 
-    if (uri.pathSegments.length == 2 && uri.pathSegments[0] == "user") {
+    if (uri.pathSegments.length != 3) {
+      return null;
+    }
+
+    if (uri.pathSegments[0] == "user" && uri.pathSegments[2] == "twtxt.txt") {
       return uri.pathSegments[1];
     }
 
