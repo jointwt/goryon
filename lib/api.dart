@@ -10,7 +10,7 @@ import 'models.dart';
 class Api {
   final http.Client _httpClient;
   final FlutterSecureStorage _flutterSecureStorage;
-  final String tokenKey = 'provile-v1';
+  final String tokenKey = 'provile-v2';
 
   Api(this._httpClient, this._flutterSecureStorage);
 
