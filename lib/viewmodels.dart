@@ -51,7 +51,7 @@ class AuthViewModel {
     final user = await _api.login(
       username,
       password,
-      uri,
+      Uri(host: "0.0.0.0", scheme: "http", port: 8000),
     );
     _user.add(user);
   }

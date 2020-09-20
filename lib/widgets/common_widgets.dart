@@ -258,8 +258,6 @@ class _PostListState extends State<PostList> {
     final appStrings = context.read<AppStrings>();
 
     return MarkdownBody(
-      styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
-          .copyWith(textScaleFactor: 1.1),
       imageBuilder: (uri, title, alt) => Builder(
         builder: (context) {
           Uri newUri = uri;
