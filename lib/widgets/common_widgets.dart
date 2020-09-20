@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:goryon/strings.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:path/path.dart' as path;
@@ -238,191 +239,207 @@ class _PostListState extends State<PostList> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Consumer2<User, Api>(
-      builder: (context, user, api, _) => CustomScrollView(
-        cacheExtent: 1000,
-        controller: _scrollController,
-        slivers: [
-          ...widget.topSlivers,
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (_, idx) {
-                final twt = widget.twts[idx];
+  String getNickFromTwtxtURL(Uri uriFromMarkdown, Uri uriFromLoggedInUser) {
+    // Only allow  viewing the profile for internal users for now
+    if (uriFromMarkdown.authority != uriFromLoggedInUser.authority) {
+      return null;
+    }
 
-                return ListTile(
-                  isThreeLine: true,
-                  title: GestureDetector(
-                    onTap: () {
-                      pushToProfileScreen(
-                        context,
-                        twt.twter.nick,
-                        twt.twter.uri,
-                      );
-                    },
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Avatar(imageUrl: twt.twter.avatar.toString()),
-                        SizedBox(width: 8),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              twt.twter.nick,
-                              style: Theme.of(context).textTheme.headline6,
-                            ),
-                            SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Text(
-                                  Jiffy(twt.createdTime.toLocal()).format('jm'),
-                                  style: Theme.of(context).textTheme.bodyText2,
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  '(${Jiffy(twt.createdTime).fromNow()})',
-                                  style: Theme.of(context).textTheme.bodyText2,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: MarkdownBody(
-                          styleSheet: MarkdownStyleSheet(),
-                          imageBuilder: (uri, title, alt) => Builder(
-                            builder: (context) {
-                              Uri newUri = uri;
-                              bool isVideoThumbnail = false;
+    if (uriFromMarkdown.pathSegments.length == 2 &&
+        uriFromMarkdown.pathSegments.first == "user") {
+      return uriFromMarkdown.pathSegments[1];
+    }
 
-                              if (path.extension(uri.path) == '.webm') {
-                                isVideoThumbnail = true;
-                                newUri = uri.replace(
-                                  path:
-                                      '${path.withoutExtension(uri.path)}.webp',
-                                );
-                              }
+    return null;
+  }
 
-                              void onTap() async {
-                                if (await canLaunch(uri.toString())) {
-                                  await launch(uri.toString());
-                                  return;
-                                }
+  Widget buildMarkdownBody(BuildContext context, Twt twt) {
+    final user = context.read<User>();
+    final appStrings = context.read<AppStrings>();
 
-                                Scaffold.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Failed to launch image'),
-                                  ),
-                                );
-                              }
+    return MarkdownBody(
+      imageBuilder: (uri, title, alt) => Builder(
+        builder: (context) {
+          Uri newUri = uri;
+          bool isVideoThumbnail = false;
 
-                              return GestureDetector(
-                                onTap: onTap,
-                                child: CachedNetworkImage(
-                                  httpHeaders: {
-                                    HttpHeaders.acceptHeader: "image/webp"
-                                  },
-                                  imageUrl: newUri.toString(),
-                                  placeholder: (context, url) =>
-                                      CircularProgressIndicator(),
-                                  imageBuilder: (context, imageProvider) {
-                                    return Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        Image(image: imageProvider),
-                                        if (isVideoThumbnail)
-                                          Center(
-                                            child: Icon(
-                                              Icons.play_arrow,
-                                              color: Colors.white,
-                                              size: 100.0,
-                                            ),
-                                          ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-                          onTapLink: (link) async {
-                            final nick = user.getNickFromTwtxtURL(link);
-                            if (nick != null) {
-                              pushToProfileScreen(
-                                context,
-                                nick,
-                                Uri.parse(link),
-                              );
-                              return;
-                            }
+          if (path.extension(uri.path) == '.webm') {
+            isVideoThumbnail = true;
+            newUri = uri.replace(
+              path: '${path.withoutExtension(uri.path)}.webp',
+            );
+          }
 
-                            if (await canLaunch(link)) {
-                              await launch(link);
-                              return;
-                            }
+          void onTap() async {
+            if (await canLaunch(uri.toString())) {
+              await launch(uri.toString());
+              return;
+            }
 
-                            Scaffold.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Failed to launch $link'),
-                              ),
-                            );
-                          },
-                          data: twt.sanitizedTxt,
-                          extensionSet: md.ExtensionSet.gitHubWeb,
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Text(appStrings.failLaunchImageToBrowser),
+              ),
+            );
+          }
+
+          return GestureDetector(
+            onTap: onTap,
+            child: CachedNetworkImage(
+              httpHeaders: {HttpHeaders.acceptHeader: "image/webp"},
+              imageUrl: newUri.toString(),
+              placeholder: (context, url) => CircularProgressIndicator(),
+              imageBuilder: (context, imageProvider) {
+                return Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Image(image: imageProvider),
+                    if (isVideoThumbnail)
+                      Center(
+                        child: Icon(
+                          Icons.play_arrow,
+                          color: Colors.white,
+                          size: 100.0,
                         ),
                       ),
-                      OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          shape: StadiumBorder(),
-                        ),
-                        onPressed: () async {
-                          if (await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => NewTwt(
-                                    initialText: twt.replyText(
-                                      user.profile.username,
-                                    ),
-                                  ),
-                                ),
-                              ) ??
-                              false) {
-                            widget.fetchNewPost();
-                          }
-                        },
-                        child: Text(
-                          "Reply",
-                          style: Theme.of(context).textTheme.button,
-                        ),
-                      ),
-                      Divider(height: 0),
-                    ],
-                  ),
+                  ],
                 );
               },
-              childCount: widget.twts.length,
             ),
-          ),
-          if (widget.isBottomListLoading)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 64.0),
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-            )
-        ],
+          );
+        },
       ),
+      onTapLink: (link) async {
+        final nick = getNickFromTwtxtURL(Uri.parse(link), user.profile.uri);
+        if (nick != null) {
+          pushToProfileScreen(
+            context,
+            nick,
+            Uri.parse(link),
+          );
+          return;
+        }
+
+        if (await canLaunch(link)) {
+          await launch(link);
+          return;
+        }
+
+        Scaffold.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${appStrings.failLaunch} $link'),
+          ),
+        );
+      },
+      data: twt.text,
+      extensionSet: md.ExtensionSet.gitHubWeb,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = context.watch<User>();
+
+    return CustomScrollView(
+      cacheExtent: 1000,
+      controller: _scrollController,
+      slivers: [
+        ...widget.topSlivers,
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (_, idx) {
+              final twt = widget.twts[idx];
+
+              return ListTile(
+                isThreeLine: true,
+                title: GestureDetector(
+                  onTap: () {
+                    pushToProfileScreen(
+                      context,
+                      twt.twter.nick,
+                      twt.twter.uri,
+                    );
+                  },
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Avatar(imageUrl: twt.twter.avatar.toString()),
+                      SizedBox(width: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            twt.twter.nick,
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                          SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Text(
+                                Jiffy(twt.createdTime.toLocal()).format('jm'),
+                                style: Theme.of(context).textTheme.bodyText2,
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                '(${Jiffy(twt.createdTime).fromNow()})',
+                                style: Theme.of(context).textTheme.bodyText2,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: buildMarkdownBody(context, twt),
+                    ),
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        shape: StadiumBorder(),
+                      ),
+                      onPressed: () async {
+                        if (await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => NewTwt(
+                                  initialText: twt.replyText(
+                                    user.profile.username,
+                                  ),
+                                ),
+                              ),
+                            ) ??
+                            false) {
+                          widget.fetchNewPost();
+                        }
+                      },
+                      child: Text(
+                        "Reply",
+                        style: Theme.of(context).textTheme.button,
+                      ),
+                    ),
+                    Divider(height: 0),
+                  ],
+                ),
+              );
+            },
+            childCount: widget.twts.length,
+          ),
+        ),
+        if (widget.isBottomListLoading)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 64.0),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          )
+      ],
     );
   }
 }

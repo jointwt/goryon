@@ -12,4 +12,7 @@ class AppStrings {
   String followNicknameLabel = 'Enter the nickname of user/feed';
   String followURLLabel = 'Enter the url of user/feed';
   String followSuccessful = 'Successfully followed';
+
+  String failLaunch = 'Failed to launch';
+  String failLaunchImageToBrowser = 'Failed to launch image in browser';
 }
