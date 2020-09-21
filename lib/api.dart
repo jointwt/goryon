@@ -224,11 +224,29 @@ class Api {
     }
 
     return ProfileResponse.fromJson(
-        jsonDecode(utf8.decode(response.bodyBytes)));
+      jsonDecode(
+        utf8.decode(response.bodyBytes),
+      ),
+    );
   }
 
-  Future<ProfileResponse> getExternalProfile(String nick, String url) async {
-    throw UnimplementedError('getExternalProfile needs to be implemented');
+  Future<ProfileResponse> getExternalProfile(String nick, String slug) async {
+    final _user = await user;
+    final response = await _httpClient.get(
+      _user.profile.uri.replace(path: "/api/v1/profile/$nick/$slug"),
+    );
+
+    if (response.statusCode >= 400) {
+      throw http.ClientException(
+        'Failed fetch profile. Please try again later',
+      );
+    }
+
+    return ProfileResponse.fromJson(
+      jsonDecode(
+        utf8.decode(response.bodyBytes),
+      ),
+    );
   }
 
   Future<PagedResponse> getUserTwts(int page, String name) async {

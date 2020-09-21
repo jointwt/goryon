@@ -102,7 +102,7 @@ class Twt {
   String get subject {
     final match = subjectExp.firstMatch(text);
     if (match == null) {
-      return "";
+      return "(#$hash)";
     }
 
     return match.group(2);
@@ -110,19 +110,24 @@ class Twt {
 
   String replyText(String usernameToExclude) {
     var _subject = subject;
+
+    final _mentions = mentions
+      ..add(twter.nick)
+      ..remove(usernameToExclude);
+
+    final mentionsStr = _mentions.map((e) => "@$e").join(" ");
+
     if (_subject != "") {
       _subject = _subject.replaceAllMapped(mentionAndHashtagExp, (match) {
         final prefix = match.group(1);
         final nick = match.group(2);
         return "$prefix$nick";
       });
+
+      return "$mentionsStr $subject ";
     }
 
-    final _mentions = mentions
-      ..add(twter.nick)
-      ..remove(usernameToExclude);
-
-    return "${_mentions.map((e) => "@$e").join(" ")} $subject ";
+    return "$mentionsStr ";
   }
 
   factory Twt.fromJson(Map<String, dynamic> json) => _$TwtFromJson(json);

@@ -220,26 +220,26 @@ class _PostListState extends State<PostList> {
     }
   }
 
-  void pushToProfileScreen(BuildContext context, String nick, Uri uri) {
+  void pushToProfileScreen(
+    BuildContext context,
+    Twter twter,
+  ) {
+    final user = context.read<User>();
+    final api = context.read<Api>();
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) {
-          return Consumer<Api>(
-            builder: (context, api, child) => ChangeNotifierProvider(
-              create: (_) => ProfileViewModel(api),
-              child: ProfileScreen(
-                name: nick,
-                uri: uri,
-              ),
-            ),
+          return ChangeNotifierProvider(
+            create: (_) => ProfileViewModel(api, twter, user.profile),
+            child: ProfileScreen(),
           );
         },
       ),
     );
   }
 
-  String getNickFromTwtxtURL(Uri uriFromMarkdown, Uri uriFromLoggedInUser) {
+  Twter getNickFromTwtxtURL(Uri uriFromMarkdown, Uri uriFromLoggedInUser) {
     // Only allow  viewing the profile for internal users for now
     if (uriFromMarkdown.authority != uriFromLoggedInUser.authority) {
       return null;
@@ -247,7 +247,15 @@ class _PostListState extends State<PostList> {
 
     if (uriFromMarkdown.pathSegments.length == 2 &&
         uriFromMarkdown.pathSegments.first == "user") {
-      return uriFromMarkdown.pathSegments[1];
+      return Twter(nick: uriFromMarkdown.pathSegments[1]);
+    }
+
+    if (uriFromMarkdown.pathSegments.length == 3 &&
+        uriFromMarkdown.pathSegments.first == "user") {
+      return Twter(
+        slug: uriFromMarkdown.pathSegments[1],
+        nick: uriFromMarkdown.pathSegments[2],
+      );
     }
 
     return null;
@@ -310,13 +318,9 @@ class _PostListState extends State<PostList> {
         },
       ),
       onTapLink: (link) async {
-        final nick = getNickFromTwtxtURL(Uri.parse(link), user.profile.uri);
-        if (nick != null) {
-          pushToProfileScreen(
-            context,
-            nick,
-            Uri.parse(link),
-          );
+        final twter = getNickFromTwtxtURL(Uri.parse(link), user.profile.uri);
+        if (twter != null) {
+          pushToProfileScreen(context, twter);
           return;
         }
 
@@ -354,11 +358,7 @@ class _PostListState extends State<PostList> {
                 isThreeLine: true,
                 title: GestureDetector(
                   onTap: () {
-                    pushToProfileScreen(
-                      context,
-                      twt.twter.nick,
-                      twt.twter.uri,
-                    );
+                    pushToProfileScreen(context, twt.twter);
                   },
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,

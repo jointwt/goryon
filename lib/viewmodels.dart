@@ -180,6 +180,9 @@ class NewTwtViewModel {
 
 class ProfileViewModel extends ChangeNotifier {
   final Api _api;
+  final Profile _loggedInUserProfile;
+  final Twter _twter;
+
   ProfileResponse _profileResponse;
   bool _isBottomListLoading;
   PagedResponse _lastTimelineResponse;
@@ -201,6 +204,12 @@ class ProfileViewModel extends ChangeNotifier {
   int get followerCount => followers?.length ?? 0;
   bool get hasFollowers => followerCount > 0;
 
+  bool get isViewingOwnProfile => profile.uri == twter.uri;
+  bool get isFollowing => profile.isFollowing(twter.uri.toString());
+  bool get isProfileExternal => _twter.isPodMember(_loggedInUserProfile.uri);
+
+  String get name => _twter.nick;
+
   set profileResponse(ProfileResponse profileResponse) {
     _profileResponse = profileResponse;
     notifyListeners();
@@ -212,22 +221,26 @@ class ProfileViewModel extends ChangeNotifier {
   }
 
   Future refreshPost() async {
+    if (isProfileExternal) {
+      return;
+    }
+
     _lastTimelineResponse = await _api.getUserTwts(0, profile.username);
     _twts = _lastTimelineResponse.twts;
     notifyListeners();
   }
 
-  ProfileViewModel(this._api) {
+  ProfileViewModel(this._api, this._twter, this._loggedInUserProfile) {
     _twts = [];
     _isBottomListLoading = false;
   }
 
-  Future<void> fetchProfile(String name, [String url]) async {
-    if (url != null) {
-      profileResponse = await _api.getExternalProfile(name, url);
+  Future<void> fetchProfile() async {
+    if (isProfileExternal) {
+      profileResponse = await _api.getExternalProfile(_twter.nick, _twter.slug);
       return;
     }
-    profileResponse = await _api.getProfile(name);
+    profileResponse = await _api.getProfile(_twter.nick);
   }
 
   Future<void> gotoNextPage() async {
