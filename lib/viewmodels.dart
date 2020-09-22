@@ -49,10 +49,10 @@ class AuthViewModel {
     }
 
     final user = await _api.login(
-      username,
-      password,
-      uri,
-    );
+        username,
+        password,
+        // uri,
+        Uri(host: '0.0.0.0', port: 8000, scheme: 'http'));
     _user.add(user);
   }
 }
@@ -204,9 +204,10 @@ class ProfileViewModel extends ChangeNotifier {
   int get followerCount => followers?.length ?? 0;
   bool get hasFollowers => followerCount > 0;
 
-  bool get isViewingOwnProfile => profile.uri == twter.uri;
-  bool get isFollowing => profile.isFollowing(twter.uri.toString());
-  bool get isProfileExternal => _twter.isPodMember(_loggedInUserProfile.uri);
+  bool get isViewingOwnProfile => _loggedInUserProfile.uri == twter.uri;
+  bool get isFollowing =>
+      _loggedInUserProfile.isFollowing(twter.uri.toString());
+  bool get isProfileExternal => !_twter.isPodMember(_loggedInUserProfile.uri);
 
   String get name => _twter.nick;
 
@@ -221,11 +222,11 @@ class ProfileViewModel extends ChangeNotifier {
   }
 
   Future refreshPost() async {
-    if (isProfileExternal) {
-      return;
-    }
-
-    _lastTimelineResponse = await _api.getUserTwts(0, profile.username);
+    _lastTimelineResponse = await _api.getUserTwts(
+      0,
+      _twter.nick,
+      _twter.slug,
+    );
     _twts = _lastTimelineResponse.twts;
     notifyListeners();
   }
