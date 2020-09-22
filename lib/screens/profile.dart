@@ -395,7 +395,9 @@ class UserList extends StatelessWidget {
                   title: Text(entry.key),
                   subtitle: Text(Uri.parse(entry.value).host),
                   onTap: () {
-                    // TODO: Fix this one
+                    // ignore: todo
+                    // TODO: Fix this one after slugifying the Followrs/Following map is implemented
+                    //  in this issue  https://github.com/jointwt/twtxt/issues/210
                     // Navigator.push(
                     //   context,
                     //   MaterialPageRoute(
