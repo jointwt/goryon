@@ -49,10 +49,10 @@ class AuthViewModel {
     }
 
     final user = await _api.login(
-        username,
-        password,
-        // uri,
-        Uri(host: '0.0.0.0', port: 8000, scheme: 'http'));
+      username,
+      password,
+      uri,
+    );
     _user.add(user);
   }
 }
