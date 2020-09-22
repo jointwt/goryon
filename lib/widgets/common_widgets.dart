@@ -240,18 +240,13 @@ class _PostListState extends State<PostList> {
   }
 
   Twter getNickFromTwtxtURL(Uri uriFromMarkdown, Uri uriFromLoggedInUser) {
-    // Only allow  viewing the profile for internal users for now
-    if (uriFromMarkdown.authority != uriFromLoggedInUser.authority) {
-      return null;
-    }
-
     if (uriFromMarkdown.pathSegments.length == 2 &&
         uriFromMarkdown.pathSegments.first == "user") {
       return Twter(nick: uriFromMarkdown.pathSegments[1]);
     }
 
     if (uriFromMarkdown.pathSegments.length == 3 &&
-        uriFromMarkdown.pathSegments.first == "user") {
+        uriFromMarkdown.pathSegments.first == "external") {
       return Twter(
         slug: uriFromMarkdown.pathSegments[1],
         nick: uriFromMarkdown.pathSegments[2],

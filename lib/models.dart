@@ -62,8 +62,12 @@ class PagerResponse {
 class Twter {
   @JsonKey(name: 'nick')
   final String nick;
+
+  // uri is the twtxt for this twter. If uri is set to null, it usually means that it's an
+  // external user
   @JsonKey(name: 'url')
   final Uri uri;
+
   @JsonKey(name: 'avatar')
   final Uri avatar;
   @JsonKey(name: 'slug')
@@ -72,6 +76,9 @@ class Twter {
   Twter({this.nick, this.uri, this.avatar, this.slug});
 
   bool isPodMember(Uri podUri) {
+    if (uri == null) {
+      return false;
+    }
     return podUri.authority == uri.authority;
   }
 

@@ -113,70 +113,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       borderColor: Theme.of(context).primaryColor,
                     ),
                   ),
-                  Flexible(
-                    flex: 2,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        GestureDetector(
-                          onTap: profileViewModel.hasFollowing
-                              ? () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      fullscreenDialog: true,
-                                      builder: (context) {
-                                        return UserList(
-                                          usersAndURL:
-                                              profileViewModel.following,
-                                          title: 'Following',
-                                        );
-                                      },
-                                    ),
-                                  );
-                                }
-                              : null,
-                          child: Column(
-                            children: [
-                              Text(
-                                profileViewModel.followingCount.toString(),
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
-                              Text('Following')
-                            ],
+                  if (!profileViewModel.isProfileExternal)
+                    Flexible(
+                      flex: 2,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          GestureDetector(
+                            onTap: profileViewModel.hasFollowing
+                                ? () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        fullscreenDialog: true,
+                                        builder: (context) {
+                                          return UserList(
+                                            usersAndURL:
+                                                profileViewModel.following,
+                                            title: 'Following',
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  }
+                                : null,
+                            child: Column(
+                              children: [
+                                Text(
+                                  profileViewModel.followingCount.toString(),
+                                  style: Theme.of(context).textTheme.headline6,
+                                ),
+                                Text('Following')
+                              ],
+                            ),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: profileViewModel.hasFollowers
-                              ? () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      fullscreenDialog: true,
-                                      builder: (context) {
-                                        return UserList(
-                                          usersAndURL:
-                                              profileViewModel.followers,
-                                          title: 'Followers',
-                                        );
-                                      },
-                                    ),
-                                  );
-                                }
-                              : null,
-                          child: Column(
-                            children: [
-                              Text(
-                                profileViewModel.followerCount.toString(),
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
-                              Text('Followers')
-                            ],
-                          ),
-                        )
-                      ],
+                          GestureDetector(
+                            onTap: profileViewModel.hasFollowers
+                                ? () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        fullscreenDialog: true,
+                                        builder: (context) {
+                                          return UserList(
+                                            usersAndURL:
+                                                profileViewModel.followers,
+                                            title: 'Followers',
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  }
+                                : null,
+                            child: Column(
+                              children: [
+                                Text(
+                                  profileViewModel.followerCount.toString(),
+                                  style: Theme.of(context).textTheme.headline6,
+                                ),
+                                Text('Followers')
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
                 ],
               ),
               SizedBox(height: 16),
