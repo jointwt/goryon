@@ -189,15 +189,15 @@ class PostList extends StatefulWidget {
     @required this.fetchNewPost,
     @required this.gotoNextPage,
     @required this.twts,
-    @required this.isBottomListLoading,
+    @required this.fetchMoreState,
     this.topSlivers = const <Widget>[],
   }) : super(key: key);
 
   final Function fetchNewPost;
   final Function gotoNextPage;
-  final bool isBottomListLoading;
   final List<Twt> twts;
   final List<Widget> topSlivers;
+  final FetchState fetchMoreState;
 
   @override
   _PostListState createState() => _PostListState();
@@ -214,8 +214,7 @@ class _PostListState extends State<PostList> {
 
   void initiateLoadMoreOnScroll() {
     if (_scrollController.position.pixels >
-            _scrollController.position.maxScrollExtent * 0.9 &&
-        !widget.isBottomListLoading) {
+        _scrollController.position.maxScrollExtent * 0.9) {
       widget.gotoNextPage();
     }
   }
@@ -425,7 +424,7 @@ class _PostListState extends State<PostList> {
             childCount: widget.twts.length,
           ),
         ),
-        if (widget.isBottomListLoading)
+        if (widget.fetchMoreState == FetchState.Loading)
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 64.0),
@@ -435,6 +434,36 @@ class _PostListState extends State<PostList> {
             ),
           )
       ],
+    );
+  }
+}
+
+class ErrorMessage extends StatelessWidget {
+  final VoidCallback onRetryPressed;
+  final String description;
+  final String buttonLabel;
+  const ErrorMessage({
+    Key key,
+    this.onRetryPressed,
+    this.buttonLabel,
+    this.description,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(description),
+          SizedBox(height: 32),
+          RaisedButton(
+            color: Theme.of(context).colorScheme.error,
+            onPressed: onRetryPressed,
+            child: Text(buttonLabel),
+          )
+        ],
+      ),
     );
   }
 }

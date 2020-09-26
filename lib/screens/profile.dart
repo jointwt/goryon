@@ -356,7 +356,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           body: PostList(
-            isBottomListLoading: profileViewModel.isBottomListLoading,
+            // isBottomListLoading: profileViewModel.isBottomListLoading,
             gotoNextPage: () => _page(context),
             fetchNewPost: profileViewModel.refreshPost,
             twts: profileViewModel.twts,

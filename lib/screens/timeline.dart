@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
 import '../widgets/common_widgets.dart';
 import '../viewmodels.dart';
@@ -16,24 +15,7 @@ class _TimelineState extends State<Timeline> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => _fetchNewPost());
-  }
-
-  void _page() async {
-    try {
-      context.read<TimelineViewModel>().gotoNextPage();
-    } on http.ClientException catch (e) {
-      Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
-      rethrow;
-    }
-  }
-
-  void _fetchNewPost() async {
-    try {
-      context.read<TimelineViewModel>().fetchNewPost();
-    } on http.ClientException catch (e) {
-      Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
-    }
+    Future.microtask(() => context.read<TimelineViewModel>().fetchNewPost());
   }
 
   @override
@@ -51,9 +33,7 @@ class _TimelineState extends State<Timeline> {
           onPressed: () async {
             if (await Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => NewTwt(),
-                  ),
+                  MaterialPageRoute(builder: (_) => NewTwt()),
                 ) ??
                 false) {
               context.read<TimelineViewModel>().fetchNewPost();
@@ -62,22 +42,27 @@ class _TimelineState extends State<Timeline> {
         ),
       ),
       body: Consumer<TimelineViewModel>(
-        builder: (context, timelineViewModel, _) {
-          if (timelineViewModel.isEntireListLoading) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
+        builder: (context, vm, _) {
+          switch (vm.mainListState) {
+            case FetchState.Loading:
+              return Center(child: CircularProgressIndicator());
+            case FetchState.Error:
+              return ErrorMessage(
+                buttonLabel: 'Tap to retry',
+                description: 'An unexpected has occurred',
+                onRetryPressed: vm.gotoNextPage,
+              );
+            default:
+              return RefreshIndicator(
+                onRefresh: vm.refreshPost,
+                child: PostList(
+                  gotoNextPage: vm.gotoNextPage,
+                  fetchNewPost: vm.fetchNewPost,
+                  fetchMoreState: vm.fetchMoreState,
+                  twts: vm.twts,
+                ),
+              );
           }
-
-          return RefreshIndicator(
-            onRefresh: timelineViewModel.refreshPost,
-            child: PostList(
-              isBottomListLoading: timelineViewModel.isBottomListLoading,
-              gotoNextPage: _page,
-              fetchNewPost: timelineViewModel.fetchNewPost,
-              twts: timelineViewModel.twts,
-            ),
-          );
         },
       ),
     );

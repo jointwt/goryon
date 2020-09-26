@@ -57,31 +57,30 @@ class AuthViewModel {
   }
 }
 
+enum FetchState { Loading, Done, Error }
+
 class TimelineViewModel extends ChangeNotifier {
-  TimelineViewModel(this._api) {
-    _twts = [];
-    _isEntireListLoading = false;
-    _isBottomListLoading = false;
-  }
+  TimelineViewModel(this._api);
 
   final Api _api;
-  bool _isEntireListLoading;
-  bool _isBottomListLoading;
   PagedResponse _lastTimelineResponse;
-  List<Twt> _twts;
 
-  bool get isEntireListLoading => _isEntireListLoading;
-  bool get isBottomListLoading => _isBottomListLoading;
+  FetchState _mainListState = FetchState.Done;
+  FetchState _fetchMoreState = FetchState.Done;
+  List<Twt> _twts = [];
+
+  FetchState get mainListState => _mainListState;
+  FetchState get fetchMoreState => _fetchMoreState;
 
   List<Twt> get twts => _twts;
 
-  set isEntireListLoading(bool isLoading) {
-    _isEntireListLoading = isLoading;
+  set mainListState(FetchState fetchState) {
+    _mainListState = fetchState;
     notifyListeners();
   }
 
-  set isBottomListLoading(bool isLoading) {
-    _isBottomListLoading = isLoading;
+  set fetchMoreState(FetchState fetchState) {
+    _fetchMoreState = fetchState;
     notifyListeners();
   }
 
@@ -92,50 +91,60 @@ class TimelineViewModel extends ChangeNotifier {
   }
 
   void fetchNewPost() async {
-    isEntireListLoading = true;
+    mainListState = FetchState.Loading;
 
     try {
       _lastTimelineResponse = await _api.timeline(0);
       _twts = _lastTimelineResponse.twts;
+    } catch (e) {
+      mainListState = FetchState.Error;
     } finally {
-      isEntireListLoading = false;
+      mainListState = FetchState.Done;
     }
   }
 
   void gotoNextPage() async {
     if (_lastTimelineResponse.pagerResponse.currentPage ==
-        _lastTimelineResponse.pagerResponse.maxPages) {
+            _lastTimelineResponse.pagerResponse.maxPages &&
+        _fetchMoreState == FetchState.Loading) {
       return;
     }
 
-    isBottomListLoading = true;
+    fetchMoreState = FetchState.Loading;
     try {
       final page = _lastTimelineResponse.pagerResponse.currentPage + 1;
       _lastTimelineResponse = await _api.timeline(page);
       _twts = [..._twts, ..._lastTimelineResponse.twts];
+    } catch (e) {
+      fetchMoreState = FetchState.Error;
     } finally {
-      isBottomListLoading = false;
+      fetchMoreState = FetchState.Done;
     }
   }
 }
 
 class DiscoverViewModel extends ChangeNotifier {
-  DiscoverViewModel(this._api) {
-    _twts = [];
-    _isBottomListLoading = false;
-  }
+  DiscoverViewModel(this._api);
 
   final Api _api;
-  bool _isBottomListLoading;
-  PagedResponse _lastTimelineResponse;
-  List<Twt> _twts;
+  FetchState _mainListState = FetchState.Done;
+  FetchState _fetchMoreState = FetchState.Done;
 
-  bool get isBottomListLoading => _isBottomListLoading;
+  PagedResponse _lastTimelineResponse;
+  List<Twt> _twts = [];
 
   List<Twt> get twts => _twts;
 
-  set isBottomListLoading(bool isLoading) {
-    _isBottomListLoading = isLoading;
+  FetchState get mainListState => _mainListState;
+  FetchState get fetchMoreState => _fetchMoreState;
+
+  set mainListState(FetchState fetchState) {
+    _mainListState = fetchState;
+    notifyListeners();
+  }
+
+  set fetchMoreState(FetchState fetchState) {
+    _fetchMoreState = fetchState;
     notifyListeners();
   }
 
@@ -145,19 +154,36 @@ class DiscoverViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> gotoNextPage() async {
+  void fetchNewPost() async {
+    mainListState = FetchState.Loading;
+
+    try {
+      _lastTimelineResponse = await _api.discover(0);
+      _twts = _lastTimelineResponse.twts;
+    } catch (e) {
+      mainListState = FetchState.Error;
+    } finally {
+      mainListState = FetchState.Done;
+    }
+  }
+
+  void gotoNextPage() async {
     if (_lastTimelineResponse.pagerResponse.currentPage ==
-        _lastTimelineResponse.pagerResponse.maxPages) {
+            _lastTimelineResponse.pagerResponse.maxPages &&
+        _fetchMoreState == FetchState.Loading) {
       return;
     }
 
-    isBottomListLoading = true;
+    fetchMoreState = FetchState.Loading;
+    await Future.delayed(Duration(seconds: 10));
     try {
       final page = _lastTimelineResponse.pagerResponse.currentPage + 1;
       _lastTimelineResponse = await _api.discover(page);
       _twts = [..._twts, ..._lastTimelineResponse.twts];
+    } catch (e) {
+      fetchMoreState = FetchState.Error;
     } finally {
-      isBottomListLoading = false;
+      fetchMoreState = FetchState.Done;
     }
   }
 }
