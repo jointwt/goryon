@@ -100,6 +100,7 @@ class TimelineViewModel extends ChangeNotifier {
       mainListState = FetchState.Done;
     } catch (e) {
       mainListState = FetchState.Error;
+      rethrow;
     }
   }
 
@@ -117,6 +118,7 @@ class TimelineViewModel extends ChangeNotifier {
       fetchMoreState = FetchState.Done;
     } catch (e) {
       fetchMoreState = FetchState.Error;
+      rethrow;
     }
   }
 }
@@ -161,6 +163,7 @@ class DiscoverViewModel extends ChangeNotifier {
       mainListState = FetchState.Done;
     } catch (e) {
       mainListState = FetchState.Error;
+      rethrow;
     }
   }
 
@@ -171,7 +174,6 @@ class DiscoverViewModel extends ChangeNotifier {
     }
 
     fetchMoreState = FetchState.Loading;
-    await Future.delayed(Duration(seconds: 5));
     try {
       final page = _lastTimelineResponse.pagerResponse.currentPage + 1;
       _lastTimelineResponse = await _api.discover(page);
@@ -179,6 +181,7 @@ class DiscoverViewModel extends ChangeNotifier {
       fetchMoreState = FetchState.Done;
     } catch (e) {
       fetchMoreState = FetchState.Error;
+      rethrow;
     }
   }
 }
@@ -208,7 +211,6 @@ class ProfileViewModel extends ChangeNotifier {
   PagedResponse _lastTimelineResponse;
   List<Twt> _twts = [];
 
-  FetchState _mainListState = FetchState.Done;
   FetchState _fetchMoreState = FetchState.Done;
 
   List<Twt> get twts => _twts;
@@ -277,11 +279,10 @@ class ProfileViewModel extends ChangeNotifier {
       final page = _lastTimelineResponse.pagerResponse.currentPage + 1;
       _lastTimelineResponse = await _api.getUserTwts(page, profile.username);
       _twts = [..._twts, ..._lastTimelineResponse.twts];
+      fetchMoreState = FetchState.Done;
     } catch (e) {
       fetchMoreState = FetchState.Error;
-      return;
-    } finally {
-      fetchMoreState = FetchState.Done;
+      rethrow;
     }
   }
 }

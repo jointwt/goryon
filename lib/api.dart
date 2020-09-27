@@ -106,9 +106,6 @@ class Api {
   }
 
   Future<PagedResponse> discover(int page) async {
-    if (page == 2) {
-      throw Exception();
-    }
     final _user = await user;
     final response = await _httpClient.post(
       _user.profile.uri.replace(path: "/api/v1/discover"),
