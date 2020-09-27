@@ -214,7 +214,8 @@ class _PostListState extends State<PostList> {
 
   void initiateLoadMoreOnScroll() {
     if (_scrollController.position.pixels >
-        _scrollController.position.maxScrollExtent * 0.9) {
+            _scrollController.position.maxScrollExtent * 0.9 &&
+        widget.fetchMoreState == FetchState.Done) {
       widget.gotoNextPage();
     }
   }
@@ -424,28 +425,78 @@ class _PostListState extends State<PostList> {
             childCount: widget.twts.length,
           ),
         ),
-        if (widget.fetchMoreState == FetchState.Loading)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 64.0),
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
-          )
+        SliverToBoxAdapter(
+          child: Builder(
+            builder: (context) {
+              switch (widget.fetchMoreState) {
+                case FetchState.Loading:
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 64.0),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                case FetchState.Error:
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 32.0),
+                    child: UnexpectedErrorMessage(
+                      onRetryPressed: widget.gotoNextPage,
+                    ),
+                  );
+                default:
+                  return SizedBox.shrink();
+              }
+            },
+          ),
+        )
       ],
     );
   }
 }
 
-class ErrorMessage extends StatelessWidget {
+class UnexpectedErrorMessage extends StatelessWidget {
   final VoidCallback onRetryPressed;
   final String description;
   final String buttonLabel;
-  const ErrorMessage({
+  const UnexpectedErrorMessage({
     Key key,
     this.onRetryPressed,
     this.buttonLabel,
+    this.description,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final strings = context.watch<AppStrings>();
+    return ErrorMessage(
+      onButtonPressed: onRetryPressed,
+      description: Column(
+        children: [
+          Text(
+            description ?? strings.unexpectedError,
+            style: Theme.of(context).textTheme.bodyText1,
+          ),
+          SizedBox(height: 32),
+        ],
+      ),
+      buttonChild: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.refresh),
+          SizedBox(width: 8),
+          Text(buttonLabel ?? strings.tapToRetry),
+        ],
+      ),
+    );
+  }
+}
+
+class ErrorMessage extends StatelessWidget {
+  final VoidCallback onButtonPressed;
+  final Widget description;
+  final Widget buttonChild;
+  const ErrorMessage({
+    Key key,
+    this.onButtonPressed,
+    this.buttonChild,
     this.description,
   }) : super(key: key);
 
@@ -455,12 +506,11 @@ class ErrorMessage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(description),
-          SizedBox(height: 32),
+          description,
           RaisedButton(
             color: Theme.of(context).colorScheme.error,
-            onPressed: onRetryPressed,
-            child: Text(buttonLabel),
+            onPressed: onButtonPressed,
+            child: buttonChild,
           )
         ],
       ),

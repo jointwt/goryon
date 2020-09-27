@@ -25,7 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _fetchProfileFuture = _fetchProfile().then((_) async {
-      return await _fetchNewPost();
+      await context.read<ProfileViewModel>().refreshPost();
     });
   }
 
@@ -66,23 +66,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       );
       rethrow;
-    }
-  }
-
-  Future<void> _fetchNewPost() async {
-    try {
-      await context.read<ProfileViewModel>().refreshPost();
-    } on http.ClientException catch (e) {
-      Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
-      rethrow;
-    }
-  }
-
-  void _page(BuildContext context) async {
-    try {
-      await context.read<ProfileViewModel>().gotoNextPage();
-    } on http.ClientException catch (e) {
-      Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
 
@@ -290,7 +273,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final profileViewModel = context.watch<ProfileViewModel>();
+    final vm = context.watch<ProfileViewModel>();
     final user = context.watch<User>();
     return FutureBuilder(
       future: _fetchProfileFuture,
@@ -298,7 +281,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
             appBar: AppBar(
-              title: Text(profileViewModel.name),
+              title: Text(vm.name),
             ),
             body: Center(
               child: CircularProgressIndicator(),
@@ -309,7 +292,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (snapshot.hasError) {
           return Scaffold(
             appBar: AppBar(
-              title: Text(profileViewModel.name),
+              title: Text(vm.name),
             ),
             body: Center(
               child: Column(
@@ -337,9 +320,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             builder: (context) => FloatingActionButton(
               child: Icon(Icons.add),
               onPressed: () async {
-                var mention = '${profileViewModel.profile.mention} ';
-                if (user.profile.username ==
-                    profileViewModel.profile.username) {
+                var mention = '${vm.profile.mention} ';
+                if (user.profile.username == vm.profile.username) {
                   mention = "";
                 }
 
@@ -350,16 +332,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ) ??
                     false) {
-                  _fetchNewPost();
+                  await context.read<ProfileViewModel>().refreshPost();
                 }
               },
             ),
           ),
           body: PostList(
-            // isBottomListLoading: profileViewModel.isBottomListLoading,
-            gotoNextPage: () => _page(context),
-            fetchNewPost: profileViewModel.refreshPost,
-            twts: profileViewModel.twts,
+            gotoNextPage: vm.gotoNextPage,
+            fetchNewPost: vm.refreshPost,
+            twts: vm.twts,
+            fetchMoreState: vm.fetchMoreState,
             topSlivers: buildSlivers(),
           ),
         );

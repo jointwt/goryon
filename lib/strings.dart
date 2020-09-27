@@ -15,4 +15,7 @@ class AppStrings {
 
   String failLaunch = 'Failed to launch';
   String failLaunchImageToBrowser = 'Failed to launch image in browser';
+
+  String unexpectedError = 'An unexpected error has occurred';
+  String tapToRetry = 'Tap to retry';
 }

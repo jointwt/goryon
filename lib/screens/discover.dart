@@ -48,9 +48,7 @@ class _DiscoverState extends State<Discover> {
             case FetchState.Loading:
               return Center(child: CircularProgressIndicator());
             case FetchState.Error:
-              return ErrorMessage(
-                buttonLabel: 'Tap to retry',
-                description: 'An unexpected has occurred',
+              return UnexpectedErrorMessage(
                 onRetryPressed: vm.fetchNewPost,
               );
 

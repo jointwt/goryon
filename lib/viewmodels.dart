@@ -96,17 +96,16 @@ class TimelineViewModel extends ChangeNotifier {
     try {
       _lastTimelineResponse = await _api.timeline(0);
       _twts = _lastTimelineResponse.twts;
+
+      mainListState = FetchState.Done;
     } catch (e) {
       mainListState = FetchState.Error;
-    } finally {
-      mainListState = FetchState.Done;
     }
   }
 
   void gotoNextPage() async {
     if (_lastTimelineResponse.pagerResponse.currentPage ==
-            _lastTimelineResponse.pagerResponse.maxPages &&
-        _fetchMoreState == FetchState.Loading) {
+        _lastTimelineResponse.pagerResponse.maxPages) {
       return;
     }
 
@@ -115,10 +114,9 @@ class TimelineViewModel extends ChangeNotifier {
       final page = _lastTimelineResponse.pagerResponse.currentPage + 1;
       _lastTimelineResponse = await _api.timeline(page);
       _twts = [..._twts, ..._lastTimelineResponse.twts];
+      fetchMoreState = FetchState.Done;
     } catch (e) {
       fetchMoreState = FetchState.Error;
-    } finally {
-      fetchMoreState = FetchState.Done;
     }
   }
 }
@@ -160,30 +158,27 @@ class DiscoverViewModel extends ChangeNotifier {
     try {
       _lastTimelineResponse = await _api.discover(0);
       _twts = _lastTimelineResponse.twts;
+      mainListState = FetchState.Done;
     } catch (e) {
       mainListState = FetchState.Error;
-    } finally {
-      mainListState = FetchState.Done;
     }
   }
 
   void gotoNextPage() async {
     if (_lastTimelineResponse.pagerResponse.currentPage ==
-            _lastTimelineResponse.pagerResponse.maxPages &&
-        _fetchMoreState == FetchState.Loading) {
+        _lastTimelineResponse.pagerResponse.maxPages) {
       return;
     }
 
     fetchMoreState = FetchState.Loading;
-    await Future.delayed(Duration(seconds: 10));
+    await Future.delayed(Duration(seconds: 5));
     try {
       final page = _lastTimelineResponse.pagerResponse.currentPage + 1;
       _lastTimelineResponse = await _api.discover(page);
       _twts = [..._twts, ..._lastTimelineResponse.twts];
+      fetchMoreState = FetchState.Done;
     } catch (e) {
       fetchMoreState = FetchState.Error;
-    } finally {
-      fetchMoreState = FetchState.Done;
     }
   }
 }
@@ -210,11 +205,11 @@ class ProfileViewModel extends ChangeNotifier {
   final Twter _twter;
 
   ProfileResponse _profileResponse;
-  bool _isBottomListLoading;
   PagedResponse _lastTimelineResponse;
-  List<Twt> _twts;
+  List<Twt> _twts = [];
 
-  bool get isBottomListLoading => _isBottomListLoading;
+  FetchState _mainListState = FetchState.Done;
+  FetchState _fetchMoreState = FetchState.Done;
 
   List<Twt> get twts => _twts;
 
@@ -235,15 +230,12 @@ class ProfileViewModel extends ChangeNotifier {
       _loggedInUserProfile.isFollowing(twter.uri.toString());
   bool get isProfileExternal => !_twter.isPodMember(_loggedInUserProfile.uri);
 
+  FetchState get fetchMoreState => _fetchMoreState;
+
   String get name => _twter.nick;
 
   set profileResponse(ProfileResponse profileResponse) {
     _profileResponse = profileResponse;
-    notifyListeners();
-  }
-
-  set isBottomListLoading(bool isLoading) {
-    _isBottomListLoading = isLoading;
     notifyListeners();
   }
 
@@ -257,9 +249,13 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  set fetchMoreState(FetchState fetchState) {
+    _fetchMoreState = fetchState;
+    notifyListeners();
+  }
+
   ProfileViewModel(this._api, this._twter, this._loggedInUserProfile) {
     _twts = [];
-    _isBottomListLoading = false;
   }
 
   Future<void> fetchProfile() async {
@@ -276,13 +272,16 @@ class ProfileViewModel extends ChangeNotifier {
       return;
     }
 
-    isBottomListLoading = true;
+    fetchMoreState = FetchState.Loading;
     try {
       final page = _lastTimelineResponse.pagerResponse.currentPage + 1;
       _lastTimelineResponse = await _api.getUserTwts(page, profile.username);
       _twts = [..._twts, ..._lastTimelineResponse.twts];
+    } catch (e) {
+      fetchMoreState = FetchState.Error;
+      return;
     } finally {
-      isBottomListLoading = false;
+      fetchMoreState = FetchState.Done;
     }
   }
 }
