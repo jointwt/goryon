@@ -5,7 +5,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../widgets/common_widgets.dart';
 import '../models.dart';
 import '../viewmodels.dart';
-import 'package:http/http.dart' as http;
 
 import 'newtwt.dart';
 
