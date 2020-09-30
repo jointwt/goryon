@@ -18,6 +18,7 @@ import '../screens/discover.dart';
 import '../screens/follow.dart';
 import '../screens/newtwt.dart';
 import '../screens/timeline.dart';
+import '../screens/mentions.dart';
 import '../viewmodels.dart';
 
 class Avatar extends StatelessWidget {
@@ -169,6 +170,7 @@ class AppDrawer extends StatelessWidget {
           buildListTile(context, 'Discover', Discover.routePath),
           buildListTile(context, 'Timeline', Timeline.routePath),
           buildListTile(context, 'Follow', Follow.routePath),
+          buildListTile(context, 'Mentions', Mentions.routePath),
           ListTile(
             title: Text('Log Out'),
             trailing: Icon(Icons.logout),

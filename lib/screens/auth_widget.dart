@@ -10,6 +10,7 @@ import 'discover.dart';
 import 'follow.dart';
 import 'login.dart';
 import 'timeline.dart';
+import 'mentions.dart';
 
 class AuthWidget extends StatefulWidget {
   const AuthWidget({Key key, this.snapshot}) : super(key: key);
@@ -74,6 +75,7 @@ class _HomeState extends State<Home> {
         providers: [
           ChangeNotifierProvider(create: (_) => TimelineViewModel(_api)),
           ChangeNotifierProvider(create: (_) => DiscoverViewModel(_api)),
+          ChangeNotifierProvider(create: (_) => MentionsViewModel(_api)),
           Provider(create: (_) => NewTwtViewModel(_api)),
         ],
         child: Navigator(
@@ -87,6 +89,9 @@ class _HomeState extends State<Home> {
                 break;
               case Discover.routePath:
                 builder = (_) => Discover();
+                break;
+              case Mentions.routePath:
+                builder = (_) => Mentions();
                 break;
               case Follow.routePath:
                 builder = (_) => Follow();

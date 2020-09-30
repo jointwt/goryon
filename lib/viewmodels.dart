@@ -123,6 +123,70 @@ class TimelineViewModel extends ChangeNotifier {
   }
 }
 
+class MentionsViewModel extends ChangeNotifier {
+  MentionsViewModel(this._api);
+
+  final Api _api;
+  PagedResponse _lastMentionsResponse;
+
+  FetchState _mainListState = FetchState.Done;
+  FetchState _fetchMoreState = FetchState.Done;
+  List<Twt> _twts = [];
+
+  FetchState get mainListState => _mainListState;
+  FetchState get fetchMoreState => _fetchMoreState;
+
+  List<Twt> get twts => _twts;
+
+  set mainListState(FetchState fetchState) {
+    _mainListState = fetchState;
+    notifyListeners();
+  }
+
+  set fetchMoreState(FetchState fetchState) {
+    _fetchMoreState = fetchState;
+    notifyListeners();
+  }
+
+  Future refreshPost() async {
+    _lastMentionsResponse = await _api.mentions(0);
+    _twts = _lastMentionsResponse.twts;
+    notifyListeners();
+  }
+
+  void fetchNewPost() async {
+    mainListState = FetchState.Loading;
+
+    try {
+      _lastMentionsResponse = await _api.mentions(0);
+      _twts = _lastMentionsResponse.twts;
+
+      mainListState = FetchState.Done;
+    } catch (e) {
+      mainListState = FetchState.Error;
+      rethrow;
+    }
+  }
+
+  void gotoNextPage() async {
+    if (_lastMentionsResponse.pagerResponse.currentPage ==
+        _lastMentionsResponse.pagerResponse.maxPages) {
+      return;
+    }
+
+    fetchMoreState = FetchState.Loading;
+    try {
+      final page = _lastMentionsResponse.pagerResponse.currentPage + 1;
+      _lastMentionsResponse = await _api.mentions(page);
+      _twts = [..._twts, ..._lastMentionsResponse.twts];
+      fetchMoreState = FetchState.Done;
+    } catch (e) {
+      fetchMoreState = FetchState.Error;
+      rethrow;
+    }
+  }
+}
+
 class DiscoverViewModel extends ChangeNotifier {
   DiscoverViewModel(this._api);
 

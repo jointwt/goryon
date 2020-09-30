@@ -105,6 +105,24 @@ class Api {
     return PagedResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
   }
 
+  Future<PagedResponse> mentions(int page) async {
+    final _user = await user;
+    final response = await _httpClient.post(
+      _user.profile.uri.replace(path: "/api/v1/mentions"),
+      body: jsonEncode({'page': page}),
+      headers: {
+        'Token': _user.token,
+        HttpHeaders.contentTypeHeader: ContentType.json.toString(),
+      },
+    );
+
+    if (response.statusCode >= 400) {
+      throw http.ClientException('Failed to get posts');
+    }
+
+    return PagedResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+  }
+
   Future<PagedResponse> discover(int page) async {
     final _user = await user;
     final response = await _httpClient.post(
