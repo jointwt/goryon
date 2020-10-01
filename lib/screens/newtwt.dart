@@ -183,8 +183,8 @@ class _NewTwtState extends State<NewTwt> {
                               tooltip: 'Link',
                               icon: Icon(Icons.link_sharp),
                               onPressed: () => _surroundTextSelection(
-                                '[title](https://',
-                                ')',
+                                '[',
+                                ']()',
                               ),
                             ),
                             IconButton(
