@@ -245,13 +245,12 @@ class _PostListState extends State<PostList> {
     Uri uri;
     try {
       uri = Uri.parse(link);
-      if(uri.pathSegments.last != "twtxt.txt") {
+      if (uri.pathSegments.last != "twtxt.txt") {
         return null;
       }
     } catch (e) {
       return null;
     }
-
 
     return Twter(nick: uri.fragment, uri: uri.replace(fragment: ""));
   }

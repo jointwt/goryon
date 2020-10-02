@@ -238,8 +238,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Function onTap = () {
                       setState(() {
                         _followFuture = _follow(
-                          profileViewModel.twter.nick,
-                          profileViewModel.twter.uri.toString(),
+                          profileViewModel.profile.username,
+                          profileViewModel.profile.uri.toString(),
                           context,
                         );
                       });

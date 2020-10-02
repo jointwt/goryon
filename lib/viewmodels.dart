@@ -326,7 +326,8 @@ class ProfileViewModel extends ChangeNotifier {
 
   Future<void> fetchProfile() async {
     if (isProfileExternal) {
-      profileResponse = await _api.getExternalProfile(_twter.nick, _twter.uri.toString());
+      profileResponse =
+          await _api.getExternalProfile(_twter.nick, _twter.uri.toString());
       return;
     }
     profileResponse = await _api.getProfile(_twter.nick);
