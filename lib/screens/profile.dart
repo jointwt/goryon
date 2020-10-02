@@ -367,7 +367,11 @@ class UserList extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(elevation: 0, title: Text(title), pinned: true),
+          SliverAppBar(
+            elevation: 0,
+            title: Text(title),
+            pinned: true,
+          ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {

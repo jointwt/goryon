@@ -23,9 +23,7 @@ class _TimelineState extends State<Timeline> {
     return Scaffold(
       drawer: AppDrawer(activatedRoute: Timeline.routePath),
       appBar: AppBar(
-        textTheme: Theme.of(context).textTheme,
         title: const Text('Timeline'),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
       floatingActionButton: Builder(
         builder: (context) => FloatingActionButton(

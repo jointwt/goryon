@@ -24,9 +24,7 @@ class _DiscoverState extends State<Discover> {
     return Scaffold(
       drawer: AppDrawer(activatedRoute: Discover.routePath),
       appBar: AppBar(
-        textTheme: Theme.of(context).textTheme,
         title: const Text('Discover'),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
       floatingActionButton: Builder(
         builder: (context) => FloatingActionButton(

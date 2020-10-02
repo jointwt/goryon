@@ -20,7 +20,6 @@ class _PlayPauseOverlay extends StatelessWidget {
                   child: Center(
                     child: Icon(
                       Icons.play_arrow,
-                      color: Colors.white,
                       size: 100.0,
                     ),
                   ),

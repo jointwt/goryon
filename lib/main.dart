@@ -30,20 +30,38 @@ class MyApp extends StatelessWidget {
         builder: (_, snapshot) => MaterialApp(
           debugShowCheckedModeBanner: false,
           home: AuthWidget(snapshot: snapshot),
+          // themeMode: ThemeMode.system,
+          // themeMode: ThemeMode.light,
+          themeMode: ThemeMode.dark,
+          darkTheme: ThemeData(
+            brightness: Brightness.dark,
+            accentColor: Colors.blue,
+            appBarTheme: AppBarTheme(
+              elevation: 0,
+              color: Colors.grey[850],
+              iconTheme: IconThemeData(color: Colors.white),
+              textTheme: TextTheme(
+                headline6: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
           theme: ThemeData(
             brightness: Brightness.light,
             appBarTheme: AppBarTheme(
-              brightness: Brightness.light,
-              textTheme: TextTheme(
-                headline6: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
-              ),
-              iconTheme: IconThemeData(color: Colors.black),
-              actionsIconTheme: IconThemeData(color: Colors.black),
               elevation: 0,
               color: Colors.grey[50],
+              iconTheme: IconThemeData(color: Colors.black),
+              textTheme: TextTheme(
+                headline6: TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
             inputDecorationTheme: InputDecorationTheme(
               floatingLabelBehavior: FloatingLabelBehavior.never,
