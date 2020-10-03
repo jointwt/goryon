@@ -346,7 +346,6 @@ class _PostListState extends State<PostList> {
     final user = context.watch<User>();
 
     return CustomScrollView(
-      cacheExtent: 1000,
       controller: _scrollController,
       slivers: [
         ...widget.topSlivers,
