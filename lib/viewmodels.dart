@@ -359,6 +359,8 @@ class ThemeViewModel extends ChangeNotifier {
   ThemeMode _themeMode;
 
   ThemeViewModel(this._sharedPreferences) {
+    assert(this._sharedPreferences != null);
+
     _themeMode = ThemeMode.values[
         (_sharedPreferences.getInt(ThemeViewModel.ThemeModeKey) ??
             0)]; // Uses ThemeMode.system by default
