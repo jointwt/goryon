@@ -18,14 +18,17 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemeViewModel(prefs),
-      child: MyApp(),
+    MyApp(
+      sharedPreferences: prefs,
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
+  final SharedPreferences sharedPreferences;
+
+  const MyApp({Key key, this.sharedPreferences}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final api = Api(http.Client(), FlutterSecureStorage());
@@ -35,6 +38,9 @@ class MyApp extends StatelessWidget {
         Provider.value(value: api),
         Provider(create: (_) => AppStrings()),
         Provider(create: (_) => AuthViewModel(api)),
+        ChangeNotifierProvider(
+          create: (context) => ThemeViewModel(sharedPreferences),
+        ),
       ],
       child: AuthWidgetBuilder(
         builder: (context, snapshot) => MaterialApp(
@@ -54,6 +60,18 @@ class MyApp extends StatelessWidget {
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
+              ),
+            ),
+            inputDecorationTheme: InputDecorationTheme(
+              floatingLabelBehavior: FloatingLabelBehavior.never,
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue),
+              ),
+            ),
+            buttonTheme: ButtonThemeData(
+              textTheme: ButtonTextTheme.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
             ),
           ),
