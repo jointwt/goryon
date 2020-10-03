@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api.dart';
 import 'models.dart';
@@ -349,5 +350,31 @@ class ProfileViewModel extends ChangeNotifier {
       fetchMoreState = FetchState.Error;
       rethrow;
     }
+  }
+}
+
+class ThemeViewModel extends ChangeNotifier {
+  static const String ThemeModeKey = "theme_mode";
+  final SharedPreferences _sharedPreferences;
+  ThemeMode _themeMode;
+
+  ThemeViewModel(this._sharedPreferences) {
+    _themeMode = ThemeMode.values[
+        (_sharedPreferences.getInt(ThemeViewModel.ThemeModeKey) ??
+            0)]; // Uses ThemeMode.system by default
+  }
+
+  ThemeMode get themeMode => _themeMode;
+
+  set themeMode(ThemeMode mode) {
+    _themeMode = mode;
+    _sharedPreferences.setInt(ThemeViewModel.ThemeModeKey, mode.index);
+    notifyListeners();
+  }
+
+  bool get isDarkModeEnabled => _themeMode == ThemeMode.dark;
+
+  void toggleDarkMode(bool shouldToggleDarkMode) {
+    themeMode = shouldToggleDarkMode ? ThemeMode.dark : ThemeMode.light;
   }
 }

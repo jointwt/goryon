@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api.dart';
 import 'widgets/common_widgets.dart';
@@ -11,8 +12,17 @@ import 'screens/auth_widget.dart';
 import 'strings.dart';
 import 'viewmodels.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final prefs = await SharedPreferences.getInstance();
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeViewModel(prefs),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -27,12 +37,10 @@ class MyApp extends StatelessWidget {
         Provider(create: (_) => AuthViewModel(api)),
       ],
       child: AuthWidgetBuilder(
-        builder: (_, snapshot) => MaterialApp(
+        builder: (context, snapshot) => MaterialApp(
           debugShowCheckedModeBanner: false,
           home: AuthWidget(snapshot: snapshot),
-          // themeMode: ThemeMode.system,
-          // themeMode: ThemeMode.light,
-          themeMode: ThemeMode.dark,
+          themeMode: context.watch<ThemeViewModel>().themeMode,
           darkTheme: ThemeData(
             brightness: Brightness.dark,
             accentColor: Colors.blue,

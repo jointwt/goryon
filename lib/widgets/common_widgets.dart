@@ -145,6 +145,7 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeVM = context.watch<ThemeViewModel>();
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -171,6 +172,11 @@ class AppDrawer extends StatelessWidget {
           buildListTile(context, 'Timeline', Timeline.routePath),
           buildListTile(context, 'Follow', Follow.routePath),
           buildListTile(context, 'Mentions', Mentions.routePath),
+          SwitchListTile(
+            title: Text("Dark mode"),
+            value: themeVM.isDarkModeEnabled,
+            onChanged: themeVM.toggleDarkMode,
+          ),
           ListTile(
             title: Text('Log Out'),
             trailing: Icon(Icons.logout),
