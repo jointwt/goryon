@@ -24,13 +24,13 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'twter': instance.twter,
     };
 
-AuthReponse _$AuthReponseFromJson(Map<String, dynamic> json) {
-  return AuthReponse(
+AuthResponse _$AuthResponseFromJson(Map<String, dynamic> json) {
+  return AuthResponse(
     token: json['token'] as String,
   );
 }
 
-Map<String, dynamic> _$AuthReponseToJson(AuthReponse instance) =>
+Map<String, dynamic> _$AuthResponseToJson(AuthResponse instance) =>
     <String, dynamic>{
       'token': instance.token,
     };
@@ -72,18 +72,24 @@ Twt _$TwtFromJson(Map<String, dynamic> json) {
         ? null
         : Twter.fromJson(json['twter'] as Map<String, dynamic>),
     text: json['text'] as String,
+    markdownText: json['markdownText'] as String,
     createdTime: json['created'] == null
         ? null
         : DateTime.parse(json['created'] as String),
     hash: json['hash'] as String,
+    tags: (json['tags'] as List)?.map((e) => e as String)?.toList(),
+    subject: json['subject'] as String,
   );
 }
 
 Map<String, dynamic> _$TwtToJson(Twt instance) => <String, dynamic>{
       'twter': instance.twter,
       'text': instance.text,
+      'markdownText': instance.markdownText,
       'created': instance.createdTime?.toIso8601String(),
       'hash': instance.hash,
+      'tags': instance.tags,
+      'subject': instance.subject,
     };
 
 PagedResponse _$PagedResponseFromJson(Map<String, dynamic> json) {

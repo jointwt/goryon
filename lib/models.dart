@@ -32,14 +32,14 @@ class User {
 }
 
 @JsonSerializable()
-class AuthReponse {
+class AuthResponse {
   final String token;
 
-  AuthReponse({this.token});
+  AuthResponse({this.token});
 
-  factory AuthReponse.fromJson(Map<String, dynamic> json) =>
-      _$AuthReponseFromJson(json);
-  Map<String, dynamic> toJson() => _$AuthReponseToJson(this);
+  factory AuthResponse.fromJson(Map<String, dynamic> json) =>
+      _$AuthResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$AuthResponseToJson(this);
 }
 
 @JsonSerializable()
@@ -92,28 +92,32 @@ class Twt {
   final Twter twter;
   @JsonKey(name: 'text')
   final String text;
+  @JsonKey(name: 'markdownText')
+  final String markdownText;
   @JsonKey(name: 'created')
   final DateTime createdTime;
   @JsonKey(name: 'hash')
   final String hash;
+  @JsonKey(name: 'tags')
+  final List<String> tags;
+  @JsonKey(name: 'subject')
+  final String subject;
 
   static final mentionAndHashtagExp = RegExp(r'(@|#)<([^ ]+) *([^>]+)>');
   static final mentionsExp = RegExp(r"@<(.*?) .*?>");
   static final subjectExp = RegExp(r"^(@<.*>[, ]*)*(\(.*?\))(.*)");
 
-  Twt({this.twter, this.text, this.createdTime, this.hash});
+  Twt(
+      {this.twter,
+      this.text,
+      this.markdownText,
+      this.createdTime,
+      this.hash,
+      this.tags,
+      this.subject});
 
   Set<String> get mentions =>
       mentionsExp.allMatches(text).map((e) => e.group(1)).toSet();
-
-  String get subject {
-    final match = subjectExp.firstMatch(text);
-    if (match == null) {
-      return "(#$hash)";
-    }
-
-    return match.group(2);
-  }
 
   String replyText(String usernameToExclude) {
     var _subject = subject;
@@ -131,7 +135,7 @@ class Twt {
         return "$prefix$nick";
       });
 
-      return "$mentionsStr $subject ";
+      return "$mentionsStr $_subject ";
     }
 
     return "$mentionsStr ";

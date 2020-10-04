@@ -48,7 +48,7 @@ class Api {
     final user = User(
       profile: profileResponse.profile,
       twter: profileResponse.twter,
-      token: AuthReponse.fromJson(jsonDecode(response.body)).token,
+      token: AuthResponse.fromJson(jsonDecode(response.body)).token,
     );
 
     await _flutterSecureStorage.write(key: tokenKey, value: jsonEncode(user));
