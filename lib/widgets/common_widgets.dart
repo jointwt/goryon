@@ -275,8 +275,7 @@ class _PostListState extends State<PostList> {
           if (path.extension(uri.path) == '.webm') {
             isVideoThumbnail = true;
             newUri = uri.replace(
-              path:
-                  '${path.withoutExtension(uri.path)}.${Platform.isIOS ? 'mp4' : 'webp'}',
+              path: '${path.withoutExtension(uri.path)}',
             );
           }
 
@@ -287,7 +286,12 @@ class _PostListState extends State<PostList> {
                 MaterialPageRoute(
                   builder: (context) => VideoScreen(
                     title: title,
-                    videoURL: uri.toString(),
+                    videoURL: newUri
+                        .replace(
+                          path:
+                              "${newUri.path}.${Platform.isIOS ? 'mp4' : 'webm'}",
+                        )
+                        .toString(),
                   ),
                 ),
               );
