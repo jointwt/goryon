@@ -19,6 +19,7 @@ import '../screens/follow.dart';
 import '../screens/newtwt.dart';
 import '../screens/timeline.dart';
 import '../screens/mentions.dart';
+import '../screens/videoscreen.dart';
 import '../viewmodels.dart';
 
 class Avatar extends StatelessWidget {
@@ -275,11 +276,25 @@ class _PostListState extends State<PostList> {
           if (path.extension(uri.path) == '.webm') {
             isVideoThumbnail = true;
             newUri = uri.replace(
-              path: '${path.withoutExtension(uri.path)}.webp',
+              path:
+                  '${path.withoutExtension(uri.path)}.${Platform.isIOS ? 'mp4' : 'webp'}',
             );
           }
 
           void onTap() async {
+            if (isVideoThumbnail) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => VideoScreen(
+                    title: title,
+                    videoURL: uri.toString(),
+                  ),
+                ),
+              );
+              return;
+            }
+
             if (await canLaunch(uri.toString())) {
               await launch(uri.toString());
               return;
