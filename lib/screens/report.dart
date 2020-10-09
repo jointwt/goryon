@@ -36,89 +36,123 @@ class _ReportState extends State<Report> {
   ];
 
   Widget buildForm() {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          RichText(
-            text: TextSpan(
-                text: 'We take all reports very seriously! ' +
-                    ' If you are unsure about our community guidelines, please read the ',
-                children: [
-                  TextSpan(
-                    text: 'Abuse Policy',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
+    return Builder(
+      builder: (context) {
+        return Form(
+          key: _formKey,
+          child: ListView(
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+            children: [
+              RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  text: 'We take all reports very seriously! ' +
+                      ' If you are unsure about our community guidelines, please read the ',
+                  children: [
+                    TextSpan(
+                      style: DefaultTextStyle.of(context).style.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
+                      text: 'Abuse Policy',
                     ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextFormField(
+                  validator: FormValidators.requiredField,
+                  decoration: InputDecoration(labelText: 'Your name'),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextFormField(
+                  validator: FormValidators.requiredField,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(labelText: 'Your email address'),
+                ),
+              ),
+              Text(
+                'Please provide your name and email address so we may contact you ' +
+                    'for further information (if necessary) and so we can inform you of the outcome.',
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: DropdownButton(
+                  isExpanded: true,
+                  items: _abuseTypes,
+                  value: _abuseValue,
+                  onChanged: (abuseValue) {
+                    setState(
+                      () {
+                        _abuseValue = abuseValue;
+                      },
+                    );
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextFormField(
+                  validator: FormValidators.requiredField,
+                  initialValue: widget.initialMessage,
+                  keyboardType: TextInputType.multiline,
+                  minLines: 2,
+                  maxLines: 5,
+                  decoration: InputDecoration(
+                    labelText: 'Message',
+                    alignLabelWithHint: true,
                   ),
-                ]),
-          ),
-          TextFormField(
-            validator: FormValidators.requiredField,
-            decoration: InputDecoration(labelText: 'Your name'),
-          ),
-          TextFormField(
-            validator: FormValidators.requiredField,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(labelText: 'Your email address'),
-          ),
-          Text(
-            'Please provide your name and email address so we may contact you ' +
-                'for further information (if necessary) and so we can inform you of the outcome.',
-          ),
-          DropdownButton<String>(
-            items: _abuseTypes,
-            onChanged: (abuseValue) {
-              setState(() {
-                _abuseValue = abuseValue;
-              });
-            },
-          ),
-          TextFormField(
-            validator: FormValidators.requiredField,
-            initialValue: widget.initialMessage,
-            decoration: InputDecoration(labelText: 'Message'),
-          ),
-          RichText(
-            text: TextSpan(
-                text: 'Please provide examples by linking to the content in question.' +
-                    ' You may paste the /twt/xxxxxxx URLs or simply a list of the hashes.' +
-                    ' Please also give a brief reason why you believe the community guidelines and therefore',
-                children: [
-                  TextSpan(
-                    text: 'Abuse Policy',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: RichText(
+                  text: TextSpan(
+                    style: DefaultTextStyle.of(context).style,
+                    text: 'Please provide examples by linking to the content in question.' +
+                        ' You may paste the /twt/xxxxxxx URLs or simply a list of the hashes.' +
+                        ' Please also give a brief reason why you believe the community guidelines and therefore ',
                     children: [
-                      TextSpan(text: ' is in direct violation'),
+                      TextSpan(
+                        text: 'Abuse Policy',
+                        style: DefaultTextStyle.of(context).style.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            ),
+                        children: [
+                          TextSpan(
+                            text: ' is in direct violation',
+                            style: DefaultTextStyle.of(context).style,
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                ]),
-          )
-        ],
-      ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: RaisedButton(
+                  onPressed: () {},
+                  child: Text('Submit'),
+                ),
+              ),
+              SizedBox(height: 64),
+            ],
+          ),
+        );
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          if (_formKey.currentState.validate()) {}
-        },
-        label: Text('Submit'),
-      ),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: buildForm(),
-          )
-        ],
-      ),
+      appBar: AppBar(title: Text('Report abuse')),
+      body: buildForm(),
     );
   }
 }
