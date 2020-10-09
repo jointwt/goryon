@@ -1,4 +1,4 @@
-package com.jointwtxt.goryon
+package com.jointwt.goryon
 
 import io.flutter.embedding.android.FlutterActivity
 
