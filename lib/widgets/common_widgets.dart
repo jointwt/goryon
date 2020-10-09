@@ -193,6 +193,49 @@ class AppDrawer extends StatelessWidget {
   }
 }
 
+class PostActions extends StatelessWidget {
+  final Twt twt;
+
+  const PostActions({Key key, @required this.twt}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          children: [
+            ListTile(
+              leading: Icon(Icons.volume_mute_rounded),
+              title: Text('Mute ${twt.twter.nick}'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.report),
+              title: const Text('Report twt'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Center(
+            child: RaisedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}
+
 class PostList extends StatefulWidget {
   const PostList({
     Key key,
@@ -373,49 +416,85 @@ class _PostListState extends State<PostList> {
               final twt = widget.twts[idx];
 
               return ListTile(
+                contentPadding: EdgeInsets.fromLTRB(16, 16, 8, 6),
                 isThreeLine: true,
-                title: GestureDetector(
-                  onTap: () {
-                    pushToProfileScreen(context, twt.twter);
-                  },
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Avatar(imageUrl: twt.twter.avatar.toString()),
-                      SizedBox(width: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        pushToProfileScreen(context, twt.twter);
+                      },
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            twt.twter.nick,
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                          SizedBox(height: 4),
-                          Row(
+                          Avatar(imageUrl: twt.twter.avatar.toString()),
+                          SizedBox(width: 8),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                Jiffy(twt.createdTime.toLocal()).format('jm'),
-                                style: Theme.of(context).textTheme.bodyText2,
+                                twt.twter.nick,
+                                style: Theme.of(context).textTheme.headline6,
                               ),
-                              SizedBox(width: 8),
-                              Text(
-                                '(${Jiffy(twt.createdTime).fromNow()})',
-                                style: Theme.of(context).textTheme.bodyText2,
+                              SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Text(
+                                    Jiffy(twt.createdTime.toLocal())
+                                        .format('jm'),
+                                    style:
+                                        Theme.of(context).textTheme.bodyText2,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    '(${Jiffy(twt.createdTime).fromNow()})',
+                                    style:
+                                        Theme.of(context).textTheme.bodyText2,
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: Material(
+                        child: InkWell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Icon(
+                              Icons.more_vert,
+                              size: 16,
+                            ),
+                          ),
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0),
+                              ),
+                              builder: (context) => Container(
+                                height: 400,
+                                child: PostActions(twt: twt),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    )
+                  ],
                 ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
                       child: buildMarkdownBody(context, twt),
                     ),
+                    Divider(height: 0),
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         shape: StadiumBorder(),
@@ -440,7 +519,6 @@ class _PostListState extends State<PostList> {
                         style: Theme.of(context).textTheme.button,
                       ),
                     ),
-                    Divider(height: 0),
                   ],
                 ),
               );
