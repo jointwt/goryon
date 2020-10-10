@@ -309,7 +309,7 @@ class Api {
         'url': url,
         'name': name,
         'email': email,
-        'category': category,
+        'subject': category,
         'message': messsage,
       }),
       headers: {

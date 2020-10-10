@@ -1,5 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../api.dart';
 import '../form_validators.dart';
 import '../widgets/common_widgets.dart';
@@ -73,6 +75,13 @@ class _ReportState extends State<Report> {
     }
   }
 
+  TapGestureRecognizer buildAbusePageTap() {
+    return TapGestureRecognizer()
+      ..onTap = () {
+        launch('https://twtxt.net/abuse');
+      };
+  }
+
   Widget buildForm() {
     return Builder(
       builder: (context) {
@@ -88,12 +97,13 @@ class _ReportState extends State<Report> {
                       ' If you are unsure about our community guidelines, please read the ',
                   children: [
                     TextSpan(
-                      style: DefaultTextStyle.of(context).style.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
-                          ),
-                      text: 'Abuse Policy',
-                    ),
+                        style: DefaultTextStyle.of(context).style.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            ),
+                        recognizer: buildAbusePageTap(),
+                        text: 'Abuse Policy',
+                        children: [TextSpan(text: '.')]),
                   ],
                 ),
               ),
@@ -162,9 +172,10 @@ class _ReportState extends State<Report> {
                               fontWeight: FontWeight.bold,
                               color: Colors.blue,
                             ),
+                        recognizer: buildAbusePageTap(),
                         children: [
                           TextSpan(
-                            text: ' is in direct violation',
+                            text: ' is in direct violation.',
                             style: DefaultTextStyle.of(context).style,
                           ),
                         ],
@@ -183,11 +194,14 @@ class _ReportState extends State<Report> {
                     onPressed: isLoading
                         ? null
                         : () {
-                            if (_formKey.currentState.validate()) {
-                              setState(() {
-                                _submitFuture = submitForm(context);
-                              });
+                            if (!_formKey.currentState.validate()) {
+                              return;
                             }
+
+                            _formKey.currentState.save();
+                            setState(() {
+                              _submitFuture = submitForm(context);
+                            });
                           },
                     child: isLoading ? SizedSpinner() : Text('Submit'),
                   );
