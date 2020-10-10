@@ -292,4 +292,34 @@ class Api {
 
     return PagedResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
   }
+
+  Future<void> submitReport(
+    String nick,
+    String url,
+    String name,
+    String email,
+    String category,
+    String messsage,
+  ) async {
+    final _user = await user;
+    final response = await _httpClient.post(
+      _user.profile.uri.replace(path: "/api/v1/report"),
+      body: jsonEncode({
+        'nick': nick,
+        'url': url,
+        'name': name,
+        'email': email,
+        'category': category,
+        'message': messsage,
+      }),
+      headers: {
+        'Token': _user.token,
+        HttpHeaders.contentTypeHeader: ContentType.json.toString(),
+      },
+    );
+
+    if (response.statusCode >= 400) {
+      throw http.ClientException('Failed to get posts');
+    }
+  }
 }

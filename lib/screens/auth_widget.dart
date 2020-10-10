@@ -97,9 +97,6 @@ class _HomeState extends State<Home> {
               case Follow.routePath:
                 builder = (_) => Follow();
                 break;
-              case Report.routePath:
-                builder = (_) => Report();
-                break;
               default:
                 throw Exception('Invalid route: ${settings.name}');
             }

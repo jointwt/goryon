@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goryon/screens/report.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -258,6 +259,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     );
                   },
                 );
+              },
+            ),
+            ListTile(
+              dense: true,
+              title: Text('Report'),
+              leading: Icon(Icons.report),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      fullscreenDialog: true,
+                      builder: (context) {
+                        return Report(
+                          nick: profileViewModel.profile.username,
+                          url: profileViewModel.profile.uri.toString(),
+                        );
+                      },
+                    ));
               },
             ),
             Padding(

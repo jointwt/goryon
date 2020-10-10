@@ -175,7 +175,6 @@ class AppDrawer extends StatelessWidget {
           buildListTile(context, 'Timeline', Timeline.routePath),
           buildListTile(context, 'Follow', Follow.routePath),
           buildListTile(context, 'Mentions', Mentions.routePath),
-          buildListTile(context, 'Report', Report.routePath),
           SwitchListTile(
             title: Text("Dark mode"),
             value: themeVM.isDarkModeEnabled &&
