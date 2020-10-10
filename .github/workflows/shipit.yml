@@ -28,7 +28,7 @@ jobs:
           ruby-version: '2.x'
       - uses: subosito/flutter-action@v1
         with:
-          flutter-version: '1.21.0-7.0.pre'
+          flutter-version: '1.23.0-7.0.pre'
           channel: 'dev'
       - name: Install gem packages
         run: |
