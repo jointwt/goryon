@@ -642,6 +642,10 @@ class DropdownFormField<T> extends FormField<T> {
             return Column(
               children: [
                 DropdownButton<T>(
+                  onTap: () {
+                    // https://github.com/flutter/flutter/issues/47128#issuecomment-627551073
+                    FocusManager.instance.primaryFocus.unfocus();
+                  },
                   value: state.value,
                   isExpanded: isExpanded,
                   items: dropDownItems,
