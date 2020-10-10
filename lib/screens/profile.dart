@@ -93,13 +93,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       await context.read<ProfileViewModel>().unmute();
       Scaffold.of(context).showSnackBar(
         SnackBar(
-          content: Text('Successfully muted user/feed'),
+          content: Text('Successfully unmuted user/feed'),
         ),
       );
     } catch (e) {
       Scaffold.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to mute user/feed'),
+          content: Text('Failed to unmute user/feed'),
         ),
       );
       rethrow;
