@@ -198,6 +198,8 @@ class Profile {
   final Map<String, String> following;
   @JsonKey(name: 'Tagline', defaultValue: '')
   final String tagline;
+  @JsonKey(name: 'Muted')
+  final bool muted;
 
   Profile(
     this.type,
@@ -206,6 +208,7 @@ class Profile {
     this.followers,
     this.following,
     this.tagline,
+    this.muted,
   );
 
   String get mention {
