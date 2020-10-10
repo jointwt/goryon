@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:goryon/screens/report.dart';
+import 'package:share/share.dart';
 import 'package:goryon/strings.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -21,6 +21,7 @@ import '../screens/newtwt.dart';
 import '../screens/timeline.dart';
 import '../screens/mentions.dart';
 import '../screens/videoscreen.dart';
+import '../screens/report.dart';
 import '../viewmodels.dart';
 
 class Avatar extends StatelessWidget {
@@ -174,6 +175,7 @@ class AppDrawer extends StatelessWidget {
           buildListTile(context, 'Timeline', Timeline.routePath),
           buildListTile(context, 'Follow', Follow.routePath),
           buildListTile(context, 'Mentions', Mentions.routePath),
+          buildListTile(context, 'Report', Report.routePath),
           SwitchListTile(
             title: Text("Dark mode"),
             value: themeVM.isDarkModeEnabled &&
@@ -213,16 +215,18 @@ class PostActions extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.report),
-              title: const Text('Report twt'),
+              leading: Icon(Icons.share),
+              title: const Text('Share'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Report(),
-                  ),
-                );
+                Share.share(context
+                    .read<User>()
+                    .profile
+                    .uri
+                    .replace(
+                      path: "/twt/${twt.hash}",
+                    )
+                    .toString());
               },
             ),
           ],
@@ -624,4 +628,63 @@ class ErrorMessage extends StatelessWidget {
       ),
     );
   }
+}
+
+class DropdownFormField<T> extends FormField<T> {
+  DropdownFormField(
+    BuildContext context,
+    List<DropdownMenuItem<T>> dropDownItems, {
+    FormFieldSetter<T> onSaved,
+    FormFieldValidator<T> validator,
+    T initialValue,
+    bool autovalidate = false,
+    bool isExpanded = false,
+    Widget hint,
+  }) : super(
+          onSaved: onSaved,
+          validator: validator,
+          initialValue: initialValue,
+          autovalidate: autovalidate,
+          builder: (FormFieldState<T> state) {
+            final theme = Theme.of(context);
+            return Column(
+              children: [
+                DropdownButton<T>(
+                  value: state.value,
+                  isExpanded: isExpanded,
+                  items: dropDownItems,
+                  underline: Container(
+                    height: 1.0,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: state.hasError
+                              ? theme.errorColor
+                              : Color(0xFFBDBDBD),
+                          width: state.hasError ? 1.0 : 0.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  hint: hint,
+                  onChanged: (changedValue) {
+                    state.didChange(changedValue);
+                  },
+                ),
+                if (state.hasError) ...[
+                  SizedBox(height: 2),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      state.errorText,
+                      style: theme.textTheme.caption.copyWith(
+                        color: theme.errorColor,
+                      ),
+                    ),
+                  )
+                ]
+              ],
+            );
+          },
+        );
 }

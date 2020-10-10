@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:goryon/form_validators.dart';
+import '../form_validators.dart';
+import '../widgets/common_widgets.dart';
 
 class Report extends StatefulWidget {
+  static const String routePath = "/report";
   final String initialMessage;
 
   const Report({Key key, this.initialMessage = ''}) : super(key: key);
@@ -10,13 +12,8 @@ class Report extends StatefulWidget {
 }
 
 class _ReportState extends State<Report> {
-  String _abuseValue = 'select';
   final _formKey = GlobalKey<FormState>();
   final _abuseTypes = [
-    DropdownMenuItem(
-      child: Text('Select type of abuse...'),
-      value: 'select',
-    ),
     DropdownMenuItem(
       child: Text('Illegal activities'),
       value: 'illegal',
@@ -80,17 +77,12 @@ class _ReportState extends State<Report> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: DropdownButton(
+                child: DropdownFormField(
+                  context,
+                  _abuseTypes,
                   isExpanded: true,
-                  items: _abuseTypes,
-                  value: _abuseValue,
-                  onChanged: (abuseValue) {
-                    setState(
-                      () {
-                        _abuseValue = abuseValue;
-                      },
-                    );
-                  },
+                  hint: Text('Select type of abuse...'),
+                  validator: FormValidators.requiredField,
                 ),
               ),
               Padding(
@@ -136,7 +128,9 @@ class _ReportState extends State<Report> {
               Align(
                 alignment: Alignment.centerRight,
                 child: RaisedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    _formKey.currentState.validate();
+                  },
                   child: Text('Submit'),
                 ),
               ),
@@ -152,6 +146,7 @@ class _ReportState extends State<Report> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Report abuse')),
+      drawer: AppDrawer(activatedRoute: Report.routePath),
       body: buildForm(),
     );
   }
