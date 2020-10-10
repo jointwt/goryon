@@ -514,19 +514,16 @@ class _PostListState extends State<PostList> {
                         shape: StadiumBorder(),
                       ),
                       onPressed: () async {
-                        if (await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => NewTwt(
-                                  initialText: twt.replyText(
-                                    user.profile.username,
-                                  ),
-                                ),
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => NewTwt(
+                              initialText: twt.replyText(
+                                user.profile.username,
                               ),
-                            ) ??
-                            false) {
-                          widget.fetchNewPost();
-                        }
+                            ),
+                          ),
+                        );
                       },
                       child: Text(
                         "Reply",
