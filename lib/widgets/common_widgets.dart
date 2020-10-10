@@ -21,7 +21,6 @@ import '../screens/newtwt.dart';
 import '../screens/timeline.dart';
 import '../screens/mentions.dart';
 import '../screens/videoscreen.dart';
-import '../screens/report.dart';
 import '../viewmodels.dart';
 
 class Avatar extends StatelessWidget {
@@ -206,13 +205,6 @@ class PostActions extends StatelessWidget {
       children: [
         Column(
           children: [
-            ListTile(
-              leading: Icon(Icons.volume_mute_rounded),
-              title: Text('Mute ${twt.twter.nick}'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
             ListTile(
               leading: Icon(Icons.share),
               title: const Text('Share'),
@@ -483,11 +475,12 @@ class _PostListState extends State<PostList> {
                           onTap: () {
                             showModalBottomSheet(
                               context: context,
+                              isScrollControlled: true,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16.0),
                               ),
                               builder: (context) => Container(
-                                height: 400,
+                                height: 200,
                                 child: PostActions(twt: twt),
                               ),
                             );

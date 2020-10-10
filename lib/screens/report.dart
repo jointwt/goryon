@@ -173,25 +173,23 @@ class _ReportState extends State<Report> {
                   ),
                 ),
               ),
+              SizedBox(height: 16),
               FutureBuilder(
                 future: _submitFuture,
                 builder: (context, snapshot) {
                   final isLoading =
                       snapshot.connectionState == ConnectionState.waiting;
-                  return Align(
-                    alignment: Alignment.centerRight,
-                    child: RaisedButton(
-                      onPressed: isLoading
-                          ? null
-                          : () {
-                              if (_formKey.currentState.validate()) {
-                                setState(() {
-                                  _submitFuture = submitForm(context);
-                                });
-                              }
-                            },
-                      child: isLoading ? SizedSpinner() : Text('Submit'),
-                    ),
+                  return RaisedButton(
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            if (_formKey.currentState.validate()) {
+                              setState(() {
+                                _submitFuture = submitForm(context);
+                              });
+                            }
+                          },
+                    child: isLoading ? SizedSpinner() : Text('Submit'),
                   );
                 },
               ),

@@ -319,7 +319,7 @@ class Api {
     );
 
     if (response.statusCode >= 400) {
-      throw http.ClientException('Failed to get posts');
+      throw http.ClientException('Failed to post report');
     }
   }
 }
