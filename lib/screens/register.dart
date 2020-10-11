@@ -58,7 +58,6 @@ class _RegisterState extends State<Register> {
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
-                Text(''),
                 SizedBox(height: 16),
                 TextFormField(
                   validator: FormValidators.requiredField,
