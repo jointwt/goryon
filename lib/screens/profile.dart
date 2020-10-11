@@ -234,21 +234,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }
               },
             ),
-            Consumer<User>(
-              builder: (context, user, _) {
-                if (profileViewModel.isViewingOwnProfile) {
-                  return Container();
-                }
+            if (!profileViewModel.isViewingOwnProfile) ...[
+              Consumer<User>(
+                builder: (context, user, _) {
+                  if (profileViewModel.isFollowing) {
+                    return FutureBuilder(
+                      future: _unFollowFuture,
+                      builder: (context, snapshot) {
+                        Widget leading = Icon(Icons.person_remove);
+                        Function onTap = () {
+                          setState(() {
+                            _unFollowFuture = _unFollow(
+                              profileViewModel.twter.nick,
+                              context,
+                            );
+                          });
+                        };
 
-                if (profileViewModel.isFollowing) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          leading = SizedSpinner();
+                          onTap = null;
+                        }
+
+                        return ListTile(
+                          dense: true,
+                          title: Text('Unfollow'),
+                          leading: leading,
+                          onTap: onTap,
+                        );
+                      },
+                    );
+                  }
+
                   return FutureBuilder(
-                    future: _unFollowFuture,
+                    future: _followFuture,
                     builder: (context, snapshot) {
-                      Widget leading = Icon(Icons.person_remove);
+                      Widget leading = Icon(Icons.person_add_alt);
                       Function onTap = () {
                         setState(() {
-                          _unFollowFuture = _unFollow(
-                            profileViewModel.twter.nick,
+                          _followFuture = _follow(
+                            profileViewModel.profile.username,
+                            profileViewModel.profile.uri.toString(),
                             context,
                           );
                         });
@@ -261,97 +288,70 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       return ListTile(
                         dense: true,
-                        title: Text('Unfollow'),
+                        title: Text('Follow'),
                         leading: leading,
                         onTap: onTap,
                       );
                     },
                   );
-                }
-
-                return FutureBuilder(
-                  future: _followFuture,
-                  builder: (context, snapshot) {
-                    Widget leading = Icon(Icons.person_add_alt);
-                    Function onTap = () {
-                      setState(() {
-                        _followFuture = _follow(
-                          profileViewModel.profile.username,
-                          profileViewModel.profile.uri.toString(),
-                          context,
+                },
+              ),
+              ListTile(
+                dense: true,
+                title: Text('Report'),
+                leading: Icon(Icons.report),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      fullscreenDialog: true,
+                      builder: (context) {
+                        return Report(
+                          nick: profileViewModel.profile.username,
+                          url: profileViewModel.profile.uri.toString(),
                         );
-                      });
-                    };
-
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      leading = SizedSpinner();
-                      onTap = null;
-                    }
-
+                      },
+                    ),
+                  );
+                },
+              ),
+              FutureBuilder(
+                future: _muteFuture,
+                builder: (context, snapshot) {
+                  final isLoading =
+                      snapshot.connectionState == ConnectionState.waiting;
+                  if (profileViewModel.profile.muted) {
                     return ListTile(
                       dense: true,
-                      title: Text('Follow'),
-                      leading: leading,
-                      onTap: onTap,
+                      onTap: isLoading
+                          ? null
+                          : () {
+                              setState(() {
+                                _muteFuture = _unmute(context);
+                              });
+                            },
+                      title: Text('Unmute'),
+                      leading:
+                          isLoading ? SizedSpinner() : Icon(Icons.volume_down),
                     );
-                  },
-                );
-              },
-            ),
-            ListTile(
-              dense: true,
-              title: Text('Report'),
-              leading: Icon(Icons.report),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    fullscreenDialog: true,
-                    builder: (context) {
-                      return Report(
-                        nick: profileViewModel.profile.username,
-                        url: profileViewModel.profile.uri.toString(),
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
-            FutureBuilder(
-              future: _muteFuture,
-              builder: (context, snapshot) {
-                final isLoading =
-                    snapshot.connectionState == ConnectionState.waiting;
-                if (profileViewModel.profile.muted) {
+                  }
+
                   return ListTile(
-                    dense: true,
                     onTap: isLoading
                         ? null
                         : () {
                             setState(() {
-                              _muteFuture = _unmute(context);
+                              _muteFuture = _mute(context);
                             });
                           },
-                    title: Text('Unmute'),
+                    dense: true,
+                    title: Text('Mute'),
                     leading:
-                        isLoading ? SizedSpinner() : Icon(Icons.volume_down),
+                        isLoading ? SizedSpinner() : Icon(Icons.volume_mute),
                   );
-                }
-
-                return ListTile(
-                  onTap: isLoading
-                      ? null
-                      : () {
-                          setState(() {
-                            _muteFuture = _mute(context);
-                          });
-                        },
-                  dense: true,
-                  title: Text('Mute'),
-                  leading: isLoading ? SizedSpinner() : Icon(Icons.volume_mute),
-                );
-              },
-            ),
+                },
+              ),
+            ],
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Divider(),
