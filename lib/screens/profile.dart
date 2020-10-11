@@ -34,6 +34,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await context.read<ProfileViewModel>().fetchProfile();
   }
 
+  Future _refreshPost() async {
+    try {
+      await context.read<ProfileViewModel>().refreshPost();
+    } catch (e) {
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to refresh post'),
+        ),
+      );
+    }
+  }
+
   Future _follow(String nick, String url, BuildContext context) async {
     try {
       await context.read<AuthViewModel>().follow(nick, url);
@@ -73,6 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future _mute(BuildContext context) async {
     try {
       await context.read<ProfileViewModel>().mute();
+      await context.read<ProfileViewModel>().refreshPost();
       Scaffold.of(context).showSnackBar(
         SnackBar(
           content: Text('Successfully muted user/feed'),
@@ -91,6 +104,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future _unmute(BuildContext context) async {
     try {
       await context.read<ProfileViewModel>().unmute();
+      await context.read<ProfileViewModel>().refreshPost();
       Scaffold.of(context).showSnackBar(
         SnackBar(
           content: Text('Successfully unmuted user/feed'),
@@ -442,12 +456,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
           ),
-          body: PostList(
-            gotoNextPage: vm.gotoNextPage,
-            fetchNewPost: vm.refreshPost,
-            twts: vm.twts,
-            fetchMoreState: vm.fetchMoreState,
-            topSlivers: buildSlivers(),
+          body: RefreshIndicator(
+            onRefresh: _refreshPost,
+            child: PostList(
+              gotoNextPage: vm.gotoNextPage,
+              fetchNewPost: vm.refreshPost,
+              twts: vm.twts,
+              fetchMoreState: vm.fetchMoreState,
+              topSlivers: buildSlivers(),
+            ),
           ),
         );
       },
