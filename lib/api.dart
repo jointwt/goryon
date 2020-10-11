@@ -222,6 +222,7 @@ class Api {
   }
 
   Future<ProfileResponse> getProfile(String name, [Uri uri]) async {
+    final _user = await user;
     Uri _uri;
 
     if (uri != null) {
@@ -233,6 +234,10 @@ class Api {
 
     final response = await _httpClient.get(
       _uri.replace(path: "/api/v1/profile/$name"),
+      headers: {
+        'Token': _user.token,
+        HttpHeaders.contentTypeHeader: ContentType.json.toString(),
+      },
     );
 
     if (response.statusCode >= 400) {
@@ -320,6 +325,43 @@ class Api {
 
     if (response.statusCode >= 400) {
       throw http.ClientException('Failed to post report');
+    }
+  }
+
+  Future<void> mute(String nick, String url) async {
+    final _user = await user;
+    final response = await _httpClient.post(
+      _user.profile.uri.replace(path: "/api/v1/mute"),
+      body: jsonEncode({
+        'nick': nick,
+        'url': url,
+      }),
+      headers: {
+        'Token': _user.token,
+        HttpHeaders.contentTypeHeader: ContentType.json.toString(),
+      },
+    );
+
+    if (response.statusCode >= 400) {
+      throw http.ClientException('Failed to mute user/feed');
+    }
+  }
+
+  Future<void> unmute(String nick) async {
+    final _user = await user;
+    final response = await _httpClient.post(
+      _user.profile.uri.replace(path: "/api/v1/unmute"),
+      body: jsonEncode({
+        'nick': nick,
+      }),
+      headers: {
+        'Token': _user.token,
+        HttpHeaders.contentTypeHeader: ContentType.json.toString(),
+      },
+    );
+
+    if (response.statusCode >= 400) {
+      throw http.ClientException('Failed to unmute user/feed');
     }
   }
 }

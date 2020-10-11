@@ -20,6 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future _fetchProfileFuture;
   Future _followFuture;
   Future _unFollowFuture;
+  Future _muteFuture;
 
   @override
   void initState() {
@@ -63,6 +64,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
       Scaffold.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to unfollow $nick'),
+        ),
+      );
+      rethrow;
+    }
+  }
+
+  Future _mute(BuildContext context) async {
+    try {
+      await context.read<ProfileViewModel>().mute();
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Successfully muted user/feed'),
+        ),
+      );
+    } catch (e) {
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to mute user/feed'),
+        ),
+      );
+      rethrow;
+    }
+  }
+
+  Future _unmute(BuildContext context) async {
+    try {
+      await context.read<ProfileViewModel>().unmute();
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Successfully unmuted user/feed'),
+        ),
+      );
+    } catch (e) {
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to unmute user/feed'),
         ),
       );
       rethrow;
@@ -267,16 +304,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
               leading: Icon(Icons.report),
               onTap: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      fullscreenDialog: true,
-                      builder: (context) {
-                        return Report(
-                          nick: profileViewModel.profile.username,
-                          url: profileViewModel.profile.uri.toString(),
-                        );
-                      },
-                    ));
+                  context,
+                  MaterialPageRoute(
+                    fullscreenDialog: true,
+                    builder: (context) {
+                      return Report(
+                        nick: profileViewModel.profile.username,
+                        url: profileViewModel.profile.uri.toString(),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+            FutureBuilder(
+              future: _muteFuture,
+              builder: (context, snapshot) {
+                final isLoading =
+                    snapshot.connectionState == ConnectionState.waiting;
+                if (profileViewModel.profile.muted) {
+                  return ListTile(
+                    dense: true,
+                    onTap: isLoading
+                        ? null
+                        : () {
+                            setState(() {
+                              _muteFuture = _unmute(context);
+                            });
+                          },
+                    title: Text('Unmute'),
+                    leading:
+                        isLoading ? SizedSpinner() : Icon(Icons.volume_down),
+                  );
+                }
+
+                return ListTile(
+                  onTap: isLoading
+                      ? null
+                      : () {
+                          setState(() {
+                            _muteFuture = _mute(context);
+                          });
+                        },
+                  dense: true,
+                  title: Text('Mute'),
+                  leading: isLoading ? SizedSpinner() : Icon(Icons.volume_mute),
+                );
               },
             ),
             Padding(
@@ -369,14 +442,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 }
 
 class UserList extends StatelessWidget {
-  final Map<String, String> usersAndURL;
-  final String title;
-
   const UserList({
     Key key,
     @required this.usersAndURL,
     @required this.title,
   }) : super(key: key);
+
+  final String title;
+  final Map<String, String> usersAndURL;
 
   List<MapEntry<String, String>> get _usersAndURLEntry =>
       usersAndURL.entries.toList();

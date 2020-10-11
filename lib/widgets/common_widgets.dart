@@ -197,43 +197,55 @@ class AppDrawer extends StatelessWidget {
 class PostActions extends StatelessWidget {
   final Twt twt;
 
-  const PostActions({Key key, @required this.twt}) : super(key: key);
+  const PostActions({
+    Key key,
+    @required this.twt,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          children: [
-            ListTile(
-              leading: Icon(Icons.share),
-              title: const Text('Share'),
-              onTap: () {
-                Navigator.pop(context);
-                Share.share(context
-                    .read<User>()
-                    .profile
-                    .uri
-                    .replace(
-                      path: "/twt/${twt.hash}",
-                    )
-                    .toString());
-              },
-            ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: Center(
-            child: RaisedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Cancel'),
-            ),
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Icon(Icons.drag_handle),
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.share),
+                title: const Text('Share'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Share.share(context
+                      .read<User>()
+                      .profile
+                      .uri
+                      .replace(
+                        path: "/twt/${twt.hash}",
+                      )
+                      .toString());
+                },
+              ),
+            ],
           ),
-        )
-      ],
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Center(
+              child: RaisedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Cancel'),
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
@@ -480,7 +492,6 @@ class _PostListState extends State<PostList> {
                                 borderRadius: BorderRadius.circular(16.0),
                               ),
                               builder: (context) => Container(
-                                height: 200,
                                 child: PostActions(twt: twt),
                               ),
                             );
@@ -503,19 +514,16 @@ class _PostListState extends State<PostList> {
                         shape: StadiumBorder(),
                       ),
                       onPressed: () async {
-                        if (await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => NewTwt(
-                                  initialText: twt.replyText(
-                                    user.profile.username,
-                                  ),
-                                ),
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => NewTwt(
+                              initialText: twt.replyText(
+                                user.profile.username,
                               ),
-                            ) ??
-                            false) {
-                          widget.fetchNewPost();
-                        }
+                            ),
+                          ),
+                        );
                       },
                       child: Text(
                         "Reply",
@@ -629,14 +637,12 @@ class DropdownFormField<T> extends FormField<T> {
     FormFieldSetter<T> onSaved,
     FormFieldValidator<T> validator,
     T initialValue,
-    bool autovalidate = false,
     bool isExpanded = false,
     Widget hint,
   }) : super(
           onSaved: onSaved,
           validator: validator,
           initialValue: initialValue,
-          autovalidate: autovalidate,
           builder: (FormFieldState<T> state) {
             final theme = Theme.of(context);
             return Column(

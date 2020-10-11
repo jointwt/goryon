@@ -1,1 +1,10 @@
-Goryon for twt
+Goryon is a Twtxt client that connects to any Twt.social pod (whether you run one yourself, use a friend’s or let us host it for you!). If you’ve ever used Twitter™ before you’ll feel right at home, BUT, there are important differences!
+
+- We do not collect user data
+- We do not modify your timeline
+- We do not serve you ads
+- Your social media is your own
+
+Goryon is a client of Twtxt and Twt.social pods (what we call individual instances) allows you to have all the benefits of traditional social media where you can follow your friends, post short-form content (Twts), long-form content (Blogs) read news and have meaningful discourse and exchange including photos, videos and audio!
+
+Join Twt.social today! Its FREE!

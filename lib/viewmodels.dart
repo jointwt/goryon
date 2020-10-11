@@ -351,6 +351,16 @@ class ProfileViewModel extends ChangeNotifier {
       rethrow;
     }
   }
+
+  Future<void> mute() async {
+    await _api.mute(profile.username, profile.uri.toString());
+    await fetchProfile();
+  }
+
+  Future<void> unmute() async {
+    await _api.unmute(profile.username);
+    await fetchProfile();
+  }
 }
 
 class ThemeViewModel extends ChangeNotifier {
