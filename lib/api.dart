@@ -43,7 +43,10 @@ class Api {
       throw http.ClientException('Failed to login');
     }
 
-    final profileResponse = await getProfile(username, podURI);
+    final authResponse = AuthResponse.fromJson(jsonDecode(response.body));
+
+    final profileResponse =
+        await getProfile(username, token: authResponse.token, podURI: podURI);
 
     final user = User(
       profile: profileResponse.profile,
@@ -59,8 +62,7 @@ class Api {
   Future<User> loginUsingCachedData() async {
     var _user = await user;
 
-    final profileResponse =
-        await getProfile(_user.profile.username, _user.profile.uri);
+    final profileResponse = await getProfile(_user.profile.username);
 
     _user = _user.copyWith(
         profile: profileResponse.profile, twter: profileResponse.twter);
@@ -221,24 +223,28 @@ class Api {
     return jsonDecode(response.body)['Path'];
   }
 
-  Future<ProfileResponse> getProfile(String name, [Uri uri]) async {
-    final _user = await user;
-    Uri _uri;
+  Future<ProfileResponse> getProfile(String name,
+      {String token, Uri podURI}) async {
+    http.Response response;
 
-    if (uri != null) {
-      _uri = uri;
+    if (token != null && podURI != null) {
+      response = await _httpClient.get(
+        podURI.replace(path: "/api/v1/profile/$name"),
+        headers: {
+          'Token': token,
+          HttpHeaders.contentTypeHeader: ContentType.json.toString(),
+        },
+      );
     } else {
       final _user = await user;
-      _uri = _user.profile.uri;
+      response = await _httpClient.get(
+        _user.profile.uri.replace(path: "/api/v1/profile/$name"),
+        headers: {
+          'Token': _user.token,
+          HttpHeaders.contentTypeHeader: ContentType.json.toString(),
+        },
+      );
     }
-
-    final response = await _httpClient.get(
-      _uri.replace(path: "/api/v1/profile/$name"),
-      headers: {
-        'Token': _user.token,
-        HttpHeaders.contentTypeHeader: ContentType.json.toString(),
-      },
-    );
 
     if (response.statusCode >= 400) {
       throw http.ClientException(

@@ -45,82 +45,80 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Twtxt')),
-      body: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: AutofillGroup(
-          child: Form(
-            key: _formKey,
-            child: ListView(
-              children: [
-                SizedBox(height: 16),
-                TextFormField(
-                  validator: requiredFieldValidator,
-                  controller: _usernameTextController,
-                  autofillHints: [AutofillHints.username],
-                  decoration: InputDecoration(
-                    labelText: 'Username',
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                  ),
+      body: AutofillGroup(
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.all(32.0),
+            children: [
+              SizedBox(height: 16),
+              TextFormField(
+                validator: requiredFieldValidator,
+                controller: _usernameTextController,
+                autofillHints: [AutofillHints.username],
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
                 ),
-                TextFormField(
-                  validator: requiredFieldValidator,
-                  controller: _passwordTextController,
-                  autofillHints: [AutofillHints.password],
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                  ),
+              ),
+              TextFormField(
+                validator: requiredFieldValidator,
+                controller: _passwordTextController,
+                autofillHints: [AutofillHints.password],
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
                 ),
-                TextFormField(
-                  keyboardType: TextInputType.url,
-                  autofillHints: [AutofillHints.url],
-                  validator: requiredFieldValidator,
-                  controller: _podURLController,
-                  decoration: InputDecoration(
-                    labelText: 'Pod URL',
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                  ),
+              ),
+              TextFormField(
+                keyboardType: TextInputType.url,
+                autofillHints: [AutofillHints.url],
+                validator: requiredFieldValidator,
+                controller: _podURLController,
+                decoration: InputDecoration(
+                  labelText: 'Pod URL',
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
                 ),
-                SizedBox(height: 16),
-                FutureBuilder(
-                  future: _loginFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    }
+              ),
+              SizedBox(height: 16),
+              FutureBuilder(
+                future: _loginFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
 
-                    return RaisedButton(
-                      onPressed: () {
-                        if (!_formKey.currentState.validate()) return;
+                  return RaisedButton(
+                    onPressed: () {
+                      if (!_formKey.currentState.validate()) return;
 
-                        setState(() {
-                          _loginFuture = _handleLogin(context);
-                        });
-                      },
-                      child: const Text('Login'),
-                    );
-                  },
-                ),
-                SizedBox(height: 8),
-                Builder(builder: (context) {
-                  return FlatButton(
-                    onPressed: () async {
-                      if (await Navigator.push(context,
-                              MaterialPageRoute(builder: (_) => Register())) ??
-                          false) {
-                        Scaffold.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                            'Successfully registered an account. You can now login',
-                          ),
-                        ));
-                      }
+                      setState(() {
+                        _loginFuture = _handleLogin(context);
+                      });
                     },
-                    child: const Text('Register'),
+                    child: const Text('Login'),
                   );
-                })
-              ],
-            ),
+                },
+              ),
+              SizedBox(height: 8),
+              Builder(builder: (context) {
+                return FlatButton(
+                  onPressed: () async {
+                    if (await Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => Register())) ??
+                        false) {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                          'Successfully registered an account. You can now login',
+                        ),
+                      ));
+                    }
+                  },
+                  child: const Text('Register'),
+                );
+              })
+            ],
           ),
         ),
       ),
