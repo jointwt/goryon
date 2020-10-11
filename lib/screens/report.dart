@@ -11,10 +11,12 @@ class Report extends StatefulWidget {
   final String initialMessage;
   final String nick;
   final String url;
+  final void Function() afterSubmit;
 
   const Report({
     Key key,
     this.initialMessage = '',
+    @required this.afterSubmit,
     @required this.nick,
     @required this.url,
   }) : super(key: key);
@@ -59,12 +61,7 @@ class _ReportState extends State<Report> {
             _categoryValue,
             _messageController.value.text,
           );
-      Scaffold.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Your report has successfully submitted'),
-        ),
-      );
-      _formKey.currentState.reset();
+      widget.afterSubmit();
     } catch (e) {
       Scaffold.of(context).showSnackBar(
         SnackBar(

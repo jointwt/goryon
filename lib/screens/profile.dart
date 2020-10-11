@@ -296,22 +296,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   );
                 },
               ),
-              ListTile(
-                dense: true,
-                title: Text('Report'),
-                leading: Icon(Icons.report),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      fullscreenDialog: true,
-                      builder: (context) {
-                        return Report(
-                          nick: profileViewModel.profile.username,
-                          url: profileViewModel.profile.uri.toString(),
-                        );
-                      },
-                    ),
+              Builder(
+                builder: (context) {
+                  return ListTile(
+                    dense: true,
+                    title: Text('Report'),
+                    leading: Icon(Icons.report),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          fullscreenDialog: true,
+                          builder: (_) {
+                            return Report(
+                              nick: profileViewModel.profile.username,
+                              url: profileViewModel.profile.uri.toString(),
+                              afterSubmit: () {
+                                Scaffold.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Your report has successfully submitted',
+                                    ),
+                                  ),
+                                );
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
+                        ),
+                      );
+                    },
                   );
                 },
               ),
