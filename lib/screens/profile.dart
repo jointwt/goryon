@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:goryon/screens/report.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../api.dart';
 import '../models.dart';
@@ -21,7 +20,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future _followFuture;
   Future _unFollowFuture;
   Future _muteFuture;
-  bool _infoExpanded = true;
 
   @override
   void initState() {
