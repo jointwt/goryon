@@ -417,7 +417,7 @@ class _PostListState extends State<PostList> {
           ),
         );
       },
-      data: twt.parsedMDText,
+      data: twt.cleanMDText,
       extensionSet: md.ExtensionSet.gitHubWeb,
     );
   }
