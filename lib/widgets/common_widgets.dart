@@ -324,6 +324,12 @@ class _PostListState extends State<PostList> {
     final appStrings = context.read<AppStrings>();
 
     return MarkdownBody(
+      styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+        blockquoteDecoration: BoxDecoration(
+          color: Theme.of(context).backgroundColor,
+          borderRadius: BorderRadius.circular(4.0),
+        ),
+      ),
       imageBuilder: (uri, title, alt) => Builder(
         builder: (context) {
           Uri thumbnailURI = uri;
@@ -411,7 +417,7 @@ class _PostListState extends State<PostList> {
           ),
         );
       },
-      data: twt.markdownText,
+      data: twt.parsedMDText,
       extensionSet: md.ExtensionSet.gitHubWeb,
     );
   }

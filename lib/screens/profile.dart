@@ -235,172 +235,140 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       SliverToBoxAdapter(
-        child: ExpansionPanelList(
-          expansionCallback: (panelIndex, isExpanded) {
-            setState(() {
-              _infoExpanded = !isExpanded;
-            });
-          },
+        child: Column(
           children: [
-            ExpansionPanel(
-              canTapOnHeader: true,
-              isExpanded: _infoExpanded,
-              body: Column(
-                children: [
-                  ListTile(
-                    dense: true,
-                    title: Text('Twtxt'),
-                    leading: Icon(Icons.link),
-                    onTap: () async {
-                      final link = profileViewModel.profile.uri.toString();
-                      if (await canLaunch(link)) {
-                        await launch(link);
-                        return;
-                      }
-                    },
-                  ),
-                  if (!profileViewModel.isViewingOwnProfile) ...[
-                    Consumer<User>(
-                      builder: (context, user, _) {
-                        if (profileViewModel.isFollowing) {
-                          return FutureBuilder(
-                            future: _unFollowFuture,
-                            builder: (context, snapshot) {
-                              Widget leading = Icon(Icons.person_remove);
-                              Function onTap = () {
-                                setState(() {
-                                  _unFollowFuture = _unFollow(
-                                    profileViewModel.twter.nick,
-                                    context,
-                                  );
-                                });
-                              };
-
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                leading = SizedSpinner();
-                                onTap = null;
-                              }
-
-                              return ListTile(
-                                dense: true,
-                                title: Text('Unfollow'),
-                                leading: leading,
-                                onTap: onTap,
-                              );
-                            },
-                          );
-                        }
-
-                        return FutureBuilder(
-                          future: _followFuture,
-                          builder: (context, snapshot) {
-                            Widget leading = Icon(Icons.person_add_alt);
-                            Function onTap = () {
-                              setState(() {
-                                _followFuture = _follow(
-                                  profileViewModel.profile.username,
-                                  profileViewModel.profile.uri.toString(),
-                                  context,
-                                );
-                              });
-                            };
-
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              leading = SizedSpinner();
-                              onTap = null;
-                            }
-
-                            return ListTile(
-                              dense: true,
-                              title: Text('Follow'),
-                              leading: leading,
-                              onTap: onTap,
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    Builder(
-                      builder: (context) {
-                        return ListTile(
-                          dense: true,
-                          title: Text('Report'),
-                          leading: Icon(Icons.report),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                fullscreenDialog: true,
-                                builder: (_) {
-                                  return Report(
-                                    nick: profileViewModel.profile.username,
-                                    url:
-                                        profileViewModel.profile.uri.toString(),
-                                    afterSubmit: () {
-                                      Scaffold.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            'Your report has successfully submitted',
-                                          ),
-                                        ),
-                                      );
-                                      Navigator.pop(context);
-                                    },
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    FutureBuilder(
-                      future: _muteFuture,
+            if (!profileViewModel.isViewingOwnProfile) ...[
+              Consumer<User>(
+                builder: (context, user, _) {
+                  if (profileViewModel.isFollowing) {
+                    return FutureBuilder(
+                      future: _unFollowFuture,
                       builder: (context, snapshot) {
-                        final isLoading =
-                            snapshot.connectionState == ConnectionState.waiting;
-                        if (profileViewModel.profile.muted) {
-                          return ListTile(
-                            dense: true,
-                            onTap: isLoading
-                                ? null
-                                : () {
-                                    setState(() {
-                                      _muteFuture = _unmute(context);
-                                    });
-                                  },
-                            title: Text('Unmute'),
-                            leading: isLoading
-                                ? SizedSpinner()
-                                : Icon(Icons.volume_down),
-                          );
+                        Widget leading = Icon(Icons.person_remove);
+                        Function onTap = () {
+                          setState(() {
+                            _unFollowFuture = _unFollow(
+                              profileViewModel.twter.nick,
+                              context,
+                            );
+                          });
+                        };
+
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          leading = SizedSpinner();
+                          onTap = null;
                         }
 
                         return ListTile(
-                          onTap: isLoading
-                              ? null
-                              : () {
-                                  setState(() {
-                                    _muteFuture = _mute(context);
-                                  });
-                                },
                           dense: true,
-                          title: Text('Mute'),
-                          leading: isLoading
-                              ? SizedSpinner()
-                              : Icon(Icons.volume_mute),
+                          title: Text('Unfollow'),
+                          leading: leading,
+                          onTap: onTap,
                         );
                       },
-                    ),
-                  ],
-                ],
+                    );
+                  }
+
+                  return FutureBuilder(
+                    future: _followFuture,
+                    builder: (context, snapshot) {
+                      Widget leading = Icon(Icons.person_add_alt);
+                      Function onTap = () {
+                        setState(() {
+                          _followFuture = _follow(
+                            profileViewModel.profile.username,
+                            profileViewModel.profile.uri.toString(),
+                            context,
+                          );
+                        });
+                      };
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        leading = SizedSpinner();
+                        onTap = null;
+                      }
+
+                      return ListTile(
+                        dense: true,
+                        title: Text('Follow'),
+                        leading: leading,
+                        onTap: onTap,
+                      );
+                    },
+                  );
+                },
               ),
-              headerBuilder: (BuildContext context, bool isExpanded) {
-                return Container();
-              },
-            )
+              Builder(
+                builder: (context) {
+                  return ListTile(
+                    dense: true,
+                    title: Text('Report'),
+                    leading: Icon(Icons.report),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          fullscreenDialog: true,
+                          builder: (_) {
+                            return Report(
+                              nick: profileViewModel.profile.username,
+                              url: profileViewModel.profile.uri.toString(),
+                              afterSubmit: () {
+                                Scaffold.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Your report has successfully submitted',
+                                    ),
+                                  ),
+                                );
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+              FutureBuilder(
+                future: _muteFuture,
+                builder: (context, snapshot) {
+                  final isLoading =
+                      snapshot.connectionState == ConnectionState.waiting;
+                  if (profileViewModel.profile.muted) {
+                    return ListTile(
+                      dense: true,
+                      onTap: isLoading
+                          ? null
+                          : () {
+                              setState(() {
+                                _muteFuture = _unmute(context);
+                              });
+                            },
+                      title: Text('Unmute'),
+                      leading:
+                          isLoading ? SizedSpinner() : Icon(Icons.volume_down),
+                    );
+                  }
+
+                  return ListTile(
+                    onTap: isLoading
+                        ? null
+                        : () {
+                            setState(() {
+                              _muteFuture = _mute(context);
+                            });
+                          },
+                    dense: true,
+                    title: Text('Mute'),
+                    leading:
+                        isLoading ? SizedSpinner() : Icon(Icons.volume_mute),
+                  );
+                },
+              ),
+            ],
           ],
         ),
       ),

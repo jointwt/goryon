@@ -107,6 +107,8 @@ class Twt {
   static final mentionsExp = RegExp(r"@<(.*?) .*?>");
   static final subjectExp = RegExp(r"^(@<.*>[, ]*)*(\(.*?\))(.*)");
 
+  String get parsedMDText => markdownText.replaceAll("\u2028", "\n").trim();
+
   Twt(
       {this.twter,
       this.text,
