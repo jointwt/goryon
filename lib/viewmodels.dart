@@ -293,8 +293,6 @@ class ProfileViewModel extends ChangeNotifier {
   bool get hasFollowers => followerCount > 0;
 
   bool get isViewingOwnProfile => _loggedInUserProfile.uri == twter.uri;
-  bool get isFollowing =>
-      _loggedInUserProfile.isFollowing(profile.uri.toString());
   bool get isProfileExternal => !_twter.isPodMember(_loggedInUserProfile.uri);
 
   FetchState get fetchMoreState => _fetchMoreState;

@@ -202,6 +202,10 @@ class Profile {
   final String tagline;
   @JsonKey(name: 'Muted')
   final bool muted;
+  @JsonKey(name: 'FollowedBy')
+  final bool followedBy;
+  @JsonKey(name: 'Follows')
+  final bool follows;
 
   Profile(
     this.type,
@@ -211,6 +215,8 @@ class Profile {
     this.following,
     this.tagline,
     this.muted,
+    this.followedBy,
+    this.follows,
   );
 
   String get mention {

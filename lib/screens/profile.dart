@@ -120,11 +120,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   List<Widget> buildSlivers() {
-    final profileViewModel = context.read<ProfileViewModel>();
+    final vm = context.read<ProfileViewModel>();
 
     return [
       SliverAppBar(
-        title: Text(profileViewModel.name),
+        title: Text(vm.name),
         pinned: true,
         elevation: 0,
       ),
@@ -140,20 +140,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Flexible(
                     flex: 1,
                     child: AvatarWithBorder(
-                      imageUrl: profileViewModel.twter.avatar.toString(),
+                      imageUrl: vm.twter.avatar.toString(),
                       radius: 40,
                       borderThickness: 4,
                       borderColor: Theme.of(context).primaryColor,
                     ),
                   ),
-                  if (!profileViewModel.isProfileExternal)
+                  if (!vm.isProfileExternal)
                     Flexible(
                       flex: 2,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           GestureDetector(
-                            onTap: profileViewModel.hasFollowing
+                            onTap: vm.hasFollowing
                                 ? () {
                                     Navigator.push(
                                       context,
@@ -161,8 +161,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         fullscreenDialog: true,
                                         builder: (context) {
                                           return UserList(
-                                            usersAndURL:
-                                                profileViewModel.following,
+                                            usersAndURL: vm.following,
                                             title: 'Following',
                                           );
                                         },
@@ -173,7 +172,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Column(
                               children: [
                                 Text(
-                                  profileViewModel.followingCount.toString(),
+                                  vm.followingCount.toString(),
                                   style: Theme.of(context).textTheme.headline6,
                                 ),
                                 Text('Following')
@@ -181,7 +180,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: profileViewModel.hasFollowers
+                            onTap: vm.hasFollowers
                                 ? () {
                                     Navigator.push(
                                       context,
@@ -189,8 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         fullscreenDialog: true,
                                         builder: (context) {
                                           return UserList(
-                                            usersAndURL:
-                                                profileViewModel.followers,
+                                            usersAndURL: vm.followers,
                                             title: 'Followers',
                                           );
                                         },
@@ -201,7 +199,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Column(
                               children: [
                                 Text(
-                                  profileViewModel.followerCount.toString(),
+                                  vm.followerCount.toString(),
                                   style: Theme.of(context).textTheme.headline6,
                                 ),
                                 Text('Followers')
@@ -214,20 +212,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
               SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    flex: 2,
-                    child: Text(profileViewModel.profile.tagline),
-                  ),
-                  Flexible(
-                    flex: 1,
-                    child: SizedBox(),
-                  ),
-                ],
-              ),
-              SizedBox(height: 8),
+              if (vm.profile.tagline.isNotEmpty) Text(vm.profile.tagline),
+              SizedBox(height: 4),
             ],
           ),
         ),
@@ -235,10 +221,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
       SliverToBoxAdapter(
         child: Column(
           children: [
-            if (!profileViewModel.isViewingOwnProfile) ...[
+            Builder(
+              builder: (context) {
+                final username = vm.profile.username;
+                if (vm.profile.followedBy) {
+                  return ListTile(
+                    dense: true,
+                    title: Text('@$username follows you'),
+                  );
+                }
+                return ListTile(
+                  dense: true,
+                  title: Text(
+                    '@$username does not follow you',
+                  ),
+                  subtitle: Text('They may not see your replies!'),
+                );
+              },
+            ),
+            if (!vm.isViewingOwnProfile) ...[
               Consumer<User>(
                 builder: (context, user, _) {
-                  if (profileViewModel.isFollowing) {
+                  if (vm.profile.follows) {
                     return FutureBuilder(
                       future: _unFollowFuture,
                       builder: (context, snapshot) {
@@ -246,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Function onTap = () {
                           setState(() {
                             _unFollowFuture = _unFollow(
-                              profileViewModel.twter.nick,
+                              vm.twter.nick,
                               context,
                             );
                           });
@@ -275,8 +279,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Function onTap = () {
                         setState(() {
                           _followFuture = _follow(
-                            profileViewModel.profile.username,
-                            profileViewModel.profile.uri.toString(),
+                            vm.profile.username,
+                            vm.profile.uri.toString(),
                             context,
                           );
                         });
@@ -310,8 +314,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           fullscreenDialog: true,
                           builder: (_) {
                             return Report(
-                              nick: profileViewModel.profile.username,
-                              url: profileViewModel.profile.uri.toString(),
+                              nick: vm.profile.username,
+                              url: vm.profile.uri.toString(),
                               afterSubmit: () {
                                 Scaffold.of(context).showSnackBar(
                                   SnackBar(
@@ -335,7 +339,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 builder: (context, snapshot) {
                   final isLoading =
                       snapshot.connectionState == ConnectionState.waiting;
-                  if (profileViewModel.profile.muted) {
+                  if (vm.profile.muted) {
                     return ListTile(
                       dense: true,
                       onTap: isLoading
