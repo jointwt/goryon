@@ -9,6 +9,7 @@ import '../viewmodels.dart';
 import 'discover.dart';
 import 'follow.dart';
 import 'login.dart';
+import 'settings.dart';
 import 'timeline.dart';
 import 'mentions.dart';
 
@@ -95,6 +96,9 @@ class _HomeState extends State<Home> {
                 break;
               case Follow.routePath:
                 builder = (_) => Follow();
+                break;
+              case Settings.routePath:
+                builder = (_) => Settings();
                 break;
               default:
                 throw Exception('Invalid route: ${settings.name}');

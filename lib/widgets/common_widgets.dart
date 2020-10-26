@@ -21,6 +21,7 @@ import '../screens/newtwt.dart';
 import '../screens/timeline.dart';
 import '../screens/mentions.dart';
 import '../screens/videoscreen.dart';
+import '../screens/settings.dart';
 import '../viewmodels.dart';
 
 class Avatar extends StatelessWidget {
@@ -37,6 +38,14 @@ class Avatar extends StatelessWidget {
   Widget build(BuildContext context) {
     if (imageUrl == null) {
       return CircleAvatar(radius: radius);
+    }
+
+    // Treat image as FileImage if imageURL does not contain a scheme
+    if (!Uri.parse(imageUrl).hasScheme) {
+      return CircleAvatar(
+        backgroundImage: FileImage(File(imageUrl)),
+        radius: radius,
+      );
     }
 
     return CachedNetworkImage(
@@ -174,6 +183,7 @@ class AppDrawer extends StatelessWidget {
           buildListTile(context, 'Timeline', Timeline.routePath),
           buildListTile(context, 'Follow', Follow.routePath),
           buildListTile(context, 'Mentions', Mentions.routePath),
+          buildListTile(context, 'Settings', Settings.routePath),
           SwitchListTile(
             title: Text("Dark mode"),
             value: themeVM.isDarkModeEnabled &&
