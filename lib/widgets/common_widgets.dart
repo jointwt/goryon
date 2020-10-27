@@ -259,6 +259,7 @@ class PostList extends StatefulWidget {
     @required this.twts,
     @required this.fetchMoreState,
     this.topSlivers = const <Widget>[],
+    this.afterReply,
     this.showReplyButton = true,
     this.showConversationButton = true,
   }) : super(key: key);
@@ -270,6 +271,7 @@ class PostList extends StatefulWidget {
   final FetchState fetchMoreState;
   final bool showReplyButton;
   final bool showConversationButton;
+  final Function() afterReply;
 
   @override
   _PostListState createState() => _PostListState();
@@ -537,6 +539,7 @@ class _PostListState extends State<PostList> {
                                   ),
                                 ),
                               );
+                              widget.afterReply?.call();
                             },
                             child: Text(
                               "Reply",

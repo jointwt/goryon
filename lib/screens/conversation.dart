@@ -41,7 +41,7 @@ class _ConversationState extends State<Conversation> {
                     ),
                   ) ??
                   false) {
-                vm.fetchNewPost();
+                await vm.refreshPost();
               }
             },
           ),
@@ -59,8 +59,10 @@ class _ConversationState extends State<Conversation> {
                 return RefreshIndicator(
                   onRefresh: vm.refreshPost,
                   child: PostList(
+                    afterReply: () async {
+                      await vm.refreshPost();
+                    },
                     showConversationButton: false,
-                    showReplyButton: true,
                     gotoNextPage: vm.gotoNextPage,
                     fetchNewPost: vm.fetchNewPost,
                     fetchMoreState: vm.fetchMoreState,
