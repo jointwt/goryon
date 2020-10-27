@@ -434,6 +434,7 @@ class _PostListState extends State<PostList> {
     final user = context.watch<User>();
 
     return CustomScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       controller: _scrollController,
       slivers: [
         ...widget.topSlivers,
