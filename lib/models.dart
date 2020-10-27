@@ -108,6 +108,7 @@ class Twt {
   static final subjectExp = RegExp(r"^(@<.*>[, ]*)*(\(.*?\))(.*)");
 
   String get cleanMDText => markdownText.replaceAll("\u2028", "\n").trim();
+  String get cleanSubject => subject.replaceAll(RegExp(r"[\(\#]|\)"), "");
 
   Twt(
       {this.twter,

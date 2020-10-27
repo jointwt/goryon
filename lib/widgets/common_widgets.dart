@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:goryon/screens/conversation.dart';
 import 'package:share/share.dart';
 import 'package:goryon/strings.dart';
 import 'package:jiffy/jiffy.dart';
@@ -258,6 +259,8 @@ class PostList extends StatefulWidget {
     @required this.twts,
     @required this.fetchMoreState,
     this.topSlivers = const <Widget>[],
+    this.showReplyButton = true,
+    this.showConversationButton = true,
   }) : super(key: key);
 
   final Function fetchNewPost;
@@ -265,6 +268,8 @@ class PostList extends StatefulWidget {
   final List<Twt> twts;
   final List<Widget> topSlivers;
   final FetchState fetchMoreState;
+  final bool showReplyButton;
+  final bool showConversationButton;
 
   @override
   _PostListState createState() => _PostListState();
@@ -514,27 +519,57 @@ class _PostListState extends State<PostList> {
                       padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
                       child: buildMarkdownBody(context, twt),
                     ),
-                    Divider(height: 0),
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        shape: StadiumBorder(),
-                      ),
-                      onPressed: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => NewTwt(
-                              initialText: twt.replyText(
-                                user.profile.username,
-                              ),
+                    Row(
+                      children: [
+                        if (widget.showReplyButton)
+                          OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              shape: StadiumBorder(),
+                            ),
+                            onPressed: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => NewTwt(
+                                    initialText: twt.replyText(
+                                      user.profile.username,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              "Reply",
+                              style: Theme.of(context).textTheme.button,
                             ),
                           ),
-                        );
-                      },
-                      child: Text(
-                        "Reply",
-                        style: Theme.of(context).textTheme.button,
-                      ),
+                        SizedBox(width: 8),
+                        if (widget.showConversationButton &&
+                            twt.subject.isNotEmpty)
+                          OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              shape: StadiumBorder(),
+                            ),
+                            onPressed: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ChangeNotifierProvider(
+                                    create: (_) => ConversationViewModel(
+                                      context.read<Api>(),
+                                      twt,
+                                    ),
+                                    child: Conversation(),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              "Conversation",
+                              style: Theme.of(context).textTheme.button,
+                            ),
+                          ),
+                      ],
                     ),
                   ],
                 ),

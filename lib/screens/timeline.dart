@@ -27,6 +27,7 @@ class _TimelineState extends State<Timeline> {
       ),
       floatingActionButton: Builder(
         builder: (context) => FloatingActionButton(
+          tooltip: 'New twt',
           child: Icon(Icons.add),
           onPressed: () async {
             if (await Navigator.push(

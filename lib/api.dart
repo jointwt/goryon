@@ -370,4 +370,25 @@ class Api {
       throw http.ClientException('Failed to unmute user/feed');
     }
   }
+
+  Future<PagedResponse> fetchConversation(String hash, int page) async {
+    final _user = await user;
+    final response = await _httpClient.post(
+      _user.profile.uri.replace(path: "/api/v1/conv"),
+      body: jsonEncode({
+        'page': page,
+        'hash': hash,
+      }),
+      headers: {
+        'Token': _user.token,
+        HttpHeaders.contentTypeHeader: ContentType.json.toString(),
+      },
+    );
+
+    if (response.statusCode >= 400) {
+      throw http.ClientException('Failed to get posts');
+    }
+
+    return PagedResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+  }
 }

@@ -388,3 +388,72 @@ class ThemeViewModel extends ChangeNotifier {
     themeMode = shouldToggleDarkMode ? ThemeMode.dark : ThemeMode.light;
   }
 }
+
+class ConversationViewModel extends ChangeNotifier {
+  ConversationViewModel(this._api, this._sourceTwt);
+
+  final Api _api;
+  final Twt _sourceTwt;
+  PagedResponse _lastMentionsResponse;
+
+  FetchState _mainListState = FetchState.Done;
+  FetchState _fetchMoreState = FetchState.Done;
+  List<Twt> _twts = [];
+
+  FetchState get mainListState => _mainListState;
+  FetchState get fetchMoreState => _fetchMoreState;
+
+  List<Twt> get twts => _twts;
+  String get replyFabInitialText => "${_sourceTwt.subject} ";
+
+  set mainListState(FetchState fetchState) {
+    _mainListState = fetchState;
+    notifyListeners();
+  }
+
+  set fetchMoreState(FetchState fetchState) {
+    _fetchMoreState = fetchState;
+    notifyListeners();
+  }
+
+  Future refreshPost() async {
+    _lastMentionsResponse =
+        await _api.fetchConversation(_sourceTwt.cleanSubject, 0);
+    _twts = _lastMentionsResponse.twts;
+    notifyListeners();
+  }
+
+  void fetchNewPost() async {
+    mainListState = FetchState.Loading;
+
+    try {
+      _lastMentionsResponse =
+          await _api.fetchConversation(_sourceTwt.cleanSubject, 0);
+      _twts = _lastMentionsResponse.twts;
+
+      mainListState = FetchState.Done;
+    } catch (e) {
+      mainListState = FetchState.Error;
+      rethrow;
+    }
+  }
+
+  void gotoNextPage() async {
+    if (_lastMentionsResponse.pagerResponse.currentPage ==
+        _lastMentionsResponse.pagerResponse.maxPages) {
+      return;
+    }
+
+    fetchMoreState = FetchState.Loading;
+    try {
+      final page = _lastMentionsResponse.pagerResponse.currentPage + 1;
+      _lastMentionsResponse =
+          await _api.fetchConversation(_sourceTwt.cleanSubject, page);
+      _twts = [..._twts, ..._lastMentionsResponse.twts];
+      fetchMoreState = FetchState.Done;
+    } catch (e) {
+      fetchMoreState = FetchState.Error;
+      rethrow;
+    }
+  }
+}
