@@ -111,18 +111,18 @@ class AvatarWithBorder extends StatelessWidget {
 class AuthWidgetBuilder extends StatelessWidget {
   const AuthWidgetBuilder({Key key, @required this.builder}) : super(key: key);
 
-  final Widget Function(BuildContext, AsyncSnapshot<User>) builder;
+  final Widget Function(BuildContext, AsyncSnapshot<AppUser>) builder;
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User>(
+    return StreamBuilder<AppUser>(
       stream: context.watch<AuthViewModel>().user,
-      builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-        final User user = snapshot.data;
+      builder: (BuildContext context, AsyncSnapshot<AppUser> snapshot) {
+        final AppUser user = snapshot.data;
         if (user != null) {
           return MultiProvider(
             providers: [
-              Provider<User>.value(value: user),
+              Provider<AppUser>.value(value: user),
             ],
             child: builder(context, snapshot),
           );
@@ -162,7 +162,7 @@ class AppDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          Consumer<User>(builder: (context, user, _) {
+          Consumer<AppUser>(builder: (context, user, _) {
             return UserAccountsDrawerHeader(
               margin: const EdgeInsets.all(0),
               // Avatar border
@@ -233,7 +233,7 @@ class PostActions extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                   Share.share(context
-                      .read<User>()
+                      .read<AppUser>()
                       .profile
                       .uri
                       .replace(
@@ -308,7 +308,7 @@ class _PostListState extends State<PostList> {
     BuildContext context,
     Twter twter,
   ) {
-    final user = context.read<User>();
+    final user = context.read<AppUser>();
     final api = context.read<Api>();
     Navigator.push(
       context,
@@ -441,7 +441,7 @@ class _PostListState extends State<PostList> {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<User>();
+    final user = context.watch<AppUser>();
 
     return CustomScrollView(
       physics: const AlwaysScrollableScrollPhysics(),

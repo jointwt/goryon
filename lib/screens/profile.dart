@@ -240,7 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
             if (!vm.isViewingOwnProfile) ...[
-              Consumer<User>(
+              Consumer<AppUser>(
                 builder: (context, user, _) {
                   if (vm.profile.follows) {
                     return FutureBuilder(
@@ -380,7 +380,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ProfileViewModel>();
-    final user = context.watch<User>();
+    final user = context.watch<AppUser>();
     return FutureBuilder(
       future: _fetchProfileFuture,
       builder: (context, snapshot) {
@@ -501,7 +501,7 @@ class UserList extends StatelessWidget {
                                   nick: entry.key,
                                   uri: Uri.parse(entry.value),
                                 ),
-                                context.read<User>().profile),
+                                context.read<AppUser>().profile),
                             child: ProfileScreen(),
                           );
                         },

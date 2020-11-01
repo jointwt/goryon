@@ -16,7 +16,7 @@ import 'mentions.dart';
 class AuthWidget extends StatefulWidget {
   const AuthWidget({Key key, this.snapshot}) : super(key: key);
 
-  final AsyncSnapshot<User> snapshot;
+  final AsyncSnapshot<AppUser> snapshot;
 
   @override
   _AuthWidgetState createState() => _AuthWidgetState();

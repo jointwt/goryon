@@ -113,7 +113,7 @@ class _NewTwtState extends State<NewTwt> {
       appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Consumer<User>(
+        child: Consumer<AppUser>(
           builder: (contxt, user, _) => Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

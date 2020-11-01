@@ -4,31 +4,57 @@ import 'package:meta/meta.dart';
 part 'models.g.dart';
 
 @JsonSerializable()
-class User {
+class AppUser {
   final Profile profile;
   final String token;
   final Twter twter;
 
-  User({
+  AppUser({
     @required this.token,
     @required this.profile,
     @required this.twter,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
-  Map<String, dynamic> toJson() => _$UserToJson(this);
+  factory AppUser.fromJson(Map<String, dynamic> json) =>
+      _$AppUserFromJson(json);
+  Map<String, dynamic> toJson() => _$AppUserToJson(this);
 
-  User copyWith({
+  AppUser copyWith({
     Profile profile,
     String token,
     Twter twter,
   }) {
-    return User(
+    return AppUser(
       profile: profile ?? this.profile,
       token: token ?? this.token,
       twter: twter ?? this.twter,
     );
   }
+}
+
+@JsonSerializable()
+class User {
+  @JsonKey(name: 'Username')
+  final String username;
+  @JsonKey(name: 'Tagline')
+  final String tagline;
+  @JsonKey(name: 'Email')
+  final String email;
+  @JsonKey(name: 'IsFollowersPubliclyVisible')
+  final bool isFollowersPubliclyVisible;
+  @JsonKey(name: 'IsFollowingPubliclyVisible')
+  final bool isFollowingPubliclyVisible;
+
+  User(
+    this.username,
+    this.tagline,
+    this.email,
+    this.isFollowersPubliclyVisible,
+    this.isFollowingPubliclyVisible,
+  );
+
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  Map<String, dynamic> toJson() => _$UserToJson(this);
 }
 
 @JsonSerializable()

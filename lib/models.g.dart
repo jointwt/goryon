@@ -6,8 +6,8 @@ part of 'models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-User _$UserFromJson(Map<String, dynamic> json) {
-  return User(
+AppUser _$AppUserFromJson(Map<String, dynamic> json) {
+  return AppUser(
     token: json['token'] as String,
     profile: json['profile'] == null
         ? null
@@ -18,10 +18,28 @@ User _$UserFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
+Map<String, dynamic> _$AppUserToJson(AppUser instance) => <String, dynamic>{
       'profile': instance.profile,
       'token': instance.token,
       'twter': instance.twter,
+    };
+
+User _$UserFromJson(Map<String, dynamic> json) {
+  return User(
+    json['Username'] as String,
+    json['Tagline'] as String,
+    json['Email'] as String,
+    json['IsFollowersPubliclyVisible'] as bool,
+    json['IsFollowingPubliclyVisible'] as bool,
+  );
+}
+
+Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
+      'Username': instance.username,
+      'Tagline': instance.tagline,
+      'Email': instance.email,
+      'IsFollowersPubliclyVisible': instance.isFollowersPubliclyVisible,
+      'IsFollowingPubliclyVisible': instance.isFollowingPubliclyVisible,
     };
 
 AuthResponse _$AuthResponseFromJson(Map<String, dynamic> json) {

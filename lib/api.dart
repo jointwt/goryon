@@ -14,19 +14,19 @@ class Api {
 
   Api(this._httpClient, this._flutterSecureStorage);
 
-  Future<User> get user async {
+  Future<AppUser> get user async {
     String json = await _flutterSecureStorage.read(key: tokenKey);
     if (json == null) {
       return null;
     }
-    return User.fromJson(jsonDecode(json));
+    return AppUser.fromJson(jsonDecode(json));
   }
 
   void clearUserToken() {
     _flutterSecureStorage.delete(key: tokenKey);
   }
 
-  Future<User> login(String username, String password, Uri podURI) async {
+  Future<AppUser> login(String username, String password, Uri podURI) async {
     final response = await _httpClient.post(
       podURI.replace(path: "/api/v1/auth"),
       body: jsonEncode({'username': username, 'password': password}),
@@ -48,7 +48,7 @@ class Api {
     final profileResponse =
         await getProfile(username, token: authResponse.token, podURI: podURI);
 
-    final user = User(
+    final user = AppUser(
       profile: profileResponse.profile,
       twter: profileResponse.twter,
       token: AuthResponse.fromJson(jsonDecode(response.body)).token,
@@ -59,7 +59,7 @@ class Api {
     return user;
   }
 
-  Future<User> loginUsingCachedData() async {
+  Future<AppUser> loginUsingCachedData() async {
     var _user = await user;
 
     final profileResponse = await getProfile(_user.profile.username);
@@ -390,5 +390,62 @@ class Api {
     }
 
     return PagedResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+  }
+
+  Future<User> getUserSettings() async {
+    final _user = await user;
+    final response = await _httpClient.get(
+      _user.profile.uri.replace(path: "/api/v1/settings"),
+      headers: {
+        'Token': _user.token,
+        HttpHeaders.contentTypeHeader: ContentType.json.toString(),
+      },
+    );
+
+    if (response.statusCode >= 400) {
+      throw http.ClientException('Failed to get user setting');
+    }
+
+    return User.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+  }
+
+  Future<String> updateSettings(
+    String avatarPath,
+    String tagline,
+    String password,
+    String email,
+    bool isFollowersPubliclyVisible,
+    bool isFollowingPubliclyVisible,
+  ) async {
+    final _user = await user;
+    final request = http.MultipartRequest(
+      'POST',
+      _user.profile.uri.replace(path: "/api/v1/settings"),
+    )
+      ..headers['Token'] = _user.token
+      ..files.add(await http.MultipartFile.fromPath(
+        'avatar_file',
+        avatarPath,
+        filename: basename(avatarPath),
+      ))
+      ..fields['tagline'] = tagline
+      ..fields['password'] = password
+      ..fields['email'] = email
+      ..fields['isFollowersPubliclyVisible'] =
+          isFollowersPubliclyVisible ? "on" : "off"
+      ..fields['isFollowingPubliclyVisible'] =
+          isFollowingPubliclyVisible ? "on" : "off";
+
+    final streamedResponse = await request.send();
+
+    if (streamedResponse.statusCode >= 400) {
+      throw http.ClientException(
+        'Failed to upload image. Please try again later',
+      );
+    }
+
+    final response = await http.Response.fromStream(streamedResponse);
+
+    return jsonDecode(response.body)['Path'];
   }
 }
