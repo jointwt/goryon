@@ -107,6 +107,9 @@ class Twt {
   static final mentionsExp = RegExp(r"@<(.*?) .*?>");
   static final subjectExp = RegExp(r"^(@<.*>[, ]*)*(\(.*?\))(.*)");
 
+  String get cleanMDText => markdownText.replaceAll("\u2028", "\n").trim();
+  String get cleanSubject => subject.replaceAll(RegExp(r"[\(\#]|\)"), "");
+
   Twt(
       {this.twter,
       this.text,
@@ -200,6 +203,10 @@ class Profile {
   final String tagline;
   @JsonKey(name: 'Muted')
   final bool muted;
+  @JsonKey(name: 'FollowedBy')
+  final bool followedBy;
+  @JsonKey(name: 'Follows')
+  final bool follows;
 
   Profile(
     this.type,
@@ -209,6 +216,8 @@ class Profile {
     this.following,
     this.tagline,
     this.muted,
+    this.followedBy,
+    this.follows,
   );
 
   String get mention {

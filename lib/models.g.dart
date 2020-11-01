@@ -162,6 +162,8 @@ Profile _$ProfileFromJson(Map<String, dynamic> json) {
     ),
     json['Tagline'] as String ?? '',
     json['Muted'] as bool,
+    json['FollowedBy'] as bool,
+    json['Follows'] as bool,
   );
 }
 
@@ -173,6 +175,8 @@ Map<String, dynamic> _$ProfileToJson(Profile instance) => <String, dynamic>{
       'Following': instance.following,
       'Tagline': instance.tagline,
       'Muted': instance.muted,
+      'FollowedBy': instance.followedBy,
+      'Follows': instance.follows,
     };
 
 Link _$LinkFromJson(Map<String, dynamic> json) {
