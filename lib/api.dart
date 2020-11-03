@@ -59,7 +59,7 @@ class Api {
     return user;
   }
 
-  Future<AppUser> loginUsingCachedData() async {
+  Future<AppUser> getAppUser() async {
     var _user = await user;
 
     final profileResponse = await getProfile(_user.profile.username);
@@ -409,7 +409,7 @@ class Api {
     return User.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
   }
 
-  Future<String> updateSettings(
+  Future<String> saveSettings(
     String avatarPath,
     String tagline,
     String password,
@@ -423,11 +423,6 @@ class Api {
       _user.profile.uri.replace(path: "/api/v1/settings"),
     )
       ..headers['Token'] = _user.token
-      ..files.add(await http.MultipartFile.fromPath(
-        'avatar_file',
-        avatarPath,
-        filename: basename(avatarPath),
-      ))
       ..fields['tagline'] = tagline
       ..fields['password'] = password
       ..fields['email'] = email
@@ -435,6 +430,14 @@ class Api {
           isFollowersPubliclyVisible ? "on" : "off"
       ..fields['isFollowingPubliclyVisible'] =
           isFollowingPubliclyVisible ? "on" : "off";
+
+    if (avatarPath != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'avatar_file',
+        avatarPath,
+        filename: basename(avatarPath),
+      ));
+    }
 
     final streamedResponse = await request.send();
 

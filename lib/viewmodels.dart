@@ -14,7 +14,7 @@ class AuthViewModel {
   final _user = BehaviorSubject<AppUser>();
 
   AuthViewModel(this._api) {
-    _api.loginUsingCachedData().then(_user.add).catchError((_) {
+    getAppUser().catchError((_) {
       _api.clearUserToken();
       _user.add(null);
     });
@@ -55,6 +55,10 @@ class AuthViewModel {
       uri,
     );
     _user.add(user);
+  }
+
+  Future<void> getAppUser() {
+    return _api.getAppUser().then(_user.add);
   }
 }
 
@@ -453,42 +457,6 @@ class ConversationViewModel extends ChangeNotifier {
       fetchMoreState = FetchState.Done;
     } catch (e) {
       fetchMoreState = FetchState.Error;
-      rethrow;
-    }
-  }
-}
-
-class SettingsViewModel extends ChangeNotifier {
-  final Api _api;
-  User _user;
-
-  FetchState _fetchState = FetchState.Done;
-
-  FetchState get fetchState => _fetchState;
-  User get user => _user;
-
-  set fetchState(FetchState fetchState) {
-    _fetchState = fetchState;
-    notifyListeners();
-  }
-
-  set user(User user) {
-    _user = user;
-    notifyListeners();
-  }
-
-  SettingsViewModel(this._api) {
-    fetchUserSettings();
-  }
-
-  void fetchUserSettings() async {
-    fetchState = FetchState.Loading;
-
-    try {
-      user = await _api.getUserSettings();
-      fetchState = FetchState.Done;
-    } catch (e) {
-      fetchState = FetchState.Error;
       rethrow;
     }
   }

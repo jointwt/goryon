@@ -25,7 +25,7 @@ dependencies:
   provider: ^4.3.2
   http: ^0.12.2
   flutter_markdown: ^0.4.3
-  cached_network_image: ^2.2.0+1
+  cached_network_image: ^2.3.3
   flutter_secure_storage: ^3.3.3
   rxdart:  ^0.24.1
   url_launcher: ^5.5.1

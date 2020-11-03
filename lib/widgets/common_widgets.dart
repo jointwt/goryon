@@ -3,26 +3,26 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:goryon/screens/conversation.dart';
-import 'package:share/share.dart';
-import 'package:goryon/strings.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
+import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:goryon/screens/conversation.dart';
 import 'package:goryon/screens/profile.dart';
+import 'package:goryon/strings.dart';
 
 import '../api.dart';
 import '../models.dart';
 import '../screens/discover.dart';
 import '../screens/follow.dart';
-import '../screens/newtwt.dart';
-import '../screens/timeline.dart';
 import '../screens/mentions.dart';
-import '../screens/videoscreen.dart';
+import '../screens/newtwt.dart';
 import '../screens/settings.dart';
+import '../screens/timeline.dart';
+import '../screens/videoscreen.dart';
 import '../viewmodels.dart';
 
 class Avatar extends StatelessWidget {
@@ -625,7 +625,7 @@ class UnexpectedErrorMessage extends StatelessWidget {
   final String buttonLabel;
   const UnexpectedErrorMessage({
     Key key,
-    this.onRetryPressed,
+    @required this.onRetryPressed,
     this.buttonLabel,
     this.description,
   }) : super(key: key);
