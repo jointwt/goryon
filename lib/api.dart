@@ -262,11 +262,16 @@ class Api {
   Future<ProfileResponse> getExternalProfile(String nick, String url) async {
     final _user = await user;
     final response = await _httpClient.post(
-        _user.profile.uri.replace(path: "/api/v1/external"),
-        body: jsonEncode({
-          "nick": nick,
-          "url": url,
-        }));
+      _user.profile.uri.replace(path: "/api/v1/external"),
+      body: jsonEncode({
+        "nick": nick,
+        "url": url,
+      }),
+      headers: {
+        'Token': _user.token,
+        HttpHeaders.contentTypeHeader: ContentType.json.toString(),
+      },
+    );
 
     if (response.statusCode >= 400) {
       throw http.ClientException(
