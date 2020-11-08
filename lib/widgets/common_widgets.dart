@@ -157,7 +157,6 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeVM = context.watch<ThemeViewModel>();
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,

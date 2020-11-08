@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -12,6 +11,7 @@ import '../form_validators.dart';
 import '../models.dart';
 import '../strings.dart';
 import '../widgets/common_widgets.dart';
+import '../widgets/image_picker.dart';
 
 class NewTwt extends StatefulWidget {
   const NewTwt({Key key, this.initialText = ''}) : super(key: key);
@@ -30,7 +30,7 @@ class _NewTwtState extends State<NewTwt> {
   void initState() {
     super.initState();
     _textController = TextEditingController(text: widget.initialText)
-      ..buildTextSpan();
+      ..buildTextSpan(withComposing: true);
   }
 
   @override
@@ -77,10 +77,10 @@ class NewTwtForm extends StatefulWidget {
 class _NewTwtFormState extends State<NewTwtForm> {
   final _random = Random();
   final _scrollbarController = ScrollController();
+  final _picker = ImagePicker();
 
   String _twtPrompt;
-  Future _uploadImageFromGalleryFuture;
-  Future _uploadImageFromCameraFuture;
+  Future _uploadImageFuture;
 
   @override
   void initState() {
@@ -110,20 +110,27 @@ class _NewTwtFormState extends State<NewTwtForm> {
     );
   }
 
-  Future<void> _uploadImage(ImageSource imageSource) async {
+  Future<void> _uploadImage() async {
     final textEditingController = widget.textEditingController;
     try {
-      await context
-          .read<NewTwtViewModel>()
-          .prompUserForImageAndUpload(imageSource)
-          .then((imageURL) {
-        if (imageURL == null) return;
-        textEditingController.value = textEditingController.value.copyWith(
-          text: textEditingController.value.text + '![]($imageURL)',
-        );
-      });
-    } on http.ClientException catch (e) {
-      Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      final pickedFile = await getImage(context, _picker);
+      if (pickedFile == null) {
+        return;
+      }
+
+      final imageURL = await context.read<Api>().uploadImage(pickedFile.path);
+      textEditingController.value = textEditingController.value.copyWith(
+        text: textEditingController.value.text + '![]($imageURL)',
+      );
+    } catch (_) {
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'An error has occured while uploading an image. Please try again',
+          ),
+        ),
+      );
+      rethrow;
     }
   }
 
@@ -203,44 +210,15 @@ class _NewTwtFormState extends State<NewTwtForm> {
                   ),
                 ),
                 FutureBuilder(
-                  future: _uploadImageFromGalleryFuture,
+                  future: _uploadImageFuture,
                   builder: (context, snapshot) {
                     final isLoading =
                         snapshot.connectionState == ConnectionState.waiting;
 
                     void _onPressed() {
-                      setState(
-                        () {
-                          _uploadImageFromGalleryFuture = _uploadImage(
-                            ImageSource.gallery,
-                          );
-                        },
-                      );
-                    }
-
-                    return IconButton(
-                      tooltip: 'Upload image from gallery',
-                      icon: isLoading
-                          ? SizedSpinner()
-                          : Icon(Icons.photo_library),
-                      onPressed: isLoading ? null : _onPressed,
-                    );
-                  },
-                ),
-                FutureBuilder(
-                  future: _uploadImageFromCameraFuture,
-                  builder: (context, snapshot) {
-                    final isLoading =
-                        snapshot.connectionState == ConnectionState.waiting;
-
-                    void _onPressed() {
-                      setState(
-                        () {
-                          _uploadImageFromCameraFuture = _uploadImage(
-                            ImageSource.camera,
-                          );
-                        },
-                      );
+                      setState(() {
+                        _uploadImageFuture = _uploadImage();
+                      });
                     }
 
                     return IconButton(
