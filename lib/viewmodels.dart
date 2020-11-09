@@ -1,13 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api.dart';
 import 'models.dart';
-import './widgets/image_picker.dart';
 
 class AuthViewModel {
   final Api _api;
@@ -254,22 +252,6 @@ class DiscoverViewModel extends ChangeNotifier {
       rethrow;
     }
   }
-}
-
-class NewTwtViewModel {
-  final _picker = ImagePicker();
-  final Api _api;
-
-  NewTwtViewModel(this._api);
-
-  // Future<String> prompUserForImageAndUpload(ImageSource imageSource) async {
-  //   final pickedFile = await getImage(_picker);
-  //   if (pickedFile == null) {
-  //     return null;
-  //   }
-
-  //   return _api.uploadImage(pickedFile.path);
-  // }
 }
 
 class ProfileViewModel extends ChangeNotifier {
