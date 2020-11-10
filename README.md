@@ -1,6 +1,10 @@
 # goryon 🐦🐦🐦
 A flutter client for twtxt
 
+## Install it
+- 🤖 [Play Store](https://play.google.com/store/apps/details?id=com.jointwtxt.goryon)
+- 🍏 [App Store](https://apps.apple.com/us/app/id1528871748)
+
 ## Requirements
 - [Install flutter](https://flutter.dev/docs/get-started/install)
 - [Setup your editor (optional)](https://flutter.dev/docs/get-started/editor?tab=androidstudio)
