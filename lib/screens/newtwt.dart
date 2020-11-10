@@ -126,7 +126,7 @@ class _NewTwtFormState extends State<NewTwtForm> {
       Scaffold.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'An error has occured while uploading an image. Please try again',
+            'An error has occurred while uploading an image. Please try again',
           ),
         ),
       );
