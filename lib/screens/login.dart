@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../viewmodels.dart';
@@ -25,12 +24,7 @@ class _LoginState extends State<Login> {
             _podURLController.text,
           );
     } catch (e) {
-      var message = 'Unexpected error';
-      if (e is http.ClientException) {
-        message = e.message;
-      }
-      Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
-      rethrow;
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
 

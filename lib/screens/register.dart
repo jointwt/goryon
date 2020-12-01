@@ -23,19 +23,21 @@ class _RegisterState extends State<Register> {
 
   Future _handleRegister(BuildContext context) async {
     try {
+      var uri = Uri.parse(_podURLController.text);
+
+      if (!uri.hasScheme) {
+        uri = Uri.https(_podURLController.text, "");
+      }
+
       await context.read<Api>().register(
-            _podURLController.text,
+            uri,
             _usernameTextController.text,
             _passwordTextController.text,
             _podURLController.text,
           );
       Navigator.pop(context, true);
     } catch (e) {
-      var message = 'Unexpected error';
-      if (e is http.ClientException) {
-        message = e.message;
-      }
-      Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text(e.message)));
       rethrow;
     }
   }

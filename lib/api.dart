@@ -73,9 +73,9 @@ class Api {
   }
 
   Future<void> register(
-      String uri, String username, String password, String email) async {
+      Uri uri, String username, String password, String email) async {
     final response = await _httpClient.post(
-      Uri.parse(uri).replace(path: "/api/v1/register"),
+      uri.replace(path: "/api/v1/register"),
       body: jsonEncode({
         'username': username,
         'password': password,
