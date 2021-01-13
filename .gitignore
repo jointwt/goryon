@@ -49,3 +49,6 @@ goryon-secrets/
 
 # Fastlane files
 android/fastlane/report.xml
+
+# iOS Podfile
+ios/Podfile.lock

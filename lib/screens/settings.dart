@@ -223,7 +223,7 @@ class _SettingsBodyState extends State<SettingsBody> {
           },
         ),
         SwitchListTile(
-          title: Text('Show my followers publicly'),
+          title: Text('Show my followings publicly'),
           value: _isFollowingPubliclyVisible,
           onChanged: (value) {
             setState(() {
