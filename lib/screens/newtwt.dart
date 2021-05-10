@@ -162,38 +162,6 @@ class _NewTwtFormState extends State<NewTwtForm> {
               scrollDirection: Axis.horizontal,
               children: [
                 IconButton(
-                  tooltip: 'Bold',
-                  icon: Icon(Icons.format_bold),
-                  onPressed: () => _surroundTextSelection(
-                    '**',
-                    '**',
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Underline',
-                  icon: Icon(Icons.format_italic),
-                  onPressed: () => _surroundTextSelection(
-                    '__',
-                    '__',
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Code',
-                  icon: Icon(Icons.code),
-                  onPressed: () => _surroundTextSelection(
-                    '```',
-                    '```',
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Strikethrough',
-                  icon: Icon(Icons.strikethrough_s_rounded),
-                  onPressed: () => _surroundTextSelection(
-                    '~~',
-                    '~~',
-                  ),
-                ),
-                IconButton(
                   tooltip: 'Link',
                   icon: Icon(Icons.link_sharp),
                   onPressed: () => _surroundTextSelection(
@@ -227,6 +195,38 @@ class _NewTwtFormState extends State<NewTwtForm> {
                       onPressed: isLoading ? null : _onPressed,
                     );
                   },
+                ),
+                IconButton(
+                  tooltip: 'Bold',
+                  icon: Icon(Icons.format_bold),
+                  onPressed: () => _surroundTextSelection(
+                    '**',
+                    '**',
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Underline',
+                  icon: Icon(Icons.format_italic),
+                  onPressed: () => _surroundTextSelection(
+                    '__',
+                    '__',
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Code',
+                  icon: Icon(Icons.code),
+                  onPressed: () => _surroundTextSelection(
+                    '```',
+                    '```',
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Strikethrough',
+                  icon: Icon(Icons.strikethrough_s_rounded),
+                  onPressed: () => _surroundTextSelection(
+                    '~~',
+                    '~~',
+                  ),
                 )
               ],
             ),
