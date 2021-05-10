@@ -173,6 +173,7 @@ class _SettingsBodyState extends State<SettingsBody> {
         ),
         TextFormField(
           validator: FormValidators.requiredField,
+          maxLines: null,
           controller: _taglineController,
           decoration: InputDecoration(
             labelText: 'Tagline',
