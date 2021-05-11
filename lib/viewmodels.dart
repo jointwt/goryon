@@ -48,6 +48,10 @@ class AuthViewModel {
       uri = Uri.https(podURL, "");
     }
 
+    if (uri.isScheme("HTTP")) {
+      uri = uri.replace(scheme: "HTTPS");
+    }
+
     final user = await _api.login(
       username,
       password,
